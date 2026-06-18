@@ -141,7 +141,7 @@ jobs:
           retention-days: 14
 
   # ────────────────────────────────────────────
-  # Job 3: Publish pre-release (only on main branch)
+  # Job 3: Publish pre-release
   # ────────────────────────────────────────────
   publish-pre-release:
     name: Publish Pre-Release
