@@ -12,10 +12,12 @@ on:
       - 'main.tex'
       - '.pxis/**'
       - 'scripts/volumes/**'
+      - '.github/workflows/release-pre-release.yml'
   workflow_dispatch: {}
 
 permissions:
   contents: write
+
 concurrency:
   group: pre-release-${{ github.ref }}
   cancel-in-progress: true
@@ -28,9 +30,9 @@ jobs:
     name: Resolve Build Metadata
     runs-on: ubuntu-latest
     outputs:
-      short_sha:    ${{ steps.meta.outputs.short_sha }}
-      build_date:   ${{ steps.meta.outputs.build_date }}
-      pre_tag:      ${{ steps.meta.outputs.pre_tag }}
+      short_sha:  ${{ steps.meta.outputs.short_sha }}
+      build_date: ${{ steps.meta.outputs.build_date }}
+      pre_tag:    ${{ steps.meta.outputs.pre_tag }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -41,8 +43,7 @@ jobs:
         id: meta
         shell: bash
         run: |
-          SHORT_SHA="${{ github.sha }}"
-          SHORT_SHA="${SHORT_SHA:0:7}"
+          SHORT_SHA="${GITHUB_SHA:0:7}"
           BUILD_DATE="$(date -u '+%Y-%m-%d')"
           PRE_TAG="pre-release-${BUILD_DATE}-${SHORT_SHA}"
 
@@ -122,7 +123,6 @@ jobs:
           fi
           echo "PDF found: $PDF ($(du -sh "$PDF" | cut -f1))"
 
-      # Rename PDF to include pre-release tag for clear identification
       - name: Rename PDF with pre-release identifier
         shell: bash
         run: |
@@ -173,8 +173,6 @@ jobs:
           fi
           echo "Release assets:"
           ls -lh release/ 2>/dev/null || echo "(none)"
-
-          # Count successful PDFs for the release body
           PDF_COUNT="$(find release/ -name '*.pdf' | wc -l | tr -d ' ')"
           echo "pdf_count=${PDF_COUNT}" >> "$GITHUB_OUTPUT"
 
@@ -198,35 +196,38 @@ jobs:
           BUILD_DATE="${{ needs.metadata.outputs.build_date }}"
           SHORT_SHA="${{ needs.metadata.outputs.short_sha }}"
           FULL_SHA="${{ github.sha }}"
+          REPO="${{ github.repository }}"
+          EVENT="${{ github.event_name }}"
+          PDF_COUNT="${{ steps.collect.outputs.pdf_count }}"
 
-          cat > release_body.md << EOF
-          ## Pre-Release Build
-
-          > **This is an automated preview build** — not a stable release.
-          > PDFs are generated from the current state of \`main\` and may contain
-          > incomplete chapters, placeholder text, or unresolved issues.
-
-          | Field       | Value                                                                                          |
-          |-------------|-----------------------------------------------------------------------------------------------|
-          | Build ID    | \`${PRE_TAG}\`                                                                                |
-          | Date        | ${BUILD_DATE}                                                                                 |
-          | Commit      | [\`${SHORT_SHA}\`](https://github.com/${{ github.repository }}/commit/${FULL_SHA})           |
-          | Branch      | [\`main\`](https://github.com/${{ github.repository }}/tree/main)                            |
-          | Trigger     | ${{ github.event_name }}                                                                      |
-          | PDFs built  | ${{ steps.collect.outputs.pdf_count }}                                                        |
-
-          ### PDFs in this build
-
-          Each file follows the naming scheme:
-          \`\`\`
-          <YEAR>_ARLIZ_<Volume_Title>_Volume_<N>__${PRE_TAG}.pdf
-          \`\`\`
-
-          ### ⚠️ Disclaimer
-
-          Pre-release builds are snapshots for review only.
-          For stable, tagged releases see [Releases](https://github.com/${{ github.repository }}/releases?q=v*&expanded=true).
-          EOF
+          {
+            echo "## Pre-Release Build"
+            echo ""
+            echo "This is an automated preview build — not a stable release."
+            echo "PDFs are generated from the current state of \`main\` and may contain"
+            echo "incomplete chapters, placeholder text, or unresolved issues."
+            echo ""
+            echo "| Field      | Value |"
+            echo "|------------|-------|"
+            echo "| Build ID   | \`${PRE_TAG}\` |"
+            echo "| Date       | ${BUILD_DATE} |"
+            echo "| Commit     | [\`${SHORT_SHA}\`](https://github.com/${REPO}/commit/${FULL_SHA}) |"
+            echo "| Branch     | [\`main\`](https://github.com/${REPO}/tree/main) |"
+            echo "| Trigger    | ${EVENT} |"
+            echo "| PDFs built | ${PDF_COUNT} |"
+            echo ""
+            echo "### PDFs in this build"
+            echo ""
+            echo "Each file follows the naming scheme:"
+            echo "\`\`\`"
+            echo "<YEAR>_ARLIZ_<Volume_Title>_Volume_<N>__${PRE_TAG}.pdf"
+            echo "\`\`\`"
+            echo ""
+            echo "### Disclaimer"
+            echo ""
+            echo "Pre-release builds are snapshots for review only."
+            echo "For stable releases see [Releases](https://github.com/${REPO}/releases?q=v*&expanded=true)."
+          } > release_body.md
 
           echo "--- release_body.md ---"
           cat release_body.md
@@ -234,12 +235,12 @@ jobs:
       - name: Create latest-pre-release release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name:   latest-pre-release
-          name:       "Latest Pre-Release (${{ needs.metadata.outputs.build_date }} · ${{ needs.metadata.outputs.short_sha }})"
-          body_path:  release_body.md
-          files:      release/*.pdf
-          prerelease: true
-          draft:      false
+          tag_name:    latest-pre-release
+          name:        "Latest Pre-Release (${{ needs.metadata.outputs.build_date }} · ${{ needs.metadata.outputs.short_sha }})"
+          body_path:   release_body.md
+          files:       release/*.pdf
+          prerelease:  true
+          draft:       false
           make_latest: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
