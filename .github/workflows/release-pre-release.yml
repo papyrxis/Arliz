@@ -1,0 +1,245 @@
+name: Pre-Release Build
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'volumes/**'
+      - 'frontmatter/**'
+      - 'backmatter/**'
+      - 'configs/**'
+      - 'main.tex'
+      - '.pxis/**'
+      - 'scripts/volumes/**'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+concurrency:
+  group: pre-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ────────────────────────────────────────────
+  # Job 1: Resolve build metadata
+  # ────────────────────────────────────────────
+  metadata:
+    name: Resolve Build Metadata
+    runs-on: ubuntu-latest
+    outputs:
+      short_sha:    ${{ steps.meta.outputs.short_sha }}
+      build_date:   ${{ steps.meta.outputs.build_date }}
+      pre_tag:      ${{ steps.meta.outputs.pre_tag }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Compute tag and identifiers
+        id: meta
+        shell: bash
+        run: |
+          SHORT_SHA="${{ github.sha }}"
+          SHORT_SHA="${SHORT_SHA:0:7}"
+          BUILD_DATE="$(date -u '+%Y-%m-%d')"
+          PRE_TAG="pre-release-${BUILD_DATE}-${SHORT_SHA}"
+
+          echo "short_sha=${SHORT_SHA}"   >> "$GITHUB_OUTPUT"
+          echo "build_date=${BUILD_DATE}" >> "$GITHUB_OUTPUT"
+          echo "pre_tag=${PRE_TAG}"       >> "$GITHUB_OUTPUT"
+
+          echo "Short SHA : ${SHORT_SHA}"
+          echo "Build date: ${BUILD_DATE}"
+          echo "Pre-tag   : ${PRE_TAG}"
+
+  # ────────────────────────────────────────────
+  # Job 2: Build each volume in parallel
+  # ────────────────────────────────────────────
+  build-volumes:
+    name: Build ${{ matrix.volume }}
+    needs: metadata
+    runs-on: ubuntu-latest
+    container:
+      image: texlive/texlive:latest
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        volume: [vol1, vol2, vol3]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install build prerequisites
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends make git bash
+
+      - name: Verify .pxis/preset.tex is present
+        run: |
+          test -f .pxis/preset.tex || {
+            echo "::error::.pxis/preset.tex is missing."
+            echo "::error::Run 'make sync' locally and commit .pxis/ before pushing."
+            exit 1
+          }
+
+      - name: Resolve output basename for ${{ matrix.volume }}
+        id: vol_meta
+        shell: bash
+        run: |
+          CONF="configs/volumes/${{ matrix.volume }}.conf"
+          if [[ ! -f "$CONF" ]]; then
+            echo "::error::Config not found: $CONF"
+            exit 1
+          fi
+          source <(tr -d '\r' < "$CONF")
+          if [[ -z "${VOLUME_TITLE:-}" || -z "${VOLUME_NUM:-}" ]]; then
+            echo "::error::VOLUME_TITLE or VOLUME_NUM not set in $CONF"
+            exit 1
+          fi
+          YEAR="$(date -u '+%Y')"
+          BASENAME="${YEAR}_ARLIZ_${VOLUME_TITLE}_Volume_${VOLUME_NUM}"
+          echo "basename=${BASENAME}" >> "$GITHUB_OUTPUT"
+          echo "Resolved basename: ${BASENAME}"
+
+      - name: Build ${{ matrix.volume }}
+        shell: bash
+        run: bash scripts/volumes/build.sh ${{ matrix.volume }}
+
+      - name: Verify PDF was produced
+        shell: bash
+        run: |
+          PDF="build/${{ steps.vol_meta.outputs.basename }}.pdf"
+          if [[ ! -f "$PDF" ]]; then
+            echo "::error::Expected PDF not found: $PDF"
+            find build/ -type f 2>/dev/null || echo "(build/ is empty or missing)"
+            exit 1
+          fi
+          echo "PDF found: $PDF ($(du -sh "$PDF" | cut -f1))"
+
+      # Rename PDF to include pre-release tag for clear identification
+      - name: Rename PDF with pre-release identifier
+        shell: bash
+        run: |
+          SRC="build/${{ steps.vol_meta.outputs.basename }}.pdf"
+          DEST="build/${{ steps.vol_meta.outputs.basename }}__${{ needs.metadata.outputs.pre_tag }}.pdf"
+          cp "$SRC" "$DEST"
+          echo "Pre-release PDF: $DEST"
+
+      - name: Upload PDF artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.volume }}-pre-release-pdf
+          path: build/${{ steps.vol_meta.outputs.basename }}__${{ needs.metadata.outputs.pre_tag }}.pdf
+          if-no-files-found: warn
+          retention-days: 14
+
+  # ────────────────────────────────────────────
+  # Job 3: Publish pre-release (only on main branch)
+  # ────────────────────────────────────────────
+  publish-pre-release:
+    name: Publish Pre-Release
+    needs: [metadata, build-volumes]
+    if: always() && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: '*-pre-release-pdf'
+          merge-multiple: true
+        continue-on-error: true
+
+      - name: Collect release assets
+        id: collect
+        shell: bash
+        run: |
+          mkdir -p release
+          if [[ -d artifacts ]]; then
+            find artifacts -type f -name '*.pdf' -exec cp {} release/ \;
+          else
+            echo "::warning::No artifacts found; release will have no PDF assets."
+          fi
+          echo "Release assets:"
+          ls -lh release/ 2>/dev/null || echo "(none)"
+
+          # Count successful PDFs for the release body
+          PDF_COUNT="$(find release/ -name '*.pdf' | wc -l | tr -d ' ')"
+          echo "pdf_count=${PDF_COUNT}" >> "$GITHUB_OUTPUT"
+
+      - name: Remove existing latest-pre-release (if any)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          if gh release view latest-pre-release >/dev/null 2>&1; then
+            echo "Deleting existing latest-pre-release release..."
+            gh release delete latest-pre-release --yes --cleanup-tag || true
+          else
+            echo "No existing latest-pre-release found; skipping."
+          fi
+
+      - name: Build release notes
+        id: notes
+        shell: bash
+        run: |
+          PRE_TAG="${{ needs.metadata.outputs.pre_tag }}"
+          BUILD_DATE="${{ needs.metadata.outputs.build_date }}"
+          SHORT_SHA="${{ needs.metadata.outputs.short_sha }}"
+          FULL_SHA="${{ github.sha }}"
+
+          cat > release_body.md << EOF
+          ## Pre-Release Build
+
+          > **This is an automated preview build** — not a stable release.
+          > PDFs are generated from the current state of \`main\` and may contain
+          > incomplete chapters, placeholder text, or unresolved issues.
+
+          | Field       | Value                                                                                          |
+          |-------------|-----------------------------------------------------------------------------------------------|
+          | Build ID    | \`${PRE_TAG}\`                                                                                |
+          | Date        | ${BUILD_DATE}                                                                                 |
+          | Commit      | [\`${SHORT_SHA}\`](https://github.com/${{ github.repository }}/commit/${FULL_SHA})           |
+          | Branch      | [\`main\`](https://github.com/${{ github.repository }}/tree/main)                            |
+          | Trigger     | ${{ github.event_name }}                                                                      |
+          | PDFs built  | ${{ steps.collect.outputs.pdf_count }}                                                        |
+
+          ### PDFs in this build
+
+          Each file follows the naming scheme:
+          \`\`\`
+          <YEAR>_ARLIZ_<Volume_Title>_Volume_<N>__${PRE_TAG}.pdf
+          \`\`\`
+
+          ### ⚠️ Disclaimer
+
+          Pre-release builds are snapshots for review only.
+          For stable, tagged releases see [Releases](https://github.com/${{ github.repository }}/releases?q=v*&expanded=true).
+          EOF
+
+          echo "--- release_body.md ---"
+          cat release_body.md
+
+      - name: Create latest-pre-release release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name:   latest-pre-release
+          name:       "Latest Pre-Release (${{ needs.metadata.outputs.build_date }} · ${{ needs.metadata.outputs.short_sha }})"
+          body_path:  release_body.md
+          files:      release/*.pdf
+          prerelease: true
+          draft:      false
+          make_latest: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
