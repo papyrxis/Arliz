@@ -40,7 +40,6 @@ build_one() {
     latexmk \
       -pdf \
       -pdflatex="pdflatex -file-line-error -interaction=nonstopmode %O %S" \
-      -bibtex \
       -use-make \
       -recorder \
       -output-directory="$BUILD_DIR/$vol" \
