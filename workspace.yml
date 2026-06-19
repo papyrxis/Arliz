@@ -66,3 +66,4 @@ overrides:
     - env.tex
     - graphics.tex
     - bibliography.tex
+    - boxes.tex
