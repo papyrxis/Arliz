@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="ARLIZ — Arrays, Reasoning, Logic, Identity, Zero. A deep technical journey through the most fundamental data structure in computing, from hardware to quantum frontiers.">
+  <meta name="description" content="ARLIZ — Arrays, Reasoning, Logic, Identity, Zero. One question about arrays, followed from a voltage difference to a tensor, across three volumes.">
   <meta name="author" content="Mahdi Mamashli">
-  <meta property="og:title" content="ARLIZ — Go Beyond Arrays, Memory, and Logic">
-  <meta property="og:description" content="A comprehensive open-source technical book exploring arrays from silicon to quantum.">
+  <meta property="og:title" content="ARLIZ — Arrays, Reasoning, Logic, Identity, Zero">
+  <meta property="og:description" content="An open-source technical work exploring arrays from voltage to tensor, in three volumes.">
   <meta property="og:type" content="book">
-  <title>ARLIZ — Go Beyond Arrays, Memory, and Logic</title>
+  <title>ARLIZ — Arrays, Reasoning, Logic, Identity, Zero</title>
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='4' fill='%230d0f14'/><text x='50%25' y='72%25' text-anchor='middle' font-family='monospace' font-weight='900' font-size='20' fill='%23d4884a'>A</text></svg>">
   <link rel="stylesheet" href="style.css">
@@ -22,12 +22,9 @@
   <div class="nav-inner">
 
     <a href="#" class="nav-brand" aria-label="ARLIZ home">
-      <!-- Logo: stylised A circuit node -->
       <svg class="nav-logo" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <rect width="32" height="32" rx="6" fill="rgba(212,136,74,0.10)" stroke="rgba(212,136,74,0.25)" stroke-width="1"/>
-        <!-- A shape -->
         <path d="M16 5 L24 25 M16 5 L8 25 M10.5 19 L21.5 19" stroke="#d4884a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        <!-- circuit dot accents -->
         <circle cx="16" cy="5" r="1.5" fill="#d4884a"/>
         <circle cx="8" cy="25" r="1.5" fill="#38b2c8"/>
         <circle cx="24" cy="25" r="1.5" fill="#38b2c8"/>
@@ -37,6 +34,7 @@
 
     <nav class="nav-links" aria-label="Site sections">
       <a href="#preface"      class="nav-link">Preface</a>
+      <a href="#volumes"      class="nav-link">Volumes</a>
       <a href="#contributors" class="nav-link">Contributors</a>
       <a href="#community"    class="nav-link">Community</a>
     </nav>
@@ -48,10 +46,6 @@
       <a href="https://github.com/papyrxis/Arliz" class="btn-ico" target="_blank" rel="noopener" aria-label="GitHub repository">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
       </a>
-      <a href="https://github.com/papyrxis/Arliz/blob/main/book/Arliz.pdf" class="btn-pdf" target="_blank" rel="noopener">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-        Read PDF
-      </a>
       <button id="hamburger" class="hamburger" aria-expanded="false" aria-label="Open menu" aria-controls="mobile-nav">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
@@ -62,6 +56,7 @@
 <!-- Mobile nav -->
 <div id="mobile-nav" class="mobile-nav" role="navigation" aria-label="Mobile navigation">
   <a href="#preface"      class="nav-link">Preface</a>
+  <a href="#volumes"      class="nav-link">Volumes</a>
   <a href="#contributors" class="nav-link">Contributors</a>
   <a href="#community"    class="nav-link">Community</a>
 </div>
@@ -88,13 +83,12 @@
       </h1>
 
       <p class="hero-sub fade-up d2">
-        Arrays, Memory, and Logic &mdash;<br>A Journey from Foundations to Frontiers
+        What is an array, really? &mdash;<br>One question, three volumes.
       </p>
 
       <p class="hero-desc fade-up d3">
-        ARLIZ is not a reference book. It is a deep expedition into the most fundamental
-        data structure in computing &mdash; from ancient counting stones and silicon transistors
-        to GPU tensor cores and quantum state vectors.
+        Not a reference. A single thread followed seriously, from a voltage
+        difference across a transistor to tensor cores and quantum state vectors.
       </p>
 
       <!-- Acronym -->
@@ -123,7 +117,7 @@
 
       <!-- CTAs -->
       <div class="hero-btns fade-up d5">
-        <a href="https://github.com/papyrxis/Arliz/blob/main/book/Arliz.pdf" class="btn-primary" target="_blank" rel="noopener">
+        <a href="#volumes" class="btn-primary" target="_blank" rel="noopener">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
           Read the Book
         </a>
@@ -197,42 +191,42 @@
     <div class="preface-grid">
 
       <div class="preface-sticky fade-up">
-        <p class="preface-tag">Preface</p>
-        <h2 class="preface-heading">From a Simple Question<br>to a Started Everything</h2>
+        <p class="preface-tag">§ Preface</p>
+        <h2 class="preface-heading">What is an array, really?</h2>
         <p class="preface-tagline">
-          ARLIZ began with one uncomfortable question: <em>what is an array, really?</em>
-          Following it seriously turned a familiar programming topic into a much larger
-          inquiry about memory, logic, abstraction, and computation itself.
+          Not the syntax. Not the API. The thing itself.
         </p>
       </div>
 
       <div class="preface-body fade-up d2">
         <div class="preface-intro-card">
           <p class="preface-lead">
-            ARLIZ was not conceived as a broad survey of computer science. It emerged from
-            a narrower impulse: to revisit one of the oldest structures in programming with
-            enough honesty to admit that the usual answers were incomplete — and to follow
-            the question all the way from a voltage difference to a tensor.
+            Most programmers learn arrays the quick way: here is the syntax, here is how you loop over them, move on.
+            Following the question further led through memory layout, cache hierarchies, transistor physics, and eventually
+            to GPU tensor cores and quantum state vectors.
           </p>
         </div>
 
         <blockquote class="preface-quote">
-          "To understand arrays seriously is to move from notation to mechanism — from
-          symbols in code to the hardware and logic that make those symbols real."
+          "Arrays, Reasoning, Logic, Identity, Zero" &mdash; a name that sounded
+          right first; the acronym came after.
         </blockquote>
 
         <p>
-          That path is long enough that it no longer fits in a single book. ARLIZ is now
-          organized as <strong>three volumes</strong> — <em>Zero to Bit</em>,
-          <em>Silicon Horizon</em>, and <em>Array Odyssey</em> — each a complete
-          stage of the same journey, readable on its own but part of one continuous line of
-          reasoning. See <a href="#volumes">Volumes</a> below for how they fit together.
-        </p>
-        <p>
-          It is also a living work: errors get corrected and explanations get sharper, and
-          each volume keeps improving on its own schedule.
+          That path is long enough that it no longer fits in a single book. ARLIZ is organized as
+          three volumes — each a complete stage of the same journey, readable on its own but
+          part of one continuous line of reasoning.
         </p>
 
+        <p>
+          This is not a reference book. It is not a gentle introduction. It is an honest attempt
+          to understand one of the most fundamental structures in computing, from every relevant angle,
+          grounded throughout in the physical reality of the machines that run our code.
+        </p>
+        <p>
+          It is also a living work. Errors get corrected, explanations get sharper, and each volume
+          improves on its own schedule. If something is wrong, opening an issue is more useful than silence.
+        </p>
         <div class="preface-sig">
           <div class="sig-avatar" id="author-avatar">M</div>
           <div>
@@ -258,45 +252,187 @@
       <p class="sec-eyebrow">The Work</p>
       <h2 class="sec-title">One Journey, Three Volumes</h2>
       <p class="sec-desc">
-        ARLIZ follows a single path — from a voltage difference to a tensor — divided into
-        three volumes that can each be read, revised, and downloaded on their own.
+        Each volume depends on the one before it. Volume II assumes I. Volume III assumes both.
+        The path runs one direction: voltage → hardware → arrays.
       </p>
     </div>
+
     <div class="volumes-grid">
 
-      <div class="volume-card fade-up d1">
-        <span class="volume-num">Volume I</span>
+      <div class="volume-card volume-available fade-up d1">
+        <div class="volume-top">
+          <span class="volume-num">Volume I</span>
+          <span class="volume-status status-available">Available</span>
+        </div>
+
         <h3 class="volume-title">Zero to Bit</h3>
+        <div class="volume-actions">
+          <a href="https://github.com/papyrxis/Arliz/releases/tag/latest-pre-release"
+            class="volume-btn"
+            target="_blank"
+            rel="noopener">
+            Read PDF
+            <span class="volume-btn-arrow">→</span>
+          </a>
+        </div>
         <p class="volume-text">
-          How information is encoded at all — voltage and binary switching, Boolean
-          algebra, number systems, integers, floating point, characters, endianness,
-          bit manipulation, alignment, and serialization.
+          How information is encoded at all &mdash; voltage, binary switching,
+          number systems, integers, floating point, characters, byte order,
+          alignment, pointers, and serialization.
         </p>
-        <a href="https://github.com/papyrxis/Arliz/releases/latest" class="volume-link" target="_blank" rel="noopener">
-          Read PDF →
-        </a>
+
+        <div class="vol-mini-cover">
+          <img
+            src="https://raw.githubusercontent.com/papyrxis/Arliz/main/covers/cover-vol1.jpg"
+            alt="Volume I cover"
+            onerror="this.style.display='none'; this.parentElement.classList.add('is-fallback');"
+          >
+        </div>
       </div>
 
-      <div class="volume-card fade-up d2">
-        <span class="volume-num">Volume II</span>
+      <div class="volume-card volume-unavailable fade-up d2">
+        <div class="volume-top">
+          <span class="volume-num">Volume II</span>
+          <span class="volume-status status-unavailable">In Progress</span>
+        </div>
+
         <h3 class="volume-title">Silicon Horizon</h3>
+
         <p class="volume-text">
-          The hardware that turns encoded information into computation — logic gates,
-          memory cells and hierarchies, processors, pipelines, ISAs, SIMD, GPUs, and
-          interconnects.
+          The hardware that turns encoded information into computation &mdash;
+          logic gates, memory hierarchies, processors, pipelines, ISAs, SIMD,
+          GPUs, and interconnects.
         </p>
-        <span class="volume-status">In progress</span>
+
+        <div class="vol-mini-cover vol-mini-fallback" aria-hidden="true">
+          <svg viewBox="0 0 240 160" class="vol-icon-svg">
+            <defs>
+              <linearGradient id="chipGlow" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%" stop-color="#7ef0c4"/>
+                <stop offset="100%" stop-color="#5ac8ff"/>
+              </linearGradient>
+              <linearGradient id="chipBody" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%" stop-color="#17212d"/>
+                <stop offset="100%" stop-color="#0f1620"/>
+              </linearGradient>
+              <radialGradient id="chipCore" cx="50%" cy="45%" r="65%">
+                <stop offset="0%" stop-color="rgba(255,255,255,0.14)"/>
+                <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+              </radialGradient>
+            </defs>
+
+            <rect x="49" y="29" width="142" height="102" rx="28" fill="url(#chipBody)" stroke="url(#chipGlow)" stroke-width="3"/>
+            <rect x="77" y="57" width="86" height="46" rx="16" fill="rgba(255,255,255,0.02)" stroke="url(#chipGlow)" stroke-width="2.5"/>
+            <circle cx="120" cy="80" r="20" fill="url(#chipCore)"/>
+            <circle cx="120" cy="80" r="5.5" fill="#e8fffb"/>
+            <circle cx="104" cy="74" r="3.5" fill="#e8fffb"/>
+            <circle cx="136" cy="74" r="3.5" fill="#e8fffb"/>
+            <path d="M104 92c6 5 26 5 32 0" fill="none" stroke="#e8fffb" stroke-width="3" stroke-linecap="round"/>
+
+            <g stroke="url(#chipGlow)" stroke-width="3" stroke-linecap="round" opacity="0.95">
+              <line x1="49" y1="47" x2="31" y2="47"/>
+              <line x1="49" y1="68" x2="24" y2="68"/>
+              <line x1="49" y1="92" x2="28" y2="92"/>
+              <line x1="49" y1="113" x2="34" y2="113"/>
+
+              <line x1="191" y1="47" x2="209" y2="47"/>
+              <line x1="191" y1="68" x2="216" y2="68"/>
+              <line x1="191" y1="92" x2="212" y2="92"/>
+              <line x1="191" y1="113" x2="206" y2="113"/>
+
+              <line x1="83" y1="29" x2="83" y2="15"/>
+              <line x1="108" y1="29" x2="108" y2="11"/>
+              <line x1="132" y1="29" x2="132" y2="14"/>
+              <line x1="157" y1="29" x2="157" y2="16"/>
+
+              <line x1="83" y1="131" x2="83" y2="145"/>
+              <line x1="108" y1="131" x2="108" y2="149"/>
+              <line x1="132" y1="131" x2="132" y2="146"/>
+              <line x1="157" y1="131" x2="157" y2="144"/>
+            </g>
+
+            <g fill="url(#chipGlow)">
+              <circle cx="31" cy="47" r="3.5"/>
+              <circle cx="24" cy="68" r="3.5"/>
+              <circle cx="28" cy="92" r="3.5"/>
+              <circle cx="34" cy="113" r="3.5"/>
+
+              <circle cx="209" cy="47" r="3.5"/>
+              <circle cx="216" cy="68" r="3.5"/>
+              <circle cx="212" cy="92" r="3.5"/>
+              <circle cx="206" cy="113" r="3.5"/>
+            </g>
+          </svg>
+        </div>
       </div>
 
-      <div class="volume-card fade-up d3">
-        <span class="volume-num">Volume III</span>
+      <div class="volume-card volume-unavailable fade-up d3">
+        <div class="volume-top">
+          <span class="volume-num">Volume III</span>
+          <span class="volume-status status-unavailable">In Progress</span>
+        </div>
+
         <h3 class="volume-title">Array Odyssey</h3>
+
         <p class="volume-text">
-          Arrays themselves, in full — theory, memory layout, every major variant, the
-          data structures and algorithms built on them, and the parallel and distributed
-          systems that process them today.
+          Arrays themselves, in full &mdash; theory, memory layout, every major
+          variant, the structures and algorithms built on them, and the
+          parallel and distributed systems that process them today.
         </p>
-        <span class="volume-status">In progress</span>
+
+      <div class="vol-mini-cover vol-mini-fallback" aria-hidden="true">
+        <svg viewBox="0 0 240 160" class="vol-icon-svg">
+          <defs>
+            <linearGradient id="arrGlow" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0%" stop-color="#ffcf7a"/>
+              <stop offset="100%" stop-color="#ff7da6"/>
+            </linearGradient>
+            <linearGradient id="arrBody" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0%" stop-color="#231725"/>
+              <stop offset="100%" stop-color="#111018"/>
+            </linearGradient>
+            <radialGradient id="arrCore" cx="50%" cy="45%" r="70%">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.12)"/>
+              <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+            </radialGradient>
+          </defs>
+
+          <rect x="44" y="30" width="152" height="100" rx="30" fill="url(#arrBody)" stroke="url(#arrGlow)" stroke-width="3"/>
+          <rect x="67" y="47" width="106" height="66" rx="20" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
+          <circle cx="120" cy="80" r="23" fill="url(#arrCore)"/>
+
+          <g transform="translate(73 55)" fill="none" stroke="url(#arrGlow)" stroke-width="2.8">
+            <rect x="0" y="0" width="18" height="18" rx="5"/>
+            <rect x="26" y="0" width="18" height="18" rx="5"/>
+            <rect x="52" y="0" width="18" height="18" rx="5"/>
+
+            <rect x="0" y="26" width="18" height="18" rx="5"/>
+            <rect x="26" y="26" width="18" height="18" rx="5"/>
+            <rect x="52" y="26" width="18" height="18" rx="5"/>
+          </g>
+
+          <path d="M78 80h84" stroke="url(#arrGlow)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M120 62v36" stroke="rgba(255,255,255,0.5)" stroke-width="2.4" stroke-linecap="round"/>
+
+          <circle cx="100" cy="76" r="4.5" fill="#fff2d8"/>
+          <circle cx="140" cy="76" r="4.5" fill="#fff2d8"/>
+          <path d="M102 93c6 4 22 4 28 0" fill="none" stroke="#fff2d8" stroke-width="3" stroke-linecap="round"/>
+
+          <g stroke="url(#arrGlow)" stroke-width="3" stroke-linecap="round" opacity="0.95">
+            <path d="M57 45c-8 6-14 15-14 26"/>
+            <path d="M181 115c8-6 14-15 14-26"/>
+            <path d="M62 117c9 6 19 9 30 8"/>
+            <path d="M178 42c-9-6-19-9-30-8"/>
+          </g>
+
+          <g fill="url(#arrGlow)">
+            <circle cx="44" cy="58" r="3.5"/>
+            <circle cx="194" cy="102" r="3.5"/>
+            <circle cx="58" cy="120" r="3.5"/>
+            <circle cx="182" cy="46" r="3.5"/>
+          </g>
+        </svg>
+      </div>
       </div>
 
     </div>
@@ -366,12 +502,14 @@
 <!-- ══════════════════════════════════════
      FOOTER
 ══════════════════════════════════════ -->
+
+<!-- FOOTER -->
 <footer>
   <div class="wrap">
     <div class="footer-grid">
       <div class="footer-brand">
         <div class="footer-logo-row">
-          <svg width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true">
             <rect width="32" height="32" rx="6" fill="rgba(212,136,74,0.1)" stroke="rgba(212,136,74,0.22)" stroke-width="1"/>
             <path d="M16 5 L24 25 M16 5 L8 25 M10.5 19 L21.5 19" stroke="#d4884a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <circle cx="16" cy="5" r="1.3" fill="#d4884a"/>
@@ -381,20 +519,20 @@
           <span class="footer-wm">ARLIZ</span>
         </div>
         <p class="footer-tag">
-          "The purpose of abstraction is not to be vague, but to create a new semantic level in which one can be absolutely precise."<br>
+          "The purpose of abstraction is not to be vague, but to create a new semantic level
+          in which one can be absolutely precise."<br>
           <em style="color:var(--text-3);">&mdash; Edsger W. Dijkstra</em>
         </p>
-        <span class="footer-lic">CC BY-SA 4.0 &middot; Open Source</span>
+        <span class="footer-lic">CC BY-SA 4.0 &middot; MIT (code)</span>
       </div>
 
       <div>
-        <h4 class="footer-col-title">Book</h4>
+        <h4 class="footer-col-title">Volumes</h4>
         <ul class="footer-links">
-          <li><a href="#preface"      class="footer-a">Preface</a></li>
-          <li><a href="#introduction" class="footer-a">Introduction</a></li>
-          <li><a href="#architecture" class="footer-a">Book Architecture</a></li>
-          <li><a href="#appendices"   class="footer-a">Appendices</a></li>
-          <li><a href="https://github.com/papyrxis/Arliz/blob/main/book/Arliz.pdf" class="footer-a" target="_blank" rel="noopener">Download PDF</a></li>
+          <li><a href="#volumes" class="footer-a">Volume I — Zero to Bit</a></li>
+          <li><a href="#volumes" class="footer-a">Volume II — Silicon Horizon</a></li>
+          <li><a href="#volumes" class="footer-a">Volume III — Array Odyssey</a></li>
+          <li><a href="https://github.com/papyrxis/Arliz/releases/tag/latest-pre-release" class="footer-a" target="_blank" rel="noopener">Latest PDF</a></li>
         </ul>
       </div>
 
@@ -403,29 +541,31 @@
         <ul class="footer-links">
           <li><a href="https://github.com/papyrxis/Arliz" class="footer-a" target="_blank" rel="noopener">GitHub</a></li>
           <li><a href="https://github.com/papyrxis/Arliz/issues" class="footer-a" target="_blank" rel="noopener">Issues</a></li>
-          <li><a href="https://github.com/papyrxis/Arliz/pulls" class="footer-a" target="_blank" rel="noopener">Pull Requests</a></li>
           <li><a href="https://github.com/papyrxis/Arliz/releases" class="footer-a" target="_blank" rel="noopener">Releases</a></li>
-          <li><a href="https://github.com/papyrxis/Arliz/graphs/contributors" class="footer-a" target="_blank" rel="noopener">Contributors</a></li>
+          <li><a href="https://github.com/papyrxis/Arliz/blob/main/docs/CHANGELOG.md" class="footer-a" target="_blank" rel="noopener">Changelog</a></li>
         </ul>
       </div>
 
       <div>
-        <h4 class="footer-col-title">Contact</h4>
+        <h4 class="footer-col-title">Docs</h4>
         <ul class="footer-links">
-          <li><a href="https://github.com/m-mdy-m" class="footer-a" target="_blank" rel="noopener">@m-mdy-m</a></li>
-          <li><a href="https://github.com/papyrxis/Arliz/blob/main/docs/CONTRIBUTING.md" class="footer-a" target="_blank" rel="noopener">How to Contribute</a></li>
-          <li><a href="https://github.com/papyrxis/Arliz/blob/main/LICENSE" class="footer-a" target="_blank" rel="noopener">MIT License (code)</a></li>
+          <li><a href="https://github.com/papyrxis/Arliz/blob/main/docs/CONTRIBUTING.md" class="footer-a" target="_blank" rel="noopener">Contributing</a></li>
+          <li><a href="https://github.com/papyrxis/Arliz/blob/main/docs/ARCHITECTURE.md" class="footer-a" target="_blank" rel="noopener">Architecture</a></li>
+          <li><a href="https://github.com/papyrxis/Arliz/blob/main/docs/VOLUMES.md" class="footer-a" target="_blank" rel="noopener">Volumes guide</a></li>
+          <li><a href="https://github.com/papyrxis/Arliz/blob/main/LICENSE" class="footer-a" target="_blank" rel="noopener">License</a></li>
         </ul>
       </div>
     </div>
 
     <div class="footer-bottom">
       <p class="footer-copy">
-        &copy; 2023&ndash;2026 Mahdi Mamashli. Content: <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" style="color:var(--copper)">CC BY-SA 4.0</a> &middot; Code: <a href="https://github.com/papyrxis/Arliz/blob/main/LICENSE" target="_blank" rel="noopener" style="color:var(--copper)">MIT</a>
+        &copy; 2023–2026 Mahdi Mamashli &middot;
+        Content: <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" style="color:var(--copper)">CC BY-SA 4.0</a> &middot;
+        Code: <a href="https://github.com/papyrxis/Arliz/blob/main/LICENSE" target="_blank" rel="noopener" style="color:var(--copper)">MIT</a>
       </p>
       <div class="footer-ver">
         <span class="ver-dot"></span>
-        Living Edition &middot; Built 2026
+        Living Edition &middot; 2026
       </div>
     </div>
   </div>
