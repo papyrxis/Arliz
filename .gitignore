@@ -25,3 +25,4 @@ arch*.tex
 /build/
 *_ARLIZ_*.tex
 *draft*
+drafts/*
