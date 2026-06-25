@@ -2,7 +2,7 @@ project:
   type: book
   category: technical
   title: "Arliz"
-  author: "m-mdy-m"
+  author: "Mahdi"
   email: "bitsgenix@gmail.com"
   date: "auto"
   url: "https://github.com/papyrxis/arliz"
@@ -11,11 +11,10 @@ build:
   engine: pdflatex
   bibtex: biber
   output_dir: build
-  watch_mode: true
+  source: "2026_ARLIZ_Zero_to_Bit_Volume_1.tex"
 
 version:
   source: git
-  format: "v{major}.{minor}.{patch}"
   fallback: "dev"
 
 components:
@@ -43,11 +42,8 @@ features:
   appendix: true
 
 frontmatter:
-  - cover
   - title
   - copyright
-  - preface
-  - introduction
 
 colors:
   scheme: technical
@@ -58,12 +54,6 @@ copyright:
   holder: "m-mdy-m"
 
 overrides:
-  components_dir: "configs"
-  allow:
-    - code.tex
-    - colors.tex
-    - fonts.tex
-    - env.tex
-    - graphics.tex
-    - bibliography.tex
-    - boxes.tex
+  dir: "configs"
+  # mode: replace   (default) — your file replaces the default component
+  # mode: extend    — default component first, then your additions appended

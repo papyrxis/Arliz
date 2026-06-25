@@ -1,5 +1,15 @@
 \usepackage{tcolorbox}
 \tcbuselibrary{most}
+
+% ------------------------------------------------------------
+% ARLIZ Callouts
+%
+% Minimal, borderless admonitions. No fill, no frame — just a
+% thin colored rule on the left and a small bold label that
+% sits directly above the body text. Only the accent color and
+% the label differ between variants; everything else is shared.
+% ------------------------------------------------------------
+
 \tcbset{
 	arlizcallout/.style={
 		enhanced,
@@ -30,14 +40,6 @@
 	#1
 }
 
-\newtcolorbox{definitionbox}[1][]{%
-	arlizcallout,
-	borderline west={2pt}{0pt}{accent},
-	coltitle=accent,
-	title=Definition,
-	#1
-}
-
 \newtcolorbox{tipbox}[1][]{%
 	arlizcallout,
 	borderline west={2pt}{0pt}{arlizlightblue},
@@ -62,3 +64,10 @@
 	#1
 }
 
+\newtcolorbox{definitionbox}[1][]{%
+	arlizcallout,
+	borderline west={2pt}{0pt}{accent},
+	coltitle=accent,
+	title=Definition,
+	#1
+}
