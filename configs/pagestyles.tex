@@ -1,0 +1,220 @@
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{ifthen}
+
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\newcommand{\frontmatterpagenumber}{%
+  \pagenumbering{roman}%
+  \setcounter{page}{1}%
+}
+
+\newcommand{\mainmatterpagenumber}{%
+  \pagenumbering{arabic}%
+  \setcounter{page}{1}%
+}
+
+\newcommand{\headerrule}{%
+  \vbox to 0pt{%
+    \vss%
+    \hbox to \headwidth{%
+      \textcolor{accent}{\leaders\hrule height 1.2pt\hfill}%
+    }%
+    \vskip 0.2pt%
+    \hbox to \headwidth{%
+      \textcolor{accent!60}{\leaders\hrule height 0.4pt\hfill}%
+    }%
+    \vskip 2pt%
+  }%
+}
+
+\newcommand{\footerrule}{%
+  \vbox to 0pt{%
+    \vskip -4pt%
+    \hbox to \headwidth{%
+      \textcolor{border}{\leaders\hrule height 0.6pt\hfill}%
+    }%
+    \vss%
+  }%
+}
+
+\newcommand{\decorativerule}{%
+  \textcolor{accent}{\rule{8pt}{0.8pt}}%
+  \,\textcolor{accent!70}{\textbullet}\,%
+  \textcolor{accent}{\rule{8pt}{0.8pt}}%
+}
+
+\newcommand{\headerfont}{\sffamily\small\bfseries}
+\newcommand{\footerfont}{\sffamily\footnotesize}
+\newcommand{\pagenumberfont}{\sffamily\small\bfseries}
+
+\fancypagestyle{main}{%
+  \fancyhf{}
+  
+  \fancyhead[RO]{%
+    \parbox[b]{\textwidth}{%
+      \raggedleft%
+      \headerfont\color{primary}%
+      {\nouppercase{\rightmark}}%
+      \vskip 2pt%
+    }%
+  }
+  
+  \fancyhead[LO]{%
+    \parbox[b]{\textwidth}{%
+      \raggedright%
+      \headerfont\color{accent}%
+      \textsc{\PDFTitleFront}%
+      \vskip 2pt%
+    }%
+  }
+  
+  \fancyhead[LE]{%
+    \parbox[b]{\textwidth}{%
+      \raggedright%
+      \headerfont\color{primary}%
+      {\nouppercase{\leftmark}}%
+      \vskip 2pt%
+    }%
+  }
+  
+  \fancyhead[RE]{%
+    \parbox[b]{\textwidth}{%
+      \raggedleft%
+      \headerfont\color{accent}%
+      \textsc{\PDFTitleFront}%
+      \vskip 2pt%
+    }%
+  }
+  
+  \fancyfoot[LE]{%
+    \footerfont\color{accent}%
+    \textbf{\large\thepage}%
+    \textcolor{border}{\,\textbar\,}%
+    \textcolor{textsecondary}{\pageref{LastPage}}%
+  }
+  
+  \fancyfoot[RO]{%
+    \footerfont\color{accent}%
+    \textbf{\large\thepage}%
+    \textcolor{border}{\,\textbar\,}%
+    \textcolor{textsecondary}{\pageref{LastPage}}%
+  }
+  
+  \fancyfoot[RE]{%
+    \footerfont\color{textsecondary}%
+    \textit{Open Source}%
+  }
+  
+  \fancyfoot[LO]{%
+    \footerfont\color{textsecondary}%
+    \textit{\the\year}%
+  }
+  
+  \renewcommand{\headrulewidth}{0.6pt}
+  \renewcommand{\footrulewidth}{0.4pt}
+  \renewcommand{\headrule}{\hbox to\headwidth{\color{accent}\leaders\hrule height \headrulewidth\hfill}}
+  \renewcommand{\footrule}{\hbox to\headwidth{\color{border}\leaders\hrule height \footrulewidth\hfill}}
+}
+
+\fancypagestyle{chapter}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0.4pt}
+  
+  \fancyfoot[C]{%
+    \footerfont\color{accent}%
+    \decorativerule\quad%
+    \textbf{\large\thepage}%
+    \quad\decorativerule%
+  }
+  
+  \renewcommand{\footrule}{\hbox to\headwidth{\color{accent!60}\leaders\hrule height \footrulewidth\hfill}}
+}
+
+\fancypagestyle{frontmatter}{%
+  \fancyhf{}
+  
+  \fancyhead[C]{%
+    \headerfont\color{primary}%
+    \textsc{\PDFTitleFront}%
+  }
+  
+  \fancyfoot[C]{%
+    \pagenumberfont\color{textsecondary}%
+    \textbf{\thepage}%
+  }
+  
+  \renewcommand{\headrulewidth}{0.5pt}
+  \renewcommand{\footrulewidth}{0.3pt}
+  \renewcommand{\headrule}{\color{primary!70}\hrule width\headwidth height\headrulewidth}
+  \renewcommand{\footrule}{\color{textsecondary!50}\hrule width\headwidth height\footrulewidth}
+}
+
+\fancypagestyle{part}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+  
+  \fancyfoot[C]{%
+    \footerfont\color{primary}%
+    \decorativerule\quad%
+    \textbf{\Large\thepage}%
+    \quad\decorativerule%
+  }
+}
+
+\fancypagestyle{backmatter}{%
+  \fancyhf{}
+  
+  \fancyhead[LE,RO]{%
+    \headerfont\color{primary}{\nouppercase{\leftmark}}%
+  }
+  
+  \fancyhead[LO,RE]{%
+    \headerfont\color{textsecondary}{\textsc{\PDFTitleFront}}%
+  }
+  
+  \fancyfoot[LE,RO]{%
+    \footerfont\color{primary}{\textbf{\thepage}}%
+  }
+  
+  \fancyfoot[LO,RE]{%
+    \footerfont\color{textsecondary}{\textit{Back Matter}}%
+  }
+  
+  \renewcommand{\headrulewidth}{0.5pt}
+  \renewcommand{\footrulewidth}{0.3pt}
+  \renewcommand{\headrule}{\headerrule}
+  \renewcommand{\footrule}{\footerrule}
+}
+
+\fancypagestyle{empty}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+
+\pagestyle{main}
+
+\let\oldfrontmatter\frontmatter
+\renewcommand{\frontmatter}{%
+  \oldfrontmatter%
+  \pagestyle{frontmatter}%
+}
+
+\let\oldmainmatter\mainmatter
+\renewcommand{\mainmatter}{%
+  \oldmainmatter%
+  \pagestyle{main}%
+}
+
+\let\oldbackmatter\backmatter
+\renewcommand{\backmatter}{%
+  \oldbackmatter%
+  \pagestyle{backmatter}%
+}
+
+\newcommand{\mainstyle}{\pagestyle{main}}
