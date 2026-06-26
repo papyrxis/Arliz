@@ -1,4 +1,3 @@
-{\small \linespread{1.1}\selectfont
 \chapter*{Introduction}
 \addcontentsline{toc}{chapter}{Introduction}
 
@@ -7,10 +6,11 @@
 \section*{What This Volume Covers}
 
 Volume I asks one question: how does a computer encode information at all, starting from a voltage?\\
-The answer runs through binary switching, number systems, integers, floating-point, characters, byte ordering, bitwise operations, memory alignment, pointers, error detection, media formats, and serialization. By the end, you have everything you need to understand what's actually happening when you write \texttt{int x = 42} or read a JPEG from disk.\\
-The other two volumes pick up from here. Volume II covers the hardware caches, pipelines, GPUs. Volume III covers arrays themselves in full. This volume is the foundation both of them depend on.\\
-Each volume is written to be readable on its own, but the dependencies run in one direction: Volume II assumes the representational vocabulary built here in Volume I, and Volume III assumes both. If you find yourself in Volume III wondering why an operation costs what it does at the hardware level, or in Volume II wondering why a value is encoded the way it is, the earlier volume is where that question is answered.
-
+The answer runs through electricity and components, semiconductors and transistors, binary switching and Boolean algebra, number systems, integers, floating-point, characters, byte ordering, bitwise operations, memory alignment, pointers, error detection, media formats, and serialization. By the end, you have everything you need to understand what's actually happening when you write \texttt{int x = 42} or read a JPEG from disk.\\
+The other two volumes pick up from here. Volume II covers the hardware that runs the code memory hierarchies, pipelines, GPUs starting exactly where this volume's Boolean algebra leaves off, not before it. Volume III covers arrays themselves in full. This volume is the foundation both of them depend on.\\
+Each volume is written to be readable on its own, but the dependencies run in one direction: Volume II assumes the representational vocabulary built here in Volume I, and Volume III assumes both. If you find yourself in Volume III wondering why an operation costs what it does at the hardware level, or in Volume II wondering why a value is encoded the way it is, the earlier volume is where that question is answered.\\
+One deliberate boundary worth stating plainly: this volume explains why a transistor's gate voltage can represent a single bit, and it develops Boolean algebra as pure mathematics from that bit. It stops there. It does not go on to build that algebra back up into CMOS gates, propagation delay, or combinational and sequential circuits that is Volume II's opening move, built directly on the gate-level vocabulary this volume hands it. An earlier draft of this work covered that ground in both places; readers of that draft will notice the seam is gone.
+\newpage
 \section*{What You Need to Know}
 
 This book assumes you can write code in at least one language and read code in others. It also assumes comfort with basic discrete math sets, logic, simple proofs. If you've taken an intro algorithms course, you're ready.\\
@@ -22,4 +22,3 @@ This is not a finished book. It gets updated. If something is wrong or unclear, 
 
 \vfill
 \clearpage
-}

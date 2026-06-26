@@ -5,9 +5,10 @@
 %   The foundational question — how is information encoded in digital
 %   systems at all, starting from a voltage difference?
 %
-%   Path: voltage → binary → numbers → characters → bytes → pointers → integrity → serialization → compression
-%
-% Assumes: nothing beyond basic programming familiarity
+%   Path: charge/voltage -> electricity & components -> semiconductors &
+%   transistors -> binary & Boolean algebra (math only) -> numbers ->
+%   characters -> bytes (alignment, pointers) -> integrity -> serialization
+%   & compression
 %==============================================
 
 \begin{volumeintro}
@@ -31,3 +32,922 @@
 
 \input{volumes/vol1/chapter01/chapter01}
 \input{volumes/vol1/chapter02/chapter02}
+
+% ──────────────────────────────────────────────────────────────────────
+% STAGE 2 — Electricity: The Physical Foundation
+%
+%   Before voltage can mean anything, we need electricity itself.
+%   This stage builds physical intuition from first principles: charge,
+%   current, voltage, resistance, and the basic laws governing how
+%   electricity behaves in circuits. Nothing digital yet — just the
+%   physical world that digital logic sits on top of.
+%
+%   Volume II covers electrical engineering in much greater depth;
+%   here the goal is the minimum needed to understand why a transistor
+%   switching between two voltage levels can represent a bit.
+% ──────────────────────────────────────────────────────────────────────
+
+\chapter{Electric Charge and Matter}
+\label{ch:electric-charge}
+
+Atoms and subatomic particles: protons, neutrons, and electrons; electric
+charge as a fundamental property of matter; the coulomb as the unit of
+charge; conservation of charge; positive and negative charge and why matter
+is usually electrically neutral; charging by friction, conduction, and
+induction; Coulomb's law: force between charges; the elementary charge of a
+single electron; why understanding charge is the starting point for
+understanding electricity.
+
+\chapter{Electric Current}
+\label{ch:electric-current}
+
+Flow of charge through a conductor; conventional current direction versus
+actual electron flow; the ampere as the unit of current (one coulomb per
+second); direct current (DC) versus alternating current (AC); current in
+everyday devices; why electrons drift slowly even though electrical effects
+propagate near the speed of light; measuring current with an ammeter;
+what happens at the atomic level when current flows through a metal.
+
+\chapter{Voltage and Electric Potential}
+\label{ch:voltage}
+
+Electric potential as stored energy per unit charge; potential difference
+(voltage) as the driving force for current; the volt as the unit of voltage;
+batteries and voltage sources as pumps for charge; electromotive force (EMF);
+ground and the reference potential; measuring voltage with a voltmeter;
+why voltage is always a relative measurement between two points; the
+analogy between voltage and water pressure.
+
+\chapter{Resistance and Ohm's Law}
+\label{ch:resistance-ohms-law}
+
+Opposition to current flow; resistance and the ohm; Ohm's law (V = IR) and
+its experimental basis; resistivity and conductivity as material properties;
+how resistance depends on a conductor's material, length, cross-sectional
+area, and temperature; power dissipation: P = IV = I\textsuperscript{2}R =
+V\textsuperscript{2}/R; heat generation in resistors; linear versus
+non-linear resistive elements; why resistance matters for digital circuits:
+pull-up resistors, current limiting, signal termination.
+
+\chapter{Basic Circuit Laws and Analysis}
+\label{ch:circuit-laws}
+
+Closed circuits, open circuits, and short circuits; Kirchhoff's voltage law
+(KVL): the sum of voltages around any closed loop equals zero; Kirchhoff's
+current law (KCL): the sum of currents at any node equals zero; series
+circuits and the voltage divider rule; parallel circuits and the current
+divider rule; combining resistances in series and parallel; simple circuit
+analysis: finding unknown voltages and currents; why these laws are the
+foundation for analysing every circuit in this volume.
+
+\chapter{Capacitors: Storing Electric Charge}
+\label{ch:capacitors}
+
+Storing energy in an electric field; the capacitor as two conductors separated
+by an insulator; capacitance and the farad; the parallel plate capacitor;
+charging and discharging dynamics; the RC time constant (\(\tau = RC\));
+capacitors in series and parallel; energy stored in a capacitor
+(\(E = \tfrac{1}{2}CV^2\)); the role of capacitors in real digital circuits:
+power supply filtering, signal bypassing, decoupling each IC's power pin from
+noise on the supply rail; why every chip datasheet specifies decoupling
+capacitors.
+
+\chapter{Inductors and Magnetic Fields}
+\label{ch:inductors}
+
+Magnetic fields around current-carrying conductors; inductance and the henry;
+Faraday's law of induction: a changing magnetic field induces a voltage;
+the RL time constant; energy stored in a magnetic field (\(E = \tfrac{1}{2}LI^2\));
+inductors in series and parallel; where inductors appear in practice: switching
+power supplies, RF filters, EMI suppression; inductive kickback and why it
+damages transistors without protection diodes.
+
+\chapter{Analog Signals and Waveforms}
+\label{ch:analog-signals}
+
+Continuous-valued signals; voltage as a function of time; sinusoidal waves:
+frequency, period, amplitude, and phase; the decibel scale for expressing
+signal ratios; other waveform shapes (square, triangle, sawtooth, pulse);
+superposition: multiple signals added together; noise as an unwanted signal;
+bandwidth as the range of frequencies a system can faithfully carry;
+why analog representation of information is inherently fragile: noise
+accumulates and cannot be separated from the signal.
+
+
+% ──────────────────────────────────────────────────────────────────────
+% STAGE 3 — Electronic Components and Circuit Boards
+%
+%   Electricity happens on hardware. This stage introduces the discrete
+%   components — diodes, transistors, passive elements — and the boards
+%   and packages that assemble them into systems. The goal is vocabulary
+%   and physical intuition, not circuit design.
+%
+%   "Component arrays on PCBs" connects the physical world to the
+%   conceptual arrays that are the subject of this entire work.
+% ──────────────────────────────────────────────────────────────────────
+
+\chapter{Electronic Components: A Survey}
+\label{ch:components-survey}
+
+The basic vocabulary of electronics; passive components (resistors,
+capacitors, inductors) versus active components (diodes, transistors,
+ICs); how components are specified: ratings, tolerances, packages; reading
+component markings and colour codes; standard schematic symbols; reading
+a simple schematic; what a bill of materials (BOM) looks like; how
+component choice affects reliability, cost, and board space.
+
+\chapter{Diodes: One-Way Current Flow}
+\label{ch:diodes}
+
+The diode as a one-directional valve; forward bias: current flows; reverse
+bias: current blocked; the diode I-V characteristic; the forward voltage drop
+(approximately 0.6--0.7 V for silicon); rectification: converting AC to DC;
+the Zener diode and voltage regulation; light-emitting diodes (LEDs) and
+the relationship between forward voltage and emitted wavelength; photodiodes
+as light sensors; Schottky diodes and their lower forward voltage; how diode
+behaviour previews the transistor's switching action.
+
+\chapter{Printed Circuit Boards}
+\label{ch:pcbs}
+
+What a PCB is: a mechanical substrate that also serves as the wiring harness;
+the base materials (FR4 epoxy glass, polyimide, ceramic); copper layers:
+the signal layers, power planes, and ground planes; traces: the copper paths
+carrying current; vias: drilled and plated holes connecting copper layers;
+through-hole vias, blind vias, and buried vias; pads and footprints:
+the landing zones for component leads; solder mask protecting traces;
+silkscreen labelling components; the PCB design flow from schematic to
+Gerber files to fabrication.
+
+\chapter{Component Arrays on PCBs}
+\label{ch:component-arrays}
+
+Why components are often grouped into arrays; resistor networks (SIP and
+DIP packages): multiple resistors in a single package sharing a common
+terminal; capacitor banks: parallel capacitors distributed along a power
+bus for low-impedance decoupling; pin headers and connector arrays: rows
+of pins carrying many signals in parallel; memory modules as arrays of
+chips---a DIMM is literally an array of DRAM chips on a PCB; bus structures:
+groups of parallel copper traces carrying one bit each, a multi-bit value
+moving across a board simultaneously; the ball grid array (BGA) and pin
+grid array (PGA) package: a 2-dimensional grid of connections mirroring
+the 2-dimensional arrays discussed in Volume III; how the physical
+arrangement of components and traces is itself a spatial array.
+
+\chapter{Through-Hole and Surface-Mount Components}
+\label{ch:component-packages}
+
+Through-hole technology (THT): component leads passing through drilled board
+holes and soldered on the underside; the advantages of THT for
+high-stress connections; surface-mount technology (SMT): components placed
+on pads on the board surface, attached by reflow soldering; why SMT enables
+much higher component density; passive SMT sizes: 0402, 0603, 0805, 1206
+designations; IC packages: DIP (dual in-line), SOIC, QFP, QFN, LGA, BGA;
+the assembly process: solder paste, pick-and-place machines, reflow ovens.
+
+\chapter{Integrated Circuits: From Discrete to Monolithic}
+\label{ch:ics-overview}
+
+Why combining many transistors on a single silicon die changed computing;
+Jack Kilby and the first integrated circuit (1958); the silicon die,
+the wire bonds, and the package; how millions then billions of transistors
+fit on a fingernail-sized piece of silicon; reading an IC datasheet: pinout
+diagram, absolute maximum ratings, recommended operating conditions,
+electrical characteristics, timing diagrams; the difference between a
+simple logic gate IC, a microcontroller, a CPU, and a memory chip;
+why a CPU and a DRAM chip look the same from the outside but do
+fundamentally different things.
+
+\chapter{Power Supply and Voltage Regulation}
+\label{ch:power-supply}
+
+Power rails on a PCB and why digital systems need tightly regulated voltages;
+typical supply voltages and their historical progression: 5V TTL era,
+3.3V, 1.8V, 1.2V, 1.0V, sub-1V; why lower supply voltage reduces power
+dissipation quadratically; linear voltage regulators: dropout voltage,
+power dissipation as heat, efficiency; switching regulators (buck, boost,
+buck-boost): higher efficiency, switching noise tradeoff; decoupling
+capacitors: suppressing noise on the supply rail at each IC; power
+sequencing: some chips must be powered in a specific order; how power
+supply quality directly affects digital signal reliability.
+
+\chapter{Signal Integrity and Interconnects}
+\label{ch:signal-integrity-pcb}
+
+Why wires are not ideal at high frequencies; transmission line effects:
+traces have distributed inductance and capacitance; impedance matching and
+why mismatches cause reflections; crosstalk between adjacent traces through
+electric and magnetic coupling; differential pairs: two traces carrying
+complementary signals, immune to common-mode noise; ground planes as the
+return path for every signal; ground bounce: the inductance of the ground
+connection causes brief voltage spikes; why board layout is not just
+mechanical but an electrical engineering problem; how signal integrity
+concerns become severe above roughly 100\,MHz.
+
+
+% ──────────────────────────────────────────────────────────────────────
+% STAGE 4 — Semiconductors and Transistors
+%
+%   The transistor is the fundamental building block of all digital logic.
+%   This stage covers semiconductor physics at the depth needed to
+%   understand WHY a MOSFET can act as a binary switch — and therefore
+%   why a voltage can represent a bit.
+%
+%   Volume II covers semiconductor physics in full (band theory,
+%   fabrication, CMOS gate families, timing); here we build the
+%   intuition that makes Volume II comprehensible.
+% ──────────────────────────────────────────────────────────────────────
+
+\chapter{Semiconductors: Between Conductor and Insulator}
+\label{ch:semiconductors-intro}
+
+Conductors, insulators, and semiconductors as a spectrum of electrical
+conductivity; why silicon is the dominant semiconductor: abundance, stable
+oxide, mature fabrication; the silicon crystal lattice and covalent bonding
+of four valence electrons; intrinsic semiconductors: thermal generation of
+electron-hole pairs; the concept of holes as positive charge carriers that
+move in the direction opposite to electrons; why temperature dramatically
+increases semiconductor conductivity (unlike metals); a brief tour of other
+semiconductors: germanium (first transistors), gallium arsenide (high
+frequency), silicon carbide (high power), gallium nitride (LEDs, power).
+
+\chapter{Doping: Engineering Conductivity}
+\label{ch:doping}
+
+Why pure silicon is not useful on its own; extrinsic semiconductors created
+by intentionally adding impurities; n-type doping: donor atoms (phosphorus,
+arsenic, antimony) with five valence electrons contribute one free electron
+each; p-type doping: acceptor atoms (boron, aluminium, gallium) with three
+valence electrons create holes; majority carriers and minority carriers;
+how doping concentration determines resistivity across many orders of
+magnitude; the depletion approximation; why precise doping control is the
+central challenge of semiconductor manufacturing.
+
+\chapter{The P-N Junction}
+\label{ch:pn-junction}
+
+Bringing n-type and p-type silicon into contact; diffusion of carriers across
+the boundary; the depletion region: a zone swept clear of mobile carriers;
+the built-in electric field opposing further diffusion; contact potential
+(built-in voltage); forward bias: an external voltage reduces the depletion
+region and allows current to flow exponentially; reverse bias: an external
+voltage widens the depletion region, current is nearly zero; the ideal diode
+equation; avalanche and Zener breakdown at high reverse voltage; why the
+p-n junction is the foundational non-linear element from which all active
+devices are built.
+
+\chapter{The Bipolar Junction Transistor}
+\label{ch:bjt}
+
+Two back-to-back p-n junctions forming a three-layer device: NPN (n-p-n) and
+PNP (p-n-p) structures; the three terminals: base, collector, and emitter;
+minority carrier injection across the thin base region; current gain
+(\(\beta\)): collector current as a multiple of base current; the three
+regions of BJT operation: cutoff (base-emitter junction reverse biased —
+transistor off), active (base-emitter forward biased, base-collector reverse
+biased — amplifier region), saturation (both junctions forward biased —
+transistor fully on); using the BJT as a switch: driving it between cutoff
+and saturation; speed limitations: stored minority carriers slow switching;
+historical importance: the first transistors (1947, Bell Labs) and why they
+replaced vacuum tubes.
+
+\chapter{The MOSFET: Field-Effect Switching}
+\label{ch:mosfet}
+
+The metal-oxide-semiconductor field-effect transistor; the four terminals:
+gate, source, drain, and body; the gate oxide (silicon dioxide) as an
+insulator: no DC current flows into the gate; the threshold voltage
+V\textsubscript{th}: the minimum gate-to-source voltage that creates a
+conductive channel; n-channel MOSFET (NMOS): a positive gate voltage
+attracts electrons and creates an n-type channel between source and drain;
+p-channel MOSFET (PMOS): a negative gate voltage creates a p-type channel;
+enhancement-mode versus depletion-mode; the MOSFET I-V characteristics in
+cutoff, linear (triode), and saturation regions; why the MOSFET dominates
+digital logic: voltage-controlled (nearly zero gate current), easily scaled
+to smaller sizes, and naturally suited to CMOS pairing.
+
+\chapter{Transistors as Binary Switches}
+\label{ch:transistors-as-switches}
+
+Using a MOSFET in only two of its operating regions: cutoff (off, gate below
+V\textsubscript{th}) and linear (on, gate well above V\textsubscript{th});
+on-resistance R\textsubscript{DS(on)}: the channel acts like a small resistor
+when fully on; switching time: how long it takes to charge/discharge the gate
+capacitance and transition between states; the trade-off between on-resistance
+and switching speed as transistor size scales; drive strength: why some logic
+outputs can source/sink more current and switch faster; the MOSFET as the
+physical realisation of a single bit's worth of state control.
+
+\chapter{CMOS Technology}
+\label{ch:cmos-intro}
+
+Complementary MOS: pairing NMOS and PMOS transistors; the CMOS inverter as
+the foundational building block: a PMOS pull-up and an NMOS pull-down
+connected drain-to-drain; when input is low, PMOS conducts, output is pulled
+high; when input is high, NMOS conducts, output is pulled low; why one
+transistor is always off in steady state: zero static power dissipation;
+dynamic power: energy consumed charging and discharging capacitances during
+switching, proportional to CV\textsuperscript{2}f; why lower supply voltage
+reduces power quadratically; CMOS versus earlier logic families (TTL, ECL,
+NMOS-only) and why CMOS won; CMOS NAND and NOR gate topology.
+
+\chapter{Transistor Scaling and Moore's Law}
+\label{ch:transistor-scaling}
+
+Gordon Moore's 1965 observation: transistor count on a chip doubles roughly
+every two years; feature size (process node): the characteristic dimension
+of transistors in nanometres; how shrinking transistors increases density,
+speed, and reduces power simultaneously; Dennard scaling: as transistors
+shrink, voltage and power density stay constant — and why this relationship
+broke down around 2006; the power wall: heat dissipation limiting further
+clock frequency increases; short-channel effects at small geometries:
+drain-induced barrier lowering (DIBL), threshold voltage variation, gate
+oxide tunnelling leakage; how the industry responded: multi-gate transistors
+(FinFET), gate-all-around (GAA, nanosheet), stacked dies; Moore's law
+today — still alive in transistor density, but no longer in the simple
+doubling form Moore observed.
+
+
+% ──────────────────────────────────────────────────────────────────────
+% STAGE 5 — From Switch to Bit: The Digital Abstraction
+%
+%   All the physical machinery of the previous three stages exists for
+%   one purpose: to reliably distinguish two states. This stage makes
+%   that abstraction explicit — how voltage ranges become logic levels,
+%   why binary was chosen over alternatives, and what it means for a
+%   transistor to store one bit of information.
+%
+%   This is the pivot point of Volume I. Everything before it is
+%   physical. Everything after it is mathematical.
+% ──────────────────────────────────────────────────────────────────────
+
+\chapter{Analog Versus Digital: The Fundamental Divide}
+\label{ch:analog-vs-digital}
+
+Continuous-valued versus discrete-valued representation; why analog signals
+carry theoretically infinite information but accumulate noise without bound;
+quantisation: mapping a continuous range to a finite set of levels;
+the key insight: a discrete signal does not need to be precise, only
+unambiguous; regeneration — restoring a degraded digital signal to a clean
+value at every logic gate — versus an analog signal where every copy
+degrades further; why the shift to digital representation in the 20th
+century was not obvious and what it cost in terms of the information
+discarded.
+
+\chapter{Logic Levels and Voltage Standards}
+\label{ch:logic-levels}
+
+Defining logic 0 and logic 1 as voltage ranges rather than exact values;
+input thresholds V\textsubscript{IL} (maximum voltage still read as 0) and
+V\textsubscript{IH} (minimum voltage read as 1); output guarantees
+V\textsubscript{OL} (maximum output voltage for logic 0) and
+V\textsubscript{OH} (minimum output voltage for logic 1); noise margin:
+the difference between what an output guarantees and what an input requires,
+representing the system's tolerance for distortion; common logic families
+and their voltage levels: 5V TTL, 5V CMOS, 3.3V LVCMOS, 2.5V, 1.8V,
+1.2V, sub-1V; level-shifting between families with different voltage
+standards; why the industry has moved progressively to lower voltages.
+
+\chapter{Why Binary? Comparing Representation Bases}
+\label{ch:why-binary}
+
+Could a transistor be designed to have three stable voltage states instead
+of two? Ternary logic: historical attempts and physical obstacles;
+the signal-to-noise argument: with N levels the noise margin shrinks as
+the supply voltage divided by N, while circuit complexity grows; why two
+levels maximise the noise margin for a given supply voltage and threshold
+spread; decimal computers: early machines (ENIAC used decimal) and why
+they were abandoned; the alignment between two-state physics and Boolean
+algebra: a system with exactly two values is the natural domain of the
+logic Shannon formalised; why binary is not an arbitrary choice but a
+consequence of physics and mathematics meeting.
+
+\chapter{Noise, Interference, and the Reliability of Binary}
+\label{ch:noise-binary}
+
+Sources of noise in digital systems: thermal (Johnson-Nyquist) noise,
+shot noise, power-supply noise, ground bounce, crosstalk between traces,
+electromagnetic interference (EMI) from external sources; why binary levels
+survive noise that would corrupt an analog signal of the same amplitude;
+regenerative logic: every gate restores its output to a full rail voltage,
+preventing error accumulation; error accumulation in long analog chains
+versus error-free propagation in digital chains of arbitrary length;
+the role of noise margins in practical system design: why they must never
+be zero, and what happens when marginal designs encounter real-world
+conditions.
+
+\chapter{Clock Signals and Timing}
+\label{ch:clocks-timing}
+
+The clock as the heartbeat of a synchronous digital system; crystal
+oscillators: mechanical resonance of quartz as an extremely stable frequency
+reference; clock frequency and period; duty cycle; rising and falling edges
+as the events that trigger state changes; edge-triggered versus
+level-triggered logic; setup time (t\textsubscript{su}): data must be
+stable before the clock edge; hold time (t\textsubscript{h}): data must
+remain stable after the clock edge; why violating setup or hold time
+causes metastability; clock distribution across a chip or board; clock
+skew: the difference in arrival time at different destinations, and why
+it limits maximum frequency; the relationship between clock period and
+the maximum combinational path delay — a foundation for the pipeline
+discussion in Volume II.
+
+\chapter{From Transistor Switch to Stored Bit}
+\label{ch:switch-to-bit}
+
+Closing the loop from Stage 2 to here: a MOSFET gate voltage above
+V\textsubscript{th} turns the channel on, pulling the drain to near ground —
+that output voltage is logic 0; a gate voltage below V\textsubscript{th}
+leaves the channel off, and a pull-up element holds the output near the
+supply voltage — that is logic 1; the SR latch: two cross-coupled NOR
+gates that retain a state even after the input is removed; the D latch
+and D flip-flop: storing an arbitrary bit value on a clock edge; the
+static RAM (SRAM) cell: six transistors (four forming two inverters
+cross-coupled, two for access) holding one bit indefinitely; why this
+is the physical realisation of the abstract concept of ``a bit in memory'';
+the connection to everything that follows — all of the encodings in
+the rest of this volume exist as patterns of such stored bits.
+
+
+% ──────────────────────────────────────────────────────────────────────
+% STAGE 6 — Binary Representation and Boolean Algebra
+%
+%   With the physical foundation built, we can now treat binary as a
+%   mathematical system. This stage covers Boolean algebra — the formal
+%   mathematics of two-valued logic — purely as mathematics, independent
+%   of any particular circuit technology.
+%
+%   Deliberate scope boundary: this stage stops at the algebra. Realising
+%   Boolean operations as CMOS gates (fan-in/fan-out, propagation delay,
+%   static vs. dynamic power, combinational vs. sequential circuits) is
+%   Volume II's job, where it is built up properly alongside arithmetic
+%   circuits and sequential logic. An earlier draft of this volume
+%   duplicated that material here; it has been removed to keep the two
+%   volumes from re-deriving the same ground.
+% ──────────────────────────────────────────────────────────────────────
+
+\chapter{Binary Representation and Boolean Algebra}
+\label{ch:binary-boolean}
+
+Two-state logic and its mathematical formalisation; Boolean variables and
+Boolean expressions; Boolean operations: AND, OR, NOT, XOR, NAND, NOR, XNOR
+with truth tables; De Morgan's laws and their proofs; the completeness of
+NAND (and NOR): any Boolean function can be built from NAND gates alone;
+Boolean algebra axioms (Huntington's postulates); simplification using
+Boolean identities; the connection to Shannon's information theory
+introduced in Chapter~\ref{ch:philosophy-of-representation}: one bit is
+the amount of information needed to distinguish two equally likely outcomes;
+the dual role of the bit — as a physical switching state and as a unit of
+information.
+
+% ──────────────────────────────────────────────────────────────────────
+% STAGE 7 — Number Systems and Bases
+%
+%   Bits are grouped into numbers. This stage covers positional notation
+%   and the bases used throughout systems programming: binary, octal,
+%   decimal, and hexadecimal.
+% ──────────────────────────────────────────────────────────────────────
+
+\chapter{Number Systems and Bases}
+\label{ch:number-systems}
+
+Positional notation: the value of a digit depends on its position;
+decimal as the baseline of familiarity; binary (base 2): the natural
+language of bits; octal (base 8) and its historical use in early computing;
+hexadecimal (base 16): a compact notation for binary where one hex digit
+represents exactly four bits; base-conversion algorithms: binary to
+decimal, decimal to binary, binary to hex, hex to binary; reading
+hexadecimal fluently; why systems programmers think in hex; historical
+development of positional number systems (Babylonian, Indian, Arabic
+transmission to Europe); why different bases matter for different
+purposes in low-level programming.
+
+
+% ──────────────────────────────────────────────────────────────────────
+% STAGE 8 — Integer Representation
+%
+%   Numbers are the most fundamental values arrays store. Before
+%   floating point, before characters, before pointers — integers.
+% ──────────────────────────────────────────────────────────────────────
+
+\chapter{Integer Representation: Unsigned}
+\label{ch:unsigned-integers}
+
+Binary positional notation for non-negative values; range limitations by
+bit width; conversion algorithms; hexadecimal as a practical notation;
+why unsigned integers are the natural unit of memory addressing.
+
+\chapter{Signed Integer Representation}
+\label{ch:signed-integers}
+
+Sign-magnitude and its problems; one's complement; two's complement and why
+it won (single zero, natural arithmetic, hardware simplicity); arithmetic
+operations in two's complement; overflow detection; how the CPU's adder works
+the same for signed and unsigned.
+
+\chapter{Integer Overflow and Wraparound Behavior}
+\label{ch:integer-overflow}
+
+Defined wraparound versus undefined behavior (C/C++ vs.\ Rust vs.\ Java);
+modular arithmetic; detecting overflow before it happens; saturating
+arithmetic; real-world consequences of overflow bugs.
+
+\chapter{Fixed-Point Representation}
+\label{ch:fixed-point}
+
+Q-format notation; scaling factors; the precision-range tradeoff; why
+fixed-point dominates embedded and signal-processing systems where
+floating-point hardware is absent or too slow; fixed-point arithmetic
+and rounding.
+
+
+% ──────────────────────────────────────────────────────────────────────
+% STAGE 9 — Floating-Point Representation
+%
+%   Real numbers, approximation, and the cost of that approximation.
+% ──────────────────────────────────────────────────────────────────────
+
+\chapter{Floating-Point Representation: IEEE 754}
+\label{ch:ieee754}
+
+Sign, exponent, and mantissa encoding; normalised and denormalised
+(subnormal) numbers; single precision (binary32) and double precision
+(binary64); the implicit leading 1 bit; biased exponent; the full bit
+layout of a \texttt{float} and a \texttt{double}.
+
+\chapter{Special Floating-Point Values}
+\label{ch:float-specials}
+
+Positive and negative infinity; quiet NaN and signalling NaN; signed zero
+($+0$ vs.\ $-0$); subnormal numbers and gradual underflow; how each arises
+in practice and what operations produce them.
+
+\chapter{Floating-Point Arithmetic Operations}
+\label{ch:float-arithmetic}
+
+Addition, multiplication, and division in floating-point; guard bits and
+rounding; the four IEEE 754 rounding modes (round-to-nearest-even, toward
+zero, toward $+\infty$, toward $-\infty$); fused multiply-add (FMA) and
+why it matters for numerical accuracy.
+
+\chapter{Floating-Point Error Analysis}
+\label{ch:float-error}
+
+Precision loss; catastrophic cancellation; machine epsilon ($\varepsilon$);
+relative error versus absolute error; the Kahan compensated summation
+algorithm; why naive floating-point sums of large arrays diverge from the
+mathematically exact result.
+
+\chapter{Decimal Floating-Point Representation}
+\label{ch:decimal-float}
+
+IEEE 754-2008 decimal32/decimal64/decimal128 formats; densely packed decimal
+(DPD) encoding; why binary floating-point is unsuitable for financial
+computation; use cases and hardware support.
+
+\chapter{Extended Precision and Arbitrary Precision}
+\label{ch:extended-precision}
+
+The 80-bit extended-precision format (x87); quadruple precision (binary128);
+arbitrary-precision arithmetic libraries (GMP, MPFR); when and why to reach
+for them.
+
+
+% ──────────────────────────────────────────────────────────────────────
+% STAGE 10 — Character and Text Encoding
+%
+%   Strings are arrays of characters. Before Volume III discusses string
+%   algorithms, we need to understand what a "character" actually is at
+%   the byte level.
+% ──────────────────────────────────────────────────────────────────────
+
+\chapter{Character Encoding: ASCII and Extensions}
+\label{ch:ascii}
+
+7-bit ASCII; the 95 printable and 33 control characters; extended ASCII and
+the proliferation of incompatible code pages (ISO 8859 family,
+Windows-125x); why code pages failed for internationalisation; the need for
+a universal encoding system.
+
+\chapter{Unicode: Universal Character Encoding}
+\label{ch:unicode}
+
+Code points and the Unicode code space (U+0000 to U+10FFFF); planes and
+blocks; combining characters and grapheme clusters; canonical decomposition
+and normalisation forms (NFC, NFD, NFKC, NFKD); why ``number of
+characters'' is not a well-defined question without specifying a counting
+unit.
+
+\chapter{Unicode Transformation Formats}
+\label{ch:utf}
+
+UTF-8: variable-width encoding, byte structure, backward compatibility with
+ASCII, self-synchronisation; UTF-16: surrogate pairs and the BMP exception;
+UTF-32: fixed-width simplicity at a space cost; the byte-order mark (BOM)
+and when it causes problems; choosing the right encoding for a given context.
+
+\chapter{Text Processing Complexities}
+\label{ch:text-processing}
+
+Grapheme vs.\ code point counting; case folding and locale-dependent
+comparisons; text segmentation (word, sentence, line boundaries); combining
+marks and their effect on string length; why ``reverse a string'' is
+non-trivial in Unicode.
+
+
+% ──────────────────────────────────────────────────────────────────────
+% STAGE 11 — Byte Ordering and Cross-Platform Data Exchange
+%
+%   Every binary file format, network protocol, and serialised array
+%   blob depends on a defined byte order. A short but critical stage.
+% ──────────────────────────────────────────────────────────────────────
+
+\chapter{Endianness: Byte Ordering}
+\label{ch:endianness}
+
+Big-endian vs.\ little-endian; the historical origin of the terms; network
+byte order (big-endian) and why it was chosen; bi-endian architectures;
+byte swapping; how endianness affects multi-byte integer and floating-point
+values stored in memory or transmitted over a network.
+
+\chapter{Cross-Platform Data Exchange}
+\label{ch:cross-platform}
+
+Portable binary formats and their endianness contracts; serialisation and
+deserialisation as the mechanism for crossing byte-order boundaries; design
+considerations for binary protocols that must be read on heterogeneous
+systems.
+
+
+% ──────────────────────────────────────────────────────────────────────
+% STAGE 12 — Bitwise Operations and Bit Manipulation
+%
+%   The toolbox for working at the level of individual bits. Bit arrays
+%   (Volume III) and many low-level techniques depend on this material.
+% ──────────────────────────────────────────────────────────────────────
+
+\chapter{Bitwise Operations Fundamentals}
+\label{ch:bitwise-ops}
+
+AND, OR, XOR, and NOT at the bit level; truth tables; bit-manipulation
+primitives; using bitwise operations to implement set operations on small
+universes.
+
+\chapter{Bit Shifting and Rotation}
+\label{ch:bit-shifting}
+
+Logical shift left and right; arithmetic shift right (sign-extending);
+rotate-left and rotate-right; applications: multiplication and division by
+powers of 2; extracting and inserting bit fields.
+
+\chapter{Bit Manipulation Techniques}
+\label{ch:bit-techniques}
+
+Setting, clearing, and toggling individual bits; constructing and applying
+bitmasks; extracting bit fields; counting set bits (population count /
+\texttt{popcount}); checking whether a value is a power of two.
+
+\chapter{Bit Packing and Flags}
+\label{ch:bit-packing}
+
+Packing multiple Boolean flags into a single word; bitfields in structs and
+their portability limitations; bit arrays as a dense Boolean store; practical
+patterns from operating systems and embedded firmware.
+
+\chapter{Advanced Bit Hacking}
+\label{ch:bit-hacking}
+
+Finding the lowest set bit; isolating and manipulating bit patterns; bit
+reversal; Gray code encoding and decoding; SWAR (SIMD within a register)
+techniques; why these matter for high-performance array processing.
+
+
+% ──────────────────────────────────────────────────────────────────────
+% STAGE 13 — Memory Alignment
+%
+%   Alignment determines how array elements sit in memory and how much
+%   padding the compiler inserts between struct fields. Volume II
+%   discusses cache-line alignment in hardware; Volume III requires
+%   aligned arrays for vectorised operations.
+% ──────────────────────────────────────────────────────────────────────
+
+\chapter{Data Alignment Fundamentals}
+\label{ch:alignment-fundamentals}
+
+Natural alignment; hardware alignment requirements by type (byte, halfword,
+word, doubleword, quadword); misalignment penalties on x86 and ARM;
+alignment and bus transactions.
+
+\chapter{Structure Padding and Layout}
+\label{ch:struct-padding}
+
+How the compiler inserts padding bytes between fields to satisfy each
+member's alignment requirement; the rule for struct overall alignment;
+reordering members to minimise padding; packing pragmas and
+\texttt{\_\_attribute\_\_((packed))}; cache-line awareness in struct design.
+
+\chapter{Alignment Optimization Techniques}
+\label{ch:alignment-optimization}
+
+Manual padding to align hot fields to cache-line boundaries;
+\texttt{alignas} and \texttt{aligned\_alloc}; ensuring SIMD loads operate
+on aligned addresses; the difference between a 16-byte aligned SSE load
+and an unaligned load; practical patterns for high-throughput array code.
+
+
+% ──────────────────────────────────────────────────────────────────────
+% STAGE 14 — Pointers
+%
+%   A pointer is simply an aligned unsigned integer holding a memory
+%   address. Having covered integers (Stage 8) and alignment (Stage 13),
+%   the reader now has everything needed to understand pointers as a
+%   first-class encoding, rather than as magic.
+% ──────────────────────────────────────────────────────────────────────
+
+\chapter{Pointer Representation}
+\label{ch:pointer-repr}
+
+How a pointer is stored in memory; pointer size (32-bit vs.\ 64-bit address
+spaces); the flat virtual address space model; pointer tagging — using low
+bits of an aligned pointer to carry metadata; compressed pointers (JVM
+\texttt{-XX:+UseCompressedOops}, V8's pointer compression).
+
+\chapter{Pointer Arithmetic and Address Calculation}
+\label{ch:pointer-arithmetic}
+
+Computing the address of an array element from base address, element size,
+and index; struct member offsets via \texttt{offsetof}; pointer subtraction
+as element count; the rules that make C's address arithmetic defined and
+those that make it undefined.
+
+\chapter{Special Pointer Values}
+\label{ch:special-pointers}
+
+The null pointer and its representation; wild pointers (uninitialised) and
+dangling pointers (freed or out-of-scope); pointer alignment requirements
+and what a misaligned pointer means to hardware; fat pointers in Rust and
+slice pointers in Go as examples of richer pointer encodings.
+
+
+% ──────────────────────────────────────────────────────────────────────
+% STAGE 15 — Error Detection and Correction
+%
+%   Data stored in arrays and transmitted across networks can be
+%   corrupted. This stage covers the encoding techniques that detect and
+%   correct such errors.
+% ──────────────────────────────────────────────────────────────────────
+
+\chapter{Error Detection Codes}
+\label{ch:error-detection}
+
+Parity bits (even and odd parity); simple checksums; CRC algorithms and
+their polynomial basis; hash-based integrity (cryptographic vs.\
+non-cryptographic); tradeoffs between detection capability and overhead.
+
+\chapter{Error Correction Codes}
+\label{ch:error-correction}
+
+The distinction between error detection and error correction; Hamming codes
+and the SEC-DED (single-error-correct, double-error-detect) scheme used in
+ECC RAM; Reed-Solomon codes (used in QR codes, CDs, and deep-space
+communication); LDPC codes (used in Wi-Fi, 5G, and modern SSDs);
+convolutional codes.
+
+\chapter{Cyclic Redundancy Checks (CRC)}
+\label{ch:crc}
+
+CRC polynomials and their selection criteria; CRC-8, CRC-16, and CRC-32
+standards; efficient implementation using precomputed lookup tables; why
+hardware CRC instructions (\texttt{crc32} on x86) matter for high-speed
+storage and network stacks.
+
+
+% ──────────────────────────────────────────────────────────────────────
+% STAGE 16 — Media Encodings
+%
+%   The synthesis stage: colour, images, video, and audio are all arrays
+%   of encoded values. Every concept from Stages 8-15 appears here.
+% ──────────────────────────────────────────────────────────────────────
+
+\chapter{Color Representation Models}
+\label{ch:color-models}
+
+RGB and RGBA; HSV and HSL; CMYK; YUV and YCbCr; colour spaces and gamuts;
+gamma correction and linearisation; why video and image processing pipelines
+operate in different colour spaces.
+
+\chapter{Pixel Formats and Bit Depth}
+\label{ch:pixel-formats}
+
+1-bit (monochrome); 8-bit indexed (palette); 16-bit (RGB565, RGBA4444);
+24-bit RGB and 32-bit RGBA; 48-bit and 64-bit HDR formats; planar vs.\
+packed layout; how pixel format choices affect array layout in memory.
+
+\chapter{Image Compression Fundamentals}
+\label{ch:image-compression}
+
+Lossless compression (PNG, GIF, WebP lossless); lossy compression (JPEG,
+WebP lossy); compression ratio; quality vs.\ file-size tradeoffs; how
+compression transforms the array representation of an image.
+
+\chapter{Video Encoding Principles}
+\label{ch:video-encoding}
+
+I-frames, P-frames, and B-frames; motion compensation and inter-frame
+prediction; modern codecs (H.264/AVC, H.265/HEVC, VP9, AV1); how temporal
+redundancy allows video arrays to be compressed far more than static images.
+
+\chapter{Audio Representation: Sampling Theory}
+\label{ch:audio-sampling}
+
+The Nyquist-Shannon sampling theorem; sample rate; bit depth; quantisation
+noise; aliasing and anti-aliasing filters; why 44.1\,kHz at 16 bits became
+the CD standard.
+
+\chapter{Audio Encoding Formats}
+\label{ch:audio-encoding}
+
+PCM (uncompressed); FLAC (lossless); MP3, AAC, and Opus (lossy); perceptual
+coding and psychoacoustic models; why lossy compression is transparent to
+human hearing at sufficient bitrates.
+
+\chapter{Signal Processing Representations}
+\label{ch:signal-processing-repr}
+
+Time-domain representation; frequency-domain representation; the Fourier
+transform as a change of array basis; spectrograms as 2-D arrays; wavelet
+transforms; a preview of the FFT algorithms treated fully in Volume~III.
+
+
+% ──────────────────────────────────────────────────────────────────────
+% STAGE 17 — Serialisation and Compression
+%
+%   The closing stage: how in-memory array data is written to disk or
+%   transmitted across a network, and how it is compacted to reduce
+%   storage and bandwidth costs. The natural handoff to Volume II.
+% ──────────────────────────────────────────────────────────────────────
+
+\chapter{Data Serialisation Fundamentals}
+\label{ch:serialisation-fundamentals}
+
+Converting in-memory structures and arrays to byte streams; the portability
+problem (alignment, endianness, pointer size); self-describing vs.\
+schema-based formats; versioning and forward/backward compatibility.
+
+\chapter{Binary Serialisation Formats}
+\label{ch:binary-serialisation}
+
+Protocol Buffers (protobuf); FlatBuffers; Cap'n Proto; MessagePack; CBOR;
+how each makes different tradeoffs between encoding speed, encoded size,
+schema evolution, and random access into the serialised data.
+
+\chapter{Text Serialisation Formats}
+\label{ch:text-serialisation}
+
+JSON, XML, YAML, and TOML; human-readable vs.\ machine-efficient tradeoffs;
+parsing overhead; when text formats are appropriate and when they are not.
+
+\chapter{Custom Binary Protocols}
+\label{ch:binary-protocols}
+
+Designing efficient custom binary formats; field alignment in wire formats;
+length-prefixed vs.\ delimiter-based framing; versioning strategies; how
+array payloads are typically embedded in binary protocols.
+
+\chapter{Data Compression Theory}
+\label{ch:compression-theory}
+
+Information theory foundations: entropy and the limits of lossless
+compression; the connection to Shannon's source coding theorem; lossless
+vs.\ lossy bounds; why no compressor can shrink every input.
+
+\chapter{Dictionary-Based Compression}
+\label{ch:dictionary-compression}
+
+LZ77 and its sliding-window back-references; LZ78 and its explicit
+dictionary; LZW (used in GIF and early Unix \texttt{compress}); the
+Lempel-Ziv family as the backbone of modern general-purpose compressors.
+
+\chapter{Entropy Coding}
+\label{ch:entropy-coding}
+
+Huffman coding: optimal prefix-free codes, construction algorithm, canonical
+Huffman codes; arithmetic coding: encoding a sequence as a single fraction;
+asymmetric numeral systems (ANS) and why it replaced arithmetic coding in
+zstd, brotli, and LZFSE.
+
+\chapter{Modern Compression Algorithms}
+\label{ch:modern-compression}
+
+zlib and gzip; bzip2 (Burrows-Wheeler); LZMA and xz; Zstandard (zstd) and
+its dictionary pretraining; Brotli (optimised for HTTP); compression levels
+and the speed-ratio tradeoff; practical guidance for choosing a compressor.
+
+\chapter{Specialised Compression}
+\label{ch:specialised-compression}
+
+Run-length encoding (RLE) for sparse and repetitive arrays; delta encoding
+for sorted or temporally correlated sequences; columnar compression
+(dictionary encoding, frame-of-reference, bit packing) used in analytical
+databases; domain-specific methods for scientific data (HDF5 filters, NetCDF
+compression) that appear again in Volume~III's coverage of array databases.

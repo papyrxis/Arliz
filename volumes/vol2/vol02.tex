@@ -5,7 +5,7 @@
 \label{part:silicon-horizon}
 
 \begin{volumesintro}
-\lettrine[lines=3]{A}{rrays exist} in physical hardware. To understand array performance, we must understand the machines that execute our code---from individual transistors switching in response to a voltage, up through logic gates, memory cells, processors, caches, and the massively parallel engines---multicore CPUs, vector units, and GPUs---that move and transform arrays today. This volume builds that complete picture, one layer at a time, continuing directly from where Volume I left off.
+\lettrine[lines=3]{A}{rrays exist} in physical hardware. Volume I already established why a transistor can hold one bit and how bits compose into Boolean algebra; this volume starts exactly there and builds upward---from composed logic gates, up through memory cells, processors, caches, and the massively parallel engines---multicore CPUs, vector units, and GPUs---that move and transform arrays today. This volume builds that complete picture, one layer at a time, continuing directly from where Volume I left off, without re-deriving what Volume I already covered.
 
 \vspace{1em}
 \textbf{What Makes This Different:}
@@ -24,17 +24,16 @@
 \end{volumesintro}
 
 % ============================================================
-% STAGE 1: From transistors to logic gates
+% STAGE 1: From logic gates to functional units
+%
+%   Deliberate boundary with Volume I: this stage used to open with
+%   "Semiconductor Physics Foundations," "MOSFET Transistors," and "CMOS
+%   Logic Fundamentals" -- the same ground Volume I's Stage 4 (The
+%   Semiconductor, Doping, The P-N Junction, The MOSFET, CMOS Technology)
+%   already covers. Those three chapters have been removed. This volume
+%   now starts one level up: composing already-understood gates into the
+%   functional units of a real circuit.
 % ============================================================
-
-\chapter{Semiconductor Physics Foundations}
-Silicon properties, doping (n-type, p-type), P-N junctions, depletion regions, how semiconductors enable switching.
-
-\chapter{MOSFET Transistors}
-Gate, source, drain, channel, threshold voltage, NMOS and PMOS, how transistors act as switches.
-
-\chapter{CMOS Logic Fundamentals}
-Complementary MOS, pull-up and pull-down networks, static power vs. dynamic power, why CMOS won.
 
 \chapter{Logic Gate Implementation}
 CMOS implementation of NOT, NAND, NOR gates, gate delay, rise/fall time, fan-out limitations.

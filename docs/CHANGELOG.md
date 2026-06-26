@@ -14,6 +14,87 @@ the corresponding [GitHub Release](https://github.com/papyrxis/Arliz/releases).
 
 ## [Unreleased]
 
+### Changed -- De-duplication and scope reduction across all three volumes
+
+> **Why:** an outside read-through flagged the project as feeling scattered,
+> with abstraction level swinging between chapters and the same ground
+> covered more than once. Auditing the actual chapter outlines confirmed
+> both problems concretely (not just as an impression) and this pass fixes
+> them. Total chapter count across the three volumes goes from **677 to
+> 393** (Volume I: 81 -> 80, Volume II: 132 -> 129, Volume III: 464 -> 184).
+
+- **Volume I / Volume II seam:** Volume I's Stage 4 (semiconductor physics,
+  doping, the P-N junction, the MOSFET, CMOS technology) and Volume II's
+  former Stage 1 opening ("Semiconductor Physics Foundations," "MOSFET
+  Transistors," "CMOS Logic Fundamentals") covered the same ground twice.
+  Removed the three duplicate chapters from Volume II; Volume II's Stage 1
+  now starts at "Logic Gate Implementation," composing the gates Volume I
+  already established rather than re-deriving the transistor.
+  - Also removed Volume I's "Logic Gate Families and Circuit Building"
+    chapter (CMOS realization, fan-in/fan-out, propagation delay) -- that
+    circuit-implementation content is Volume II's job; Volume I's Stage 6
+    now covers Boolean algebra purely as mathematics.
+  - Merged `volumes/vol1/vol-1.draft.tex` (Stages 2-17, previously a
+    separate draft not yet wired into the build) into `volumes/vol1/vol1.tex`
+    as the single source of truth. The old draft is kept for reference at
+    `volumes/vol1/drafts/_archived/vol-1.draft.tex.superseded`.
+- **Volume III scope:** restructured from 464 chapters (7 sections, A-G) to
+  184 chapters (7 stages, renamed for consistency with Volumes I/II's
+  "Stage" terminology). The cut followed one rule throughout: for every
+  chapter, "after this, how much closer is the reader to actually
+  understanding and using arrays?" Three kinds of cuts followed from that:
+  - **Exact duplicates removed:** "Cache-Oblivious Algorithms Revisited,"
+    "Streaming Algorithms," and "Probabilistic Data Structures Summary"
+    (formerly in the applications section) fully duplicated chapters
+    already present earlier in the same volume; removed in favor of the
+    earlier treatment. "Broadcasting Semantics" in the applications section
+    duplicated the broadcasting chapter in the array-operations stage;
+    removed likewise.
+  - **Minor variants merged into one comparative chapter:** e.g. five
+    specialized search algorithms (interpolation, exponential, ternary,
+    jump, Fibonacci) became one "Specialized Search Algorithms" chapter;
+    nine hash-table chapters became five; twenty neural-network chapters
+    became six. This is the majority of the reduction.
+  - **Applications compressed, not eliminated:** quantum computing,
+    bioinformatics, neuromorphic/analog computing, DNA storage, and similar
+    domains each had multiple dedicated chapters; each is now exactly one
+    consolidated survey chapter. The domains are still represented; the
+    encyclopedic depth is not.
+  - Old 464-chapter outline kept for reference at
+    `volumes/vol3/_archived/vol3.tex.superseded-464ch`.
+- Updated `docs/VOLUMES.md` to match: Volume II's description no longer
+  claims semiconductor physics, and Volume III's description no longer
+  claims "in full" coverage.
+- Updated `frontmatter/vol1/Introduction.tex` to state the Volume I/II
+  boundary explicitly for readers, not just in source comments.
+
+### Fixed -- Fabricated citations removed from Volume I, Chapter 1
+
+> Four entries in `references/arliz.bib` -- `ratzky2005`, `mccal2004`,
+> `tansen2013`, `pippenborg2011` -- could not be verified to exist anywhere
+> under any search. Each had a fabricated co-author, title, and publisher;
+> `pippenborg2011` additionally carried a fabricated DOI. This is the
+> classic citation-hallucination failure mode of AI-assisted writing: a
+> generically plausible claim gets a confident-sounding name and year
+> attached with no real source behind it. (`ratzky2005` in particular looks
+> like a corrupted duplicate of the real, correctly-cited `ratzan2004` a
+> few lines later in the same file.)
+
+- Removed all four fabricated entries from `references/arliz.bib`, with a
+  note in the file explaining why and a reminder to verify any future
+  AI-suggested citation before adding it.
+- Removed the corresponding six `\autocite{}` calls from
+  `volumes/vol1/chapter01/chapter01.tex` and lightly re-worded the
+  surrounding sentences so they stand as the author's own observations
+  (which is what they always were) rather than uncited-but-still-citing
+  claims.
+- **Not yet done:** the other nine entries in `arliz.bib` look real on
+  inspection (Shannon, Knuth, Pierce, Floridi, Zins, Ackoff, Ratzan,
+  Walliman, Rob/Morris/Coronel, UNESCO, Marx, Webster's, OED) but have not
+  been individually re-verified here. Recommended before any chapter
+  ships: a pass that confirms every citation in this file actually exists
+  and says what it's cited as saying.
+
 ## [1.0.0-beta-Volume_I] - 2026-06-15
 
 > **This is a structural release, not a content release.** No chapter prose has

@@ -1,16 +1,16 @@
 %==============================================
-% VOLUME III: ARRAY ODYSSEY
+% VOLUME III: Array Odyssey
 %==============================================
 \part{Array Odyssey}
 \label{part:array-odyssey}
 
 \begin{volumesintro}
-\lettrine[lines=3]{A}{t last} we arrive at arrays themselves---the most fundamental data structure in computing, and the destination of everything Volumes I and II built up to. This volume explores arrays from every conceivable angle: theory, implementation, optimization, the data structures and algorithms built on top of them, the parallel and distributed systems that process them at scale, and the application domains---from machine learning to quantum computing---where arrays do their real work.
+\lettrine[lines=3]{A}{t last} we arrive at arrays themselves---the most fundamental data structure in computing, and the destination of everything Volumes I and II built up to. This volume explores arrays from theory to implementation to the structures and algorithms built on top of them, the parallel and distributed systems that process them at scale, and a representative tour---not an encyclopedia---of the domains where arrays do real work, from machine learning to scientific computing.
 
 \vspace{1em}
 \textbf{What Makes This Different:}
 \begin{itemize}[noitemsep]
-    \item \textbf{Complete Coverage:} Every variant, every technique, every structure built on arrays
+    \item \textbf{Focused Coverage:} Every major technique and structure built on arrays, without the redundant variants that bloat a reference into an encyclopedia
     \item \textbf{Hardware Awareness:} Cache effects, alignment, SIMD, and GPU execution---grounded in Volume II
     \item \textbf{Rigorous Analysis:} Mathematical foundations and performance, from a single access to a distributed cluster
     \item \textbf{Practical Optimization:} Making arrays fast in real systems, from one core to many
@@ -24,7 +24,12 @@
 \end{volumesintro}
 
 % ============================================================
-% SECTION A: Array theory and memory layout (original Part 3, kept as-is)
+% STAGE 1: Array Theory, Memory Layout, and Lifecycle
+%
+%   Goal check: after this stage, the reader can explain what an array
+%   formally is, how it sits in memory, and how its lifecycle (alloc,
+%   init, copy, grow, shrink) is managed -- the vocabulary every later
+%   stage assumes.
 % ============================================================
 
 \chapter{Mathematical Foundations of Arrays}
@@ -51,1436 +56,590 @@ Automatic (stack) allocation, dynamic (heap) allocation, lifetime management, si
 \chapter{Static Array Declaration}
 Compile-time size, storage duration, initialization, usage patterns.
 
-\chapter{Dynamic Memory Allocation for Arrays}
-malloc/calloc/realloc, new/delete, memory leaks, fragmentation.
+\chapter{Dynamic Memory Allocation and Deallocation}
+malloc/calloc/realloc, new/delete, proper cleanup (RAII, smart pointers), memory leaks and fragmentation.
 
-\chapter{Array Deallocation and Resource Management}
-Proper cleanup, RAII pattern, smart pointers, memory ownership.
+\chapter{Array Initialization: Techniques and Performance}
+Zero-initialization, value and aggregate initialization, designated initializers; memset internals, compiler optimizations, lazy initialization costs.
 
-\chapter{Array Initialization Techniques}
-Zero-initialization, value initialization, aggregate initialization, designated initializers.
+\chapter{Array Copying and Memory Transfer}
+Shallow vs. deep copy, copy semantics and assignment operators; memcpy/memmove, bulk copy performance, vectorized copying.
 
-\chapter{Array Initialization Performance}
-memset internals, compiler optimizations, initialization costs, lazy initialization.
+\chapter{Array Access Patterns and Cache Line Utilization}
+Sequential, random, and strided access; impact on cache and prefetching; cache line size, spatial locality, utilizing full cache lines.
 
-\chapter{Array Copying Fundamentals}
-Shallow vs. deep copy, copy semantics, assignment operators.
+\chapter{Prefetching and Traversal Optimization}
+Hardware and software prefetching, prefetch distance; loop order, blocking/tiling, minimizing cache misses during traversal.
 
-\chapter{Memory Transfer Operations}
-memcpy, memmove, bulk copy performance, vectorized copying.
+\chapter{Dynamic Arrays: Implementation and Growth Strategies}
+Capacity vs. size, C++ \texttt{std::vector} internals; doubling, multiplicative, and additive growth, and their tradeoffs. (Amortized-cost proof techniques for this growth are developed properly in Stage 5.)
 
-\chapter{Array Access Patterns and Performance}
-Sequential access, random access, strided access, impact on cache and prefetching.
+\chapter{Dynamic Array Reallocation and Shrinking}
+In-place vs. move-to-new-location reallocation, minimizing copying; shrink-to-fit, hysteresis, avoiding oscillation.
 
-\chapter{Cache Line Utilization}
-Cache line size (64 bytes typical), spatial locality, utilizing full cache lines.
+\chapter{Dynamic Arrays in Practice}
+C++ \texttt{std::vector}, Java \texttt{ArrayList}, Python \texttt{list} compared; iterator invalidation on reallocation and safe iteration patterns.
 
-\chapter{Prefetching for Array Access}
-Hardware prefetching, software prefetching, prefetch instructions, prefetch distance.
-
-\chapter{Array Traversal Optimization}
-Loop order, blocking/tiling, minimizing cache misses, memory access patterns.
-
-\chapter{Dynamic Arrays: Implementation}
-Capacity vs. size, growth strategy, amortized analysis, C++ std::vector internals.
-
-\chapter{Dynamic Array Growth Strategies}
-Doubling, multiplicative (golden ratio), additive growth, tradeoff analysis.
-
-\chapter{Dynamic Array Amortized Analysis}
-Proving O(1) amortized append, potential method, aggregate analysis.
-
-\chapter{Dynamic Array Reallocation}
-In-place vs. move to new location, realloc behavior, minimizing copying.
-
-\chapter{Dynamic Array Shrinking}
-Shrink-to-fit, hysteresis, when to shrink, avoiding oscillation.
-
-\chapter{Dynamic Arrays in Standard Libraries}
-C++ std::vector, Java ArrayList, Python list, implementation comparison.
-
-\chapter{Dynamic Array: Iterator Invalidation}
-When iterators become invalid, reallocation impact, safe iteration patterns.
-
-\chapter{Multidimensional Array Fundamentals}
-Dimensions, shape, indexing multiple dimensions, row-major vs. column-major.
-
-\chapter{Row-Major Order (C Convention)}
-Layout in memory, linearization formula, cache implications.
-
-\chapter{Column-Major Order (Fortran Convention)}
-Layout differences, when it matters, interfacing with Fortran libraries (BLAS, LAPACK).
-
-\chapter{Multidimensional Array Address Calculation}
-Linear index from multiple indices, stride computation, optimization.
+\chapter{Multidimensional Arrays: Layout Conventions}
+Dimensions and shape; row-major (C) vs. column-major (Fortran/BLAS/LAPACK) order; linear index from multiple indices, stride computation.
 
 \chapter{Multidimensional Array Traversal}
-Loop nesting order, cache-friendly traversal, impact of memory layout.
+Loop nesting order, cache-friendly traversal, impact of memory layout on iteration performance.
 
-\chapter{Array of Arrays vs. True Multidimensional}
-Pointer indirection, flexibility, memory overhead, cache implications.
+\chapter{Array of Arrays, Jagged Arrays, and Dope Vectors}
+Pointer indirection vs. true multidimensional storage; non-rectangular (jagged) arrays; dope vectors and array descriptors as metadata for flexible array operations.
 
-\chapter{Jagged Arrays}
-Non-rectangular arrays, array of arrays for irregular sizes, applications.
+\chapter{Sparse Arrays: Concepts and Construction-Friendly Formats}
+When most elements are zero; coordinate list (COO), dictionary of keys (DOK), and list of lists (LIL) as formats optimized for easy construction.
 
-\chapter{Dope Vectors and Array Descriptors}
-Metadata representation, bounds information, enabling flexible array operations.
+\chapter{Sparse Arrays: Compressed Formats and Operations}
+Compressed sparse row (CSR) and column (CSC) for efficient row/column operations; sparse matrix-vector and sparse-sparse operations; the fill-in problem.
 
-\chapter{Sparse Array Fundamentals}
-When most elements are zero (or default), compression ratio, sparsity pattern.
-
-\chapter{Sparse Array: Coordinate List (COO)}
-List of (row, col, value) tuples, easy construction, inefficient access.
-
-\chapter{Sparse Array: Compressed Sparse Row (CSR)}
-Row pointers, column indices, values, efficient row operations.
-
-\chapter{Sparse Array: Compressed Sparse Column (CSC)}
-Column-oriented version of CSR, efficient column operations.
-
-\chapter{Sparse Array: Dictionary of Keys (DOK)}
-Hash table representation, flexible construction, conversion to other formats.
-
-\chapter{Sparse Array: List of Lists (LIL)}
-List per row, incremental construction, conversion to CSR.
-
-\chapter{Sparse Matrix Operations}
-Sparse matrix-vector multiply, sparse-sparse operations, fill-in problem.
-
-\chapter{Bit Arrays: Representation}
-Packing bits into words, storage efficiency, applications (sets, flags).
-
-\chapter{Bit Array: Indexing and Access}
-Computing word and bit offset, extracting bits, setting bits.
-
-\chapter{Bit Array Operations}
-Bitwise operations on arrays, parallel operations, applications.
-
-\chapter{Bitmap Indexes}
-Using bitmaps for indexing, rank and select operations, succinct data structures preview.
+\chapter{Bit Arrays and Bitmap Indexes}
+Packing bits into words; computing word/bit offsets; bitwise operations on arrays; bitmaps for indexing, rank and select operations.
 
 \chapter{Circular Arrays and Ring Buffers}
-Wrap-around indexing, modulo arithmetic, avoiding data movement, queue implementation.
-
-\chapter{Circular Array: Head and Tail Management}
-Tracking fill level, full vs. empty distinction, producer-consumer patterns.
+Wrap-around indexing, modulo arithmetic; tracking fill level, full vs. empty distinction, producer-consumer patterns.
 
 % ============================================================
-% SECTION B: Searching and sorting (original Part 3, kept as-is)
+% STAGE 2: Searching and Sorting
+%
+%   Goal check: after this stage, the reader can choose and implement the
+%   right search or sort for a given constraint (memory, stability,
+%   data distribution, I/O-boundedness) rather than defaulting to
+%   whatever they memorized.
 % ============================================================
 
-\chapter{Array Searching: Linear Search}
-Sequential scan, early termination, best/worst/average case, sentinel technique.
+\chapter{Linear and Binary Search}
+Sequential scan with early termination and the sentinel technique; binary search's prerequisites, algorithm, loop invariants, and complexity analysis.
 
-\chapter{Array Searching: Binary Search}
-Prerequisites (sorted array), algorithm, invariants, complexity analysis.
+\chapter{Binary Search: Variants and Applications}
+Iterative vs. recursive, overflow-safe midpoint, lower\_bound vs. upper\_bound; finding insertion points, counting occurrences, searching rotated arrays.
 
-\chapter{Binary Search: Implementation Variants}
-Iterative vs. recursive, overflow-safe midpoint, lower\_bound vs. upper\_bound.
-
-\chapter{Binary Search: Applications}
-Finding insertion point, counting occurrences, rotated arrays.
-
-\chapter{Interpolation Search}
-Estimating position, prerequisites (uniform distribution), O(log log n) average case.
-
-\chapter{Exponential Search}
-Unbounded search, doubling range, combination with binary search.
-
-\chapter{Ternary Search}
-Dividing into three parts, unimodal functions, finding extrema.
-
-\chapter{Jump Search}
-Block jumping, optimal jump size, combination with linear search, cache-friendly properties.
-
-\chapter{Fibonacci Search}
-Division using Fibonacci numbers, single comparison per step, applications.
+\chapter{Specialized Search Algorithms}
+Interpolation search (uniform distributions), exponential search (unbounded ranges), ternary search (unimodal functions), jump search, and Fibonacci search, compared on their assumptions and when each beats binary search.
 
 \chapter{Sorting Fundamentals}
-Comparison-based lower bound, stability, adaptivity, in-place vs. out-of-place.
+Comparison-based lower bound, stability, adaptivity, in-place vs. out-of-place sorting.
 
-\chapter{Bubble Sort}
-Adjacent swaps, optimization (early termination), adaptive behavior, teaching value.
+\chapter{Elementary Sorts: Bubble, Selection, Insertion, and Shell}
+Adjacent swaps and early termination; selection by repeated minimum; insertion into a sorted prefix (adaptive, online); Shell sort's gap sequences and diminishing increments.
 
-\chapter{Selection Sort}
-Finding minimum, swap to position, in-place but not stable, O(n\textsuperscript{2}) always.
-
-\chapter{Insertion Sort}
-Inserting into sorted prefix, adaptive (O(n) on nearly sorted), online algorithm.
-
-\chapter{Shell Sort}
-Gap sequences, h-sorting, diminishing increments, performance depends on gap sequence.
-
-\chapter{Merge Sort Fundamentals}
-Divide and conquer, merge procedure, guaranteed O(n log n), stability.
-
-\chapter{Merge Sort: Implementation Variants}
-Top-down recursive, bottom-up iterative, in-place merging attempts, natural merge sort.
-
-\chapter{Merge Sort: Optimization Techniques}
-Switching to insertion sort for small subarrays, eliminating copy to auxiliary array.
+\chapter{Merge Sort: Algorithm and Variants}
+Divide-and-conquer with guaranteed $O(n \log n)$ and stability; top-down vs. bottom-up implementation; insertion-sort cutover and copy-elimination optimizations.
 
 \chapter{External Merge Sort}
-Sorting data larger than memory, multi-way merge, minimizing I/O, B-tree connection.
+Sorting data larger than memory; multi-way merge, minimizing I/O, the connection to B-trees.
 
-\chapter{Quick Sort Fundamentals}
-Partitioning, divide and conquer, average O(n log n), worst O(n\textsuperscript{2}).
+\chapter{Quick Sort: Algorithm, Pivots, and Partitioning}
+Partitioning and divide-and-conquer; pivot selection strategies (first, random, median-of-three, ninther); Lomuto, Hoare, and three-way partitioning; tail-recursion and small-subarray optimizations.
 
-\chapter{Quick Sort: Pivot Selection Strategies}
-First element, random element, median-of-three, median-of-medians, ninther.
+\chapter{Randomized Quicksort and Introsort}
+Random pivot selection and expected-case analysis; the hybrid introsort strategy (quicksort with depth limiting and a heapsort fallback) used in \texttt{std::sort}.
 
-\chapter{Quick Sort: Partitioning Schemes}
-Lomuto partition, Hoare partition, three-way partition (Dutch National Flag).
+\chapter{Heap Sort and the Binary Heap}
+Building a heap and repeated extract-max; the complete binary tree stored in an array, parent/child index formulas, sift-up/sift-down, and bottom-up heap construction in $O(n)$.
 
-\chapter{Quick Sort: Optimizations}
-Tail recursion elimination, switching to insertion sort, handling duplicates.
-
-\chapter{Randomized Quick Sort}
-Random pivot selection, probabilistic analysis, expected O(n log n).
-
-\chapter{Introsort}
-Hybrid algorithm, depth limiting, switching to heapsort, C++ std::sort implementation.
-
-\chapter{Heap Sort Fundamentals}
-Building heap, extract-max repeatedly, in-place, not stable, guaranteed O(n log n).
-
-\chapter{Binary Heap: Array Representation}
-Complete binary tree in array, parent/child index formulas, level-order storage.
-
-\chapter{Heapify Operations}
-Sift-up (bubble-up), sift-down (percolate-down), building heap in O(n).
-
-\chapter{Heap Sort: Optimization}
-Bottom-up heap construction, cache optimization, comparison count.
-
-\chapter{Counting Sort}
-Integer sorting, counting occurrences, cumulative sum, linear time O(n+k).
-
-\chapter{Radix Sort Fundamentals}
-Digit-by-digit sorting, LSD vs. MSD, stable sub-sorting required.
-
-\chapter{Radix Sort: Implementations}
-Base/radix selection, counting sort as sub-routine, in-place variants.
+\chapter{Counting Sort and Radix Sort}
+Counting sort's linear time via cumulative counts; radix sort's digit-by-digit approach (LSD vs. MSD), and why the per-digit sub-sort must be stable.
 
 \chapter{Bucket Sort}
-Distributing into buckets, uniform distribution assumption, O(n) average case.
+Distributing into buckets under a uniform-distribution assumption; expected $O(n)$ performance.
 
 \chapter{Timsort}
-Python's sorting algorithm, galloping mode, merge runs, adaptive merging.
+Python's adaptive merge sort: detecting and merging existing runs, galloping mode.
 
 \chapter{pdqsort (Pattern-Defeating Quicksort)}
-Rust's sort, detecting bad patterns, fallback strategies, block partitioning.
+Rust's default sort: detecting adversarial and already-sorted patterns, block partitioning, fallback strategies.
 
 \chapter{Sorting Networks}
-Comparator networks, Batcher's sort, bitonic sort, parallel sorting.
+Comparator networks, Batcher's sort, bitonic sort, and why fixed, data-independent comparison sequences matter for hardware and parallel sorting.
 
 % ============================================================
-% SECTION C: In-place manipulation, two pointers, prefix sums
-%   (original Part 3, kept as-is)
+% STAGE 3: In-Place Manipulation, Two Pointers, and Prefix Sums
+%
+%   Goal check: after this stage, the reader recognizes a wide class of
+%   interview-style and real-world array problems as instances of a small
+%   number of reusable patterns, instead of memorizing each one separately.
 % ============================================================
 
-\chapter{Array Rotation: Reversal Algorithm}
-Reverse portions, three reversals, in-place, O(n) time, elegant proof.
+\chapter{Array Rotation: Algorithms and Tradeoffs}
+Reversal-based rotation (three reversals, elegant proof), the juggling algorithm (GCD-based cycles), and block-swap rotation; in-place reversal via the two-pointer technique.
 
-\chapter{Array Rotation: Juggling Algorithm}
-GCD-based, moving elements in cycles, in-place, optimal moves.
+\chapter{Permutations: Application, Generation, and Shuffling}
+Applying a permutation in place via cycle decomposition; generating all permutations (Heap's algorithm, lexicographic order); the Fisher-Yates shuffle and why naive shuffles are biased.
 
-\chapter{Array Rotation: Block Swap Algorithm}
-Recursive block swapping, handling unequal blocks, in-place rotation.
+\chapter{Partitioning Algorithms}
+Two-way (quicksort-style), three-way (Dutch flag), and $k$-way partitioning; stable partitioning and its implementation strategies.
 
-\chapter{Array Reversal In-Place}
-Two-pointer technique, swapping elements, O(n) time, O(1) space.
+\chapter{Selection Algorithms: Quickselect and Median of Medians}
+Finding the $k$-th smallest element via partition-based selection (expected $O(n)$); the deterministic linear-time median-of-medians construction and why it matters theoretically.
 
-\chapter{Array Permutation: Application}
-Applying permutation in-place, cycle decomposition, O(n) time.
+\chapter{Two-Pointer Technique and Sliding Windows}
+Meeting-in-the-middle and opposite-direction pointers; fixed- and variable-size sliding windows, and maintaining window state (including deque-based min/max).
 
-\chapter{Array Permutation: Generation}
-Generating all permutations, lexicographic order, Heap's algorithm, iterative methods.
+\chapter{Multi-Pointer Techniques}
+Three-pointer and beyond: the Dutch National Flag as a three-pointer problem, merging sorted arrays, and complex partitioning that two pointers can't express.
 
-\chapter{Array Shuffling}
-Fisher-Yates shuffle, uniform random permutation, in-place, bias-free.
+\chapter{Prefix Sums: Construction and Applications}
+Building the cumulative-sum array in $O(n)$ for $O(1)$ range-sum queries; applications to subarray sum and equilibrium-index problems.
 
-\chapter{Array Partitioning Algorithms}
-Two-way partition (quicksort), three-way partition (Dutch flag), k-way partition.
+\chapter{Two-Dimensional Prefix Sums and Difference Arrays}
+2D cumulative sums for $O(1)$ rectangle queries via inclusion-exclusion; difference arrays as the inverse operation, enabling $O(1)$ range updates.
 
-\chapter{Stable Partitioning}
-Maintaining relative order, applications, implementation strategies.
+\chapter{Kadane's Algorithm and Maximum-Subarray Variants}
+Maximum subarray sum as a linear-time DP; variations (maximum product subarray, circular array, allowed deletions); the broader subarray-vs.-subsequence distinction.
 
-\chapter{Quickselect Algorithm}
-Finding k-th smallest element, partition-based selection, average O(n).
+\chapter{The Dutch National Flag Problem}
+Three-way partitioning in a single pass with constant space, and its role inside three-way quicksort.
 
-\chapter{Median of Medians}
-Deterministic linear-time selection, choosing good pivots, theoretical importance.
+\chapter{Set Operations on Arrays}
+Intersection and union via two-pointer (sorted) or hash-set (unsorted) techniques; symmetric difference; two-way and $k$-way (heap-based) merging of sorted arrays.
 
-\chapter{Two-Pointer Technique: Basics}
-Meeting in middle, opposite directions, applications (two sum, container problems).
+\chapter{Array Compaction and Element Removal}
+Removing elements while preserving order (stable compaction); removing duplicates or specific elements in place.
 
-\chapter{Two-Pointer: Sliding Window Fixed Size}
-Window size k, maintaining window state, deque for min/max in window.
+\chapter{Element Frequency and the Majority Element}
+Frequency counting and mode-finding; the Boyer-Moore majority-vote algorithm for finding a majority element in linear time and constant space.
 
-\chapter{Two-Pointer: Sliding Window Variable Size}
-Expanding and contracting, maintaining invariants, applications (substring problems).
-
-\chapter{Three-Pointer and Multiple-Pointer Techniques}
-Dutch National Flag, merging sorted arrays, complex partitioning.
-
-\chapter{Prefix Sum: Construction}
-Cumulative sum array, O(n) construction, range sum query in O(1).
-
-\chapter{Prefix Sum: Applications}
-Range queries, subarray sum, equilibrium index, difference arrays.
-
-\chapter{Two-Dimensional Prefix Sum}
-2D cumulative sum, O(1) rectangle sum query, inclusion-exclusion.
-
-\chapter{Difference Arrays}
-Inverse of prefix sum, range updates in O(1), final array in O(n).
-
-\chapter{Kadane's Algorithm}
-Maximum subarray sum, dynamic programming, linear time, variations.
-
-\chapter{Kadane's Algorithm: Variations}
-Maximum product subarray, circular array, maximum sum with deletions.
-
-\chapter{Subarray Problems}
-Subarray vs. subsequence, contiguous vs. non-contiguous, counting subarrays.
-
-\chapter{Dutch National Flag Problem}
-Three-way partitioning, single pass, constant space, applications to quicksort.
-
-\chapter{Array Intersection}
-Finding common elements, sorted arrays (two-pointer), unsorted (hash set).
-
-\chapter{Array Union and Set Operations}
-Union, intersection, difference, symmetric difference, complexity analysis.
-
-\chapter{Merging Sorted Arrays}
-Two-way merge, k-way merge (heap-based), in-place merging.
-
-\chapter{Array Compaction}
-Removing elements while maintaining order, in-place, stable compaction.
-
-\chapter{Array Gap Removal}
-Removing duplicates, removing specific elements, in-place techniques.
-
-\chapter{Array Element Frequency}
-Counting occurrences, mode finding, frequency map, Boyer-Moore majority vote.
-
-\chapter{Majority Element Algorithm}
-Boyer-Moore voting, linear time, constant space, verification step.
-
-\chapter{Array Rearrangement Problems}
-Alternating positive-negative, even-odd segregation, custom ordering.
-
-\chapter{In-Place Array Manipulation Techniques}
-Swapping, reversing, rotating without extra space, index mapping.
-
-\chapter{Constant Space Algorithms}
-O(1) auxiliary space, in-place transformations, iterative approaches.
+\chapter{In-Place Rearrangement and Constant-Space Techniques}
+Alternating positive/negative, even/odd segregation, and other custom-order rearrangements; the general toolbox of index mapping, swapping, and iterative in-place transformation.
 
 % ============================================================
-% SECTION D: Alignment, bounds checking, views, broadcasting
-%   (original Part 3, kept as-is)
+% STAGE 4: Alignment, Views, and Vectorized Operations
+%
+%   Goal check: after this stage, the reader understands the layer
+%   between "an array sits in memory" (Stage 1) and "a SIMD/GPU unit
+%   processes it" (Volume II, Stage 6) -- the views, alignment rules, and
+%   bulk operations that make vectorized array code possible.
 % ============================================================
 
-\chapter{Array Memory Alignment: Cache Lines}
-Aligning to 64-byte boundaries, false sharing prevention, performance impact.
+\chapter{Memory Alignment for Cache and SIMD}
+Aligning to 64-byte cache-line boundaries and false-sharing prevention; 16/32/64-byte SIMD alignment requirements (\texttt{aligned\_alloc}, \texttt{posix\_memalign}); compiler attributes and pragmas for enforcing alignment.
 
-\chapter{Array Memory Alignment: SIMD}
-16-byte, 32-byte, 64-byte alignment requirements, aligned\_alloc, posix\_memalign.
+\chapter{Bounds Checking: Strategies, Performance, and Language Support}
+Runtime and compiler-generated bounds checks; measuring and reducing their overhead; how Rust's borrow checker, C++ \texttt{std::array}, and managed languages approach safety differently.
 
-\chapter{Alignment Attributes and Directives}
-Compiler attributes (alignas, \_\_attribute\_\_), pragma directives, ensuring alignment.
-
-\chapter{Array Bounds Checking Strategies}
-Runtime bounds checking, compiler-generated checks, safe array access.
-
-\chapter{Bounds Checking: Performance Impact}
-Overhead analysis, optimization opportunities, eliminating redundant checks.
-
-\chapter{Bounds Checking: Language Support}
-Rust's borrow checker, C++ std::array, Java array bounds, safe languages.
-
-\chapter{Array Views and Slices}
-Non-owning references, NumPy slicing, stride manipulation, views vs. copies.
-
-\chapter{Array Slicing Semantics}
-Syntax (start:stop:step), negative indices, omitted bounds, Python/NumPy conventions.
-
-\chapter{Strided Array Access}
-Non-contiguous access, stride specification, performance implications, vectorization challenges.
-
-\chapter{Array Subviews and Windows}
-Creating windows without copying, sliding windows, overlapping windows.
+\chapter{Array Views, Slices, and Strided Access}
+Non-owning references and views vs. copies; slicing syntax and semantics (start:stop:step, negative indices); strided access and the vectorization challenges it introduces; windows and subviews without copying.
 
 \chapter{Array Broadcasting}
-Implicit dimension expansion, NumPy broadcasting rules, shape compatibility.
+Implicit dimension expansion and shape-compatibility rules (NumPy-style); virtual expansion that avoids physically duplicating memory.
 
-\chapter{Broadcasting: Implementation}
-Virtual expansion, avoiding memory duplication, optimized iteration.
+\chapter{Reduction and Scan Operations}
+Sum, product, min/max, and custom reductions; inclusive scan (cumulative sum) and exclusive scan as the related but distinct primitive.
 
-\chapter{Array Reduction Operations}
-Sum, product, min, max, logical operations, custom reductions.
+\chapter{Gather and Scatter Operations}
+Indexed reads (gather) and indexed writes (scatter) via an index array, including conflict handling on scatter; hardware gather/scatter support in AVX2/AVX-512.
 
-\chapter{Array Scan Operations}
-Inclusive scan (cumulative sum), exclusive scan (shifted cumulative sum).
+\chapter{Array Comprehensions, Generators, and Iterators}
+Declarative array construction (list comprehensions, functional style) versus lazy generators and the iterator protocol, and the memory-efficiency tradeoff between them.
 
-\chapter{Array Gather Operations}
-Indexed reads, gather from array using index array, vectorization support.
-
-\chapter{Array Scatter Operations}
-Indexed writes, scatter to array using index array, conflict handling.
-
-\chapter{Gather-Scatter in SIMD}
-AVX2 gather instructions, AVX-512 gather/scatter, performance characteristics.
-
-\chapter{Array Comprehensions}
-Declarative array construction, Python list comprehensions, functional style.
-
-\chapter{Array Generators and Iterators}
-Lazy evaluation, generator expressions, memory efficiency, iterator protocols.
-
-\chapter{Array Reshaping}
-Changing dimensions without copying data, view manipulation, Fortran vs. C order.
-
-\chapter{Array Transposition}
-Swapping dimensions, in-place transpose (square), out-of-place (rectangular).
+\chapter{Reshaping and Transposition}
+Changing dimensions without copying data (views, Fortran vs. C order); in-place transpose for square arrays and out-of-place transpose for rectangular ones.
 
 \chapter{Cache-Oblivious Transpose}
-Recursive divide-and-conquer, optimal cache usage, no tuning parameters.
+Recursive divide-and-conquer transposition that achieves optimal cache usage with no tuning parameters.
 
-\chapter{Array Concatenation}
-Joining arrays along axis, horizontal stack (column-wise), vertical stack (row-wise).
+\chapter{Concatenation, Splitting, Tiling, and Padding}
+Joining arrays along an axis; dividing into equal or unequal chunks; blocked/tiled decomposition for cache optimization; border, alignment, and ghost-cell padding.
 
-\chapter{Array Splitting}
-Dividing array, chunk-based splitting, equal vs. unequal splits.
+\chapter{Specialized Matrix Structures}
+Toeplitz and circulant matrices (fast multiplication via FFT); triangular and symmetric matrices (packed storage, BLAS conventions); band matrices and sparse-diagonal storage for tridiagonal systems.
 
-\chapter{Array Tiling}
-Dividing into tiles, blocked algorithms, cache optimization, matrix multiplication.
+\chapter{Vectorization Fundamentals and Loop Vectorization}
+Writing vector-friendly code and enabling autovectorization; data dependencies, trip count, alignment, and remainder loops that block or enable it.
 
-\chapter{Array Padding Techniques}
-Border padding (image processing), alignment padding, ghost cells (stencil computations).
+\chapter{Lazy Evaluation and Array Expressions}
+Expression templates and deferred computation (as in the Eigen library); fusing chained array operations instead of materializing intermediates.
 
-\chapter{Toeplitz and Circulant Matrices}
-Special array structures, efficient storage, fast multiplication (FFT).
+\chapter{Versioning, Copy-on-Write, and Immutable Arrays}
+Persistent arrays that share data between versions; structural sharing and the benefits of immutability in functional-style array code.
 
-\chapter{Triangular and Symmetric Matrices}
-Storing only half, index mapping, packed storage, BLAS conventions.
-
-\chapter{Band Matrices and Sparse Diagonal}
-Diagonal storage format, bandwidth, tridiagonal systems, efficient solvers.
-
-\chapter{Array Vectorization Fundamentals}
-Writing vector-friendly code, enabling autovectorization, compiler hints.
-
-\chapter{Loop Vectorization}
-Data dependencies, trip count, alignment, remainder loops.
-
-\chapter{Array Expressions and Lazy Evaluation}
-Expression templates (C++), deferred computation, Eigen library example.
-
-\chapter{Array Versioning and Copy-on-Write}
-Persistent arrays, sharing data between versions, efficient versioning.
-
-\chapter{Immutable Arrays}
-Functional programming, structural sharing, immutability benefits.
-
-\chapter{Array Performance Profiling}
-Measuring access patterns, cache simulation tools, hardware counters.
-
-\chapter{Roofline Model for Arrays}
-Arithmetic intensity, bandwidth bounds, computational bounds, optimization guidance.
-
-\chapter{Array Benchmarking Methodology}
-Microbenchmarks, cache warming, timing techniques, statistical significance.
+\chapter{Performance Profiling, the Roofline Model, and Benchmarking}
+Measuring access patterns and using hardware counters; arithmetic intensity and the roofline model's bandwidth/compute bounds; sound microbenchmarking methodology (warming, timing, statistical significance).
 
 % ============================================================
-% SECTION E: Foundational structures built on arrays
-%   (merged from old Part 4)
+% STAGE 5: Foundational Structures Built on Arrays
+%
+%   Goal check: this is the core of the volume. After this stage, the
+%   reader can implement and reason about the classic data structures and
+%   algorithms (stacks, queues, heaps, hash tables, strings, tries,
+%   graphs, segment/Fenwick trees, dynamic programming, greedy,
+%   backtracking) that are themselves built on top of arrays. This stage
+%   keeps the most chapters because it IS the goal, not a side path to it.
 % ============================================================
 
-\chapter{Abstract Data Types}
-ADT specification, interface vs. implementation, invariants, contracts.
+\chapter{Stacks: Implementation and Applications}
+The general ADT notion of interface vs. implementation; LIFO push/pop on an array with dynamic resizing; applications to expression evaluation, parenthesis matching, and the function call stack.
 
-\chapter{Stacks: Array Implementation}
-LIFO principle, push/pop operations, array-based stack, dynamic resizing, applications.
+\chapter{Monotonic Stacks}
+Maintaining a monotonic property for amortized $O(n)$ "next greater element" queries; applications to the largest-rectangle-in-histogram and stock-span problems.
 
-\chapter{Stack Applications}
-Expression evaluation, parenthesis matching, backtracking, function call stack.
+\chapter{Queues and Circular Buffers}
+FIFO via a circular array with front/rear pointers and full-vs.-empty detection; applications to BFS, task scheduling, and producer-consumer buffering.
 
-\chapter{Monotonic Stack}
-Maintaining monotonic property, next greater element, O(n) amortized.
+\chapter{Deques and Monotonic Queues}
+Double-ended queues with circular-array implementation; the monotonic queue (deque-based) for sliding-window maximum/minimum in amortized $O(n)$.
 
-\chapter{Monotonic Stack Applications}
-Largest rectangle in histogram, stock span problem, maximum area problems.
+\chapter{Priority Queues and Binary Heaps}
+Priority-based insert/find-min/delete-min; the complete binary tree stored in an array with parent/child index formulas; insert (sift-up), extract-min (sift-down), decrease-key, and $O(n)$ build-heap.
 
-\chapter{Queues: Circular Array Implementation}
-FIFO principle, circular buffer, enqueue/dequeue, front/rear pointers, full vs. empty detection.
+\chapter{Heap Variants and Priority-Queue Applications}
+$d$-ary heaps and their cache-performance tradeoff against binary heaps; priority queues in Dijkstra's algorithm, Prim's MST, event simulation, and job scheduling.
 
-\chapter{Queue Applications}
-BFS, task scheduling, buffering, producer-consumer patterns.
+\chapter{Hash Tables: Fundamentals and Hash Functions}
+Hash function, collision resolution, load factor, and dynamic resizing as the core design space; division, multiplication, and universal hashing.
 
-\chapter{Deques: Double-Ended Queues}
-Operations at both ends, circular array implementation, applications (sliding window).
+\chapter{Collision Resolution: Chaining and Open Addressing}
+Separate chaining with linked or dynamic-array buckets; linear, quadratic, and double hashing under open addressing, and the clustering problems each causes; advanced schemes (Robin Hood, hopscotch, cuckoo hashing).
 
-\chapter{Monotonic Queue}
-Sliding window maximum/minimum, deque-based, O(n) total operations.
+\chapter{Hash Table Resizing and Performance Analysis}
+Doubling and rehashing with amortized and incremental strategies; how load factor governs expected chain length, probe sequence length, and worst-case behavior.
 
-\chapter{Priority Queue: Concept}
-Priority-based access, operations (insert, find-min, delete-min), applications.
+\chapter{Perfect and Minimal Perfect Hashing}
+Collision-free hashing for static key sets via two-level construction; space-optimal minimal perfect hash functions (e.g. the CHD algorithm).
 
-\chapter{Binary Heaps: Array Representation}
-Complete binary tree in array, parent-child formulas, heap property (min-heap, max-heap).
+\chapter{Bloom Filters}
+Probabilistic set membership via a bit array and $k$ hash functions; choosing optimal $k$ and size for a target false-positive rate; counting, scalable, and cuckoo-filter variants.
 
-\chapter{Binary Heap: Operations}
-Insert (sift-up), extract-min (sift-down), decrease-key, build-heap in O(n).
+\chapter{Cardinality and Frequency Sketches}
+Count-Min sketch for frequency estimation; HyperLogLog for approximate distinct counting in logarithmic space; comparing these and Bloom filters as a family of space-accuracy tradeoffs.
 
-\chapter{Binary Heap: Analysis}
-Time complexity analysis, comparison count, space efficiency.
+\chapter{Strings as Arrays and Manipulation Primitives}
+Null-terminated vs. length-prefixed representations; concatenation, substring, and character-level access and modification as array operations.
 
-\chapter{Heap Variants}
-d-ary heaps, binary heaps vs. d-ary heaps, cache performance.
+\chapter{Naive and Knuth-Morris-Pratt String Matching}
+Brute-force matching and its $O(nm)$ cost; KMP's failure function and how it eliminates redundant comparisons for $O(n+m)$ matching.
 
-\chapter{Heap Sort Revisited}
-Using heap as sorting technique, in-place sorting, comparison with other sorts.
+\chapter{Boyer-Moore and Its Variants}
+The bad-character and good-suffix rules with right-to-left scanning for sublinear average-case matching; the simplified, practically faster Boyer-Moore-Horspool variant.
 
-\chapter{Priority Queue Applications}
-Dijkstra's algorithm, Prim's MST, event simulation, job scheduling.
+\chapter{Rabin-Karp and Aho-Corasick}
+Rolling-hash fingerprint matching, including multiple-pattern matching with collision handling; the Aho-Corasick automaton (a trie with failure links) for matching many patterns at once.
 
-% --- Hash tables and probabilistic structures ---
-
-\chapter{Hash Table Fundamentals}
-Hash function, collision resolution, load factor, dynamic resizing.
-
-\chapter{Hash Functions}
-Division method, multiplication method, universal hashing, perfect hashing.
-
-\chapter{Collision Resolution: Chaining}
-Separate chaining with linked lists, array of lists, dynamic arrays for chains.
-
-\chapter{Collision Resolution: Open Addressing}
-Linear probing, quadratic probing, double hashing, clustering problems.
-
-\chapter{Open Addressing: Advanced Techniques}
-Robin Hood hashing, hopscotch hashing, cuckoo hashing (multiple tables).
-
-\chapter{Hash Table Resizing}
-Doubling table size, rehashing all elements, amortized analysis, incremental resizing.
-
-\chapter{Hash Table Performance Analysis}
-Load factor impact, expected chain length, probe sequence length, worst-case scenarios.
-
-\chapter{Perfect Hashing}
-Collision-free for static sets, two-level hashing, construction algorithms.
-
-\chapter{Minimal Perfect Hashing}
-Space-optimal perfect hashing, CHD algorithm, MPHF construction.
-
-\chapter{Bloom Filters: Fundamentals}
-Probabilistic set membership, bit array with k hash functions, false positive rate.
-
-\chapter{Bloom Filters: Analysis}
-Optimal k (number of hash functions), size determination, false positive probability.
-
-\chapter{Bloom Filter Variants}
-Counting Bloom filters, scalable Bloom filters, cuckoo filters.
-
-\chapter{Count-Min Sketch}
-Frequency estimation, point queries, range queries, space-accuracy tradeoffs.
-
-\chapter{HyperLogLog}
-Cardinality estimation, approximate distinct counting, logarithmic space.
-
-\chapter{Approximate Membership and Counting}
-Space-efficient probabilistic structures, applications (databases, networks, caches).
-
-% --- Strings, pattern matching, and text-array structures ---
-
-\chapter{Strings as Character Arrays}
-Null termination (C strings), length-prefixed strings, string representations.
-
-\chapter{String Manipulation Primitives}
-Concatenation, substring, character access, modification operations.
-
-\chapter{String Matching: Naive Algorithm}
-Brute force, sliding window, complexity O(nm), when it's acceptable.
-
-\chapter{Knuth-Morris-Pratt (KMP) Algorithm}
-Failure function, avoiding redundant comparisons, O(n+m) complexity, preprocessing.
-
-\chapter{Boyer-Moore Algorithm}
-Bad character rule, good suffix rule, right-to-left scanning, sublinear average case.
-
-\chapter{Boyer-Moore-Horspool Variant}
-Simplified bad character rule, practical performance, implementation simplicity.
-
-\chapter{Rabin-Karp Algorithm}
-Rolling hash, fingerprint matching, multiple pattern matching, collision handling.
-
-\chapter{Aho-Corasick Algorithm}
-Multiple pattern matching, trie with failure links, dictionary matching applications.
-
-\chapter{Suffix Arrays: Construction}
-Sorting suffixes, O(n log n) construction algorithms, linear-time construction (SA-IS).
-
-\chapter{Suffix Arrays: Applications}
-Pattern matching, longest common substring, substring queries.
-
-\chapter{LCP Array (Longest Common Prefix)}
-Auxiliary array for suffix array, Kasai's algorithm, applications to string problems.
+\chapter{Suffix Arrays and the LCP Array}
+Sorting suffixes via $O(n \log n)$ and linear-time (SA-IS) construction; pattern matching and longest-common-substring queries; the LCP array and Kasai's algorithm.
 
 \chapter{Suffix Trees vs. Suffix Arrays}
-Space-time tradeoffs, construction complexity, practical considerations.
+The space-time tradeoffs between the two representations and when each is the practical choice.
 
-\chapter{Tries: Array-Based Nodes}
-Alphabet array in each node, space overhead, fast lookup.
-
-\chapter{Compressed Tries and Radix Trees}
-Path compression, patricia trees, space efficiency.
-
-\chapter{Trie Applications}
-Autocomplete, spell checking, IP routing, prefix matching.
+\chapter{Tries and Radix Trees}
+Array-of-children trie nodes and their space overhead; path-compressed tries (Patricia/radix trees) for space efficiency; applications to autocomplete, spell checking, and IP routing.
 
 \chapter{Ternary Search Trees}
-Space-efficient trie variant, BST-like structure, balanced performance.
+A space-efficient trie variant with BST-like node structure and balanced performance between tries and hash tables.
 
-% --- Graphs on arrays ---
+\chapter{Graph Representations: Matrix, List, and Edge List}
+Adjacency matrices ($O(V^2)$, $O(1)$ edge checks, dense graphs) versus adjacency lists ($O(V+E)$, sparse graphs) versus edge lists; implementation variants and matrix-based operations like transitive closure.
 
-\chapter{Graph Representations: Overview}
-Adjacency matrix, adjacency list, edge list, tradeoffs for different operations.
-
-\chapter{Adjacency Matrix Representation}
-2D array, space O(V\textsuperscript{2}), edge checking O(1), suitable for dense graphs.
-
-\chapter{Matrix Operations on Graphs}
-Transitive closure (Floyd-Warshall), matrix multiplication for path counting.
-
-\chapter{Adjacency List: Array of Lists}
-Space O(V+E), neighbor iteration, suitable for sparse graphs.
-
-\chapter{Adjacency List: Implementation Variants}
-Array of vectors, array of linked lists, array of dynamic arrays.
-
-\chapter{Edge List Representation}
-Array of edges, simple representation, useful for edge-centric algorithms.
-
-\chapter{Graph Algorithm Fundamentals}
-Traversal, path finding, connectivity, topological sort, minimum spanning tree.
-
-\chapter{Breadth-First Search (BFS) on Arrays}
-Queue-based traversal, level-order exploration, shortest path in unweighted graphs.
-
-\chapter{Depth-First Search (DFS) on Arrays}
-Stack-based (explicit or recursive), preorder/postorder, cycle detection.
+\chapter{Graph Traversal: BFS and DFS}
+Queue-based breadth-first traversal for level-order exploration and shortest paths in unweighted graphs; stack-based (explicit or recursive) depth-first traversal for cycle detection and ordering.
 
 \chapter{Topological Sorting}
-DFS-based, Kahn's algorithm (BFS-based), applications (dependency resolution).
+DFS-based and Kahn's (BFS-based) algorithms, and their use in dependency resolution.
 
-\chapter{Shortest Path: Dijkstra's Algorithm}
-Priority queue (binary heap), relaxation, non-negative weights, O((V+E) log V).
-
-\chapter{Shortest Path: Bellman-Ford Algorithm}
-Handling negative weights, negative cycle detection, O(VE) complexity.
+\chapter{Single-Source Shortest Paths: Dijkstra and Bellman-Ford}
+Dijkstra's priority-queue-based relaxation for non-negative weights; Bellman-Ford's handling of negative weights and negative-cycle detection.
 
 \chapter{All-Pairs Shortest Paths: Floyd-Warshall}
-Dynamic programming on adjacency matrix, O(V\textsuperscript{3}), dense graph suitability.
+Dynamic programming directly on the adjacency matrix, and why $O(V^3)$ is the right tradeoff for dense graphs.
 
-\chapter{Minimum Spanning Tree: Prim's Algorithm}
-Priority queue, growing MST from single vertex, O((V+E) log V).
-
-\chapter{Minimum Spanning Tree: Kruskal's Algorithm}
-Sorting edges, union-find for cycle detection, O(E log E).
+\chapter{Minimum Spanning Trees: Prim's and Kruskal's Algorithms}
+Prim's priority-queue-driven tree growth versus Kruskal's edge-sorting-and-union-find approach, and when each is preferable.
 
 \chapter{Disjoint-Set Union (Union-Find)}
-Array-based parent pointers, path compression, union by rank/size.
+Array-based parent pointers with path compression and union by rank/size; the (near-constant, inverse-Ackermann) amortized analysis; applications to Kruskal's MST and dynamic connectivity.
 
-\chapter{Union-Find: Analysis}
-Inverse Ackermann function, nearly constant amortized time, proof sketch.
+\chapter{Segment Trees}
+A binary tree over an array for range queries; $O(n)$ construction, $O(\log n)$ range query and point update; lazy propagation for range updates, and variants (RMQ, range sum, arbitrary associative operations).
 
-\chapter{Union-Find: Applications}
-Connected components, Kruskal's MST, dynamic connectivity, percolation.
+\chapter{Fenwick Trees (Binary Indexed Trees)}
+Cumulative-frequency queries and updates in $O(\log n)$ using bit manipulation on indices; the dual representation that supports range updates with point queries.
 
-% --- Range-query structures ---
+\chapter{Sparse Tables and Range Query Structures Compared}
+Preprocessing for $O(1)$ range-minimum queries on immutable arrays; comparing segment trees, Fenwick trees, and sparse tables on mutability, space, and query time.
 
-\chapter{Segment Trees: Fundamentals}
-Binary tree for range queries, array representation, recursive structure.
+\chapter{Dynamic Programming: Foundations and State Representation}
+Optimal substructure and overlapping subproblems; memoization vs. tabulation; 1D, 2D, and multi-dimensional state spaces and rolling-array space optimization.
 
-\chapter{Segment Tree: Construction and Queries}
-Building O(n), range query O(log n), point update O(log n).
+\chapter{Knapsack Problems}
+0/1 knapsack via a 2D DP array; the unbounded variant collapsing to 1D; subset sum as a Boolean DP and its space-optimized form.
 
-\chapter{Segment Tree: Lazy Propagation}
-Range updates, deferred updates, maintaining correctness, complexity analysis.
+\chapter{Longest Common and Longest Increasing Subsequences}
+LCS via a 2D DP table with traceback reconstruction; LIS via both the $O(n^2)$ DP and the $O(n \log n)$ patience-sorting approach.
 
-\chapter{Segment Tree: Variations}
-Range minimum query (RMQ), range sum, range GCD, arbitrary associative operations.
+\chapter{Edit Distance}
+The Levenshtein 2D DP over insertions, deletions, and substitutions; Hirschberg's linear-space divide-and-conquer reconstruction.
 
-\chapter{Fenwick Tree (Binary Indexed Tree)}
-Cumulative frequency, update and query O(log n), compact representation.
+\chapter{Matrix Chain Multiplication and Optimal Binary Search Trees}
+Optimal parenthesization via 2D DP; weighted search cost minimization for optimal BSTs, including Knuth's optimization.
 
-\chapter{Fenwick Tree: Implementation}
-Bit manipulation for parent/child, 1-indexed arrays, prefix sum queries.
-
-\chapter{Fenwick Tree: Range Updates}
-Difference array technique, point query with range update, dual representation.
-
-\chapter{Sparse Table}
-Preprocessing for RMQ, O(n log n) space, O(1) query, immutable arrays.
-
-\chapter{Sparse Table: Construction}
-Dynamic programming, overlapping ranges, idempotent operation requirement.
-
-\chapter{Range Query Structures Comparison}
-Segment tree, Fenwick tree, sparse table, tradeoffs and use cases.
-
-% --- Algorithmic design paradigms on arrays ---
-
-\chapter{Dynamic Programming Fundamentals}
-Optimal substructure, overlapping subproblems, memoization vs. tabulation.
-
-\chapter{DP: State Representation in Arrays}
-1D, 2D, multi-dimensional state spaces, state transition.
-
-\chapter{DP: Space Optimization}
-Rolling arrays, reducing dimensions, in-place updates.
-
-\chapter{0/1 Knapsack Problem}
-Items with weight and value, capacity constraint, 2D DP array.
-
-\chapter{Unbounded Knapsack}
-Unlimited copies of items, 1D DP array suffices, coin change connection.
-
-\chapter{Subset Sum Problem}
-Boolean DP, target sum reachability, space-optimized solution.
-
-\chapter{Longest Common Subsequence (LCS)}
-2D DP table, traceback for reconstruction, O(nm) time and space.
-
-\chapter{Longest Increasing Subsequence (LIS)}
-O(n\textsuperscript{2}) DP solution, O(n log n) binary search solution, patience sorting.
-
-\chapter{Edit Distance (Levenshtein)}
-2D DP, insertions/deletions/substitutions, sequence alignment.
-
-\chapter{Edit Distance: Space Optimization}
-Linear space, Hirschberg's algorithm, divide and conquer.
-
-\chapter{Matrix Chain Multiplication}
-Optimal parenthesization, 2D DP, O(n\textsuperscript{3}) complexity, reconstruction.
-
-\chapter{Optimal Binary Search Trees}
-Weighted search cost, 2D DP, Knuth's optimization.
-
-\chapter{Palindrome Problems}
-Longest palindromic substring, palindrome partitioning, DP on strings.
-
-\chapter{DP on Grids and Paths}
-Minimum path sum, unique paths, grid DP patterns.
+\chapter{Palindrome and Grid DP Patterns}
+Longest palindromic substring and palindrome partitioning; minimum path sum, unique paths, and the broader family of grid-traversal DP problems.
 
 \chapter{DP with Bitmasks}
-Representing subsets, traveling salesman, Hamiltonian path, assignment problem.
+Representing subsets as bits for problems like the traveling salesman, Hamiltonian path, and assignment problem.
 
-\chapter{Divide and Conquer Fundamentals}
-Recurrence relations, master theorem, merge step complexity.
+\chapter{Divide and Conquer: Recurrences and Classic Analyses}
+Recurrence relations and the master theorem; revisiting merge sort, quicksort, and binary search (Stage 2) through the recurrence-analysis lens.
 
-\chapter{Merge Sort Analysis}
-Recurrence T(n) = 2T(n/2) + O(n), master theorem application.
+\chapter{Closest Pair and Convex Hull}
+Divide-and-conquer closest-pair in $O(n \log n)$; Graham scan, Jarvis march, and quickhull for convex hull, built on point-array and orientation-test primitives.
 
-\chapter{Quicksort Analysis}
-Average case, randomized analysis, worst case handling.
+\chapter{Greedy Algorithms: Theory and Activity Selection}
+The greedy-choice property, optimal substructure, and exchange-argument proofs; interval scheduling via earliest finish time as the canonical example.
 
-\chapter{Binary Search Analysis}
-Recurrence T(n) = T(n/2) + O(1), logarithmic complexity.
+\chapter{Fractional Knapsack and Huffman Coding}
+Greedy-by-ratio fractional knapsack; Huffman's optimal prefix-free codes built via a priority queue.
 
-\chapter{Closest Pair of Points}
-Divide and conquer, O(n log n), geometric algorithms on arrays.
+\chapter{Backtracking Fundamentals and N-Queens}
+Exhaustive search with pruning over a state-space tree; the N-Queens problem as the canonical backtracking example over an array representation.
 
-\chapter{Convex Hull Algorithms}
-Graham scan, Jarvis march, quick hull, geometric array processing.
+\chapter{Subset and Permutation Generation}
+Generating all subsets (backtracking, bit manipulation) and all permutations (backtracking, Heap's algorithm).
 
-\chapter{Computational Geometry Primitives}
-Point arrays, line segments, orientation test, intersection tests.
+\chapter{Constraint Satisfaction: The Sudoku Solver}
+Backtracking with constraint propagation over an array-based board representation.
 
-\chapter{Greedy Algorithms on Arrays}
-Greedy choice property, optimal substructure, exchange arguments.
+\chapter{Online Algorithms and Competitive Analysis}
+Online vs. offline algorithms and the competitive ratio; cache replacement (LRU, FIFO, optimal) as a worked example.
 
-\chapter{Activity Selection Problem}
-Interval scheduling, earliest finish time, greedy correctness proof.
-
-\chapter{Fractional Knapsack}
-Greedy by value-to-weight ratio, sorting step, O(n log n).
-
-\chapter{Huffman Coding}
-Optimal prefix-free codes, priority queue, tree construction from array.
-
-\chapter{Backtracking Fundamentals}
-Exhaustive search with pruning, state space tree, recursive exploration.
-
-\chapter{N-Queens Problem}
-Placing queens on chessboard, backtracking, array representation.
-
-\chapter{Subset Generation}
-Generating all subsets, backtracking, bit manipulation approaches.
-
-\chapter{Permutation Generation}
-Generating all permutations, backtracking, iterative algorithms (Heap's).
-
-\chapter{Sudoku Solver}
-Constraint satisfaction, backtracking, array representation.
-
-% --- Online, streaming, and amortized analysis ---
-
-\chapter{Online Algorithms: Introduction}
-Online vs. offline, competitive ratio, worst-case analysis.
-
-\chapter{Online Algorithms: Paging}
-Cache replacement (LRU, FIFO, optimal), competitive analysis.
-
-\chapter{Streaming Algorithms: Fundamentals}
-One-pass algorithms, sublinear space, sampling techniques.
-
-\chapter{Streaming: Heavy Hitters}
-Finding frequent elements, Count-Min sketch, Misra-Gries algorithm.
-
-\chapter{Streaming: Distinct Elements}
-Flajolet-Martin, HyperLogLog, approximate counting.
+\chapter{Streaming Algorithms: Heavy Hitters and Distinct Elements}
+One-pass, sublinear-space algorithms; finding frequent elements (Misra-Gries), and approximate distinct counting (Flajolet-Martin).
 
 \chapter{Reservoir Sampling}
-Uniform random sample, single-pass, unknown stream size.
+Maintaining a uniform random sample from a single-pass stream of unknown size.
 
-\chapter{Amortized Analysis: Aggregate Method}
-Total cost divided by operations, examples (dynamic array, binary counter).
-
-\chapter{Amortized Analysis: Accounting Method}
-Amortized cost as credit, maintaining non-negative balance.
-
-\chapter{Amortized Analysis: Potential Method}
-Potential function, relating amortized to actual cost, flexibility.
+\chapter{Amortized Analysis: Aggregate, Accounting, and Potential Methods}
+The three standard proof techniques for amortized cost, illustrated on the dynamic-array growth example from Stage 1 and on a binary counter.
 
 \chapter{Cache-Oblivious Algorithms}
-Optimal cache usage without knowing cache parameters, ideal cache model.
-
-\chapter{Cache-Oblivious Matrix Transpose}
-Recursive divide-and-conquer, automatically adapting to cache hierarchy.
-
-\chapter{Cache-Oblivious Searching and Sorting}
-Van Emde Boas layout, funnelsort, optimal cache complexity.
+Achieving optimal cache usage without knowing cache parameters (the ideal-cache model); recursive matrix transpose and cache-oblivious searching/sorting as worked examples.
 
 % ============================================================
-% SECTION F: Parallel and distributed array processing
-%   (merged from old Part 5, algorithm-level chapters only;
-%    pure-hardware GPU/SIMD chapters already live in Volume II)
+% STAGE 6: Parallel and Distributed Array Processing
+%
+%   Goal check: after this stage, the reader can take an array algorithm
+%   from Stages 1-5 and scale it correctly across cores, GPUs, and
+%   machines -- and knows the concurrency-correctness pitfalls along the
+%   way. The real-time and energy clusters are kept brief: relevant to
+%   arrays, but not the volume's center of gravity.
 % ============================================================
 
-\chapter{Concurrency vs. Parallelism}
-Definitions, distinctions, concurrent execution, parallel execution, when each matters.
+\chapter{Concurrency, Parallelism, and Performance Metrics}
+Concurrent vs. parallel execution; speedup, efficiency, and the work/span (DAG) model of parallelism.
 
-\chapter{Parallel Performance Metrics}
-Speedup, efficiency, scalability, work, span, Amdahl's law, Gustafson's law.
+\chapter{Amdahl's Law and Gustafson's Law}
+The serial fraction's limit on speedup versus scaled speedup under growing problem size; strong vs. weak scaling.
 
-\chapter{Amdahl's Law}
-Serial fraction limits speedup, diminishing returns, implications for algorithm design.
+\chapter{Processes, Threads, and Thread Pools}
+Separate address spaces vs. shared memory; thread creation and joining (pthreads, \texttt{std::thread}); worker pools and task queues for amortizing creation overhead.
 
-\chapter{Gustafson's Law}
-Scaled speedup, weak scaling vs. strong scaling, problem size growth.
+\chapter{Work Stealing and Fork-Join Parallelism}
+Dynamic load balancing via stealing from other threads' deques (the Cilk model); recursive divide-and-conquer parallelism with fork/join synchronization.
 
-\chapter{Work and Span Model}
-DAG representation, work (total operations), span (critical path), parallelism = work/span.
+\chapter{OpenMP: Loops, Data Sharing, and Reductions}
+The parallel-for directive and scheduling policies (static, dynamic, guided); shared/private/firstprivate/lastprivate clauses; reduction operations and their private-copy combination.
 
-\chapter{Processes vs. Threads}
-Separate address spaces, shared memory, creation overhead, context switching.
+\chapter{OpenMP: Tasks, SIMD, and the Memory Model}
+Task-based irregular parallelism (\texttt{task}, \texttt{taskwait}, \texttt{taskloop}); SIMD loop directives; flush operations and thread-safe memory ordering.
 
-\chapter{Thread Creation and Management}
-POSIX threads (pthreads), C++11 std::thread, thread creation, joining, detaching.
+\chapter{Data Races and Memory Consistency Models}
+Concurrent read-write and write-write conflicts; sequential consistency, TSO, and weak/relaxed models; the happens-before relation and C++11's memory-order options.
 
-\chapter{Thread Pools}
-Worker threads, task queues, reducing creation overhead, load distribution.
+\chapter{Locks: Mutexes, Spinlocks, and Reader-Writer Locks}
+Mutual exclusion and deadlock potential; busy-waiting spinlocks vs. blocking mutexes and when each wins; reader-writer locks for read-heavy workloads.
 
-\chapter{Work Stealing}
-Dynamic load balancing, task stealing from other threads, Cilk model, deque-based implementation.
+\chapter{Semaphores, Barriers, and Condition Variables}
+Counting and binary semaphores for signaling; synchronization barriers; the wait/notify pattern for avoiding busy-waiting in producer-consumer queues.
 
-\chapter{Fork-Join Parallelism}
-Divide and conquer parallelism, recursive task spawning, join synchronization.
+\chapter{Lock-Free Programming and Atomic Operations}
+Compare-and-swap, the ABA problem, and the wait-free/lock-free distinction; atomic fetch-and-add and compare-exchange with their memory-ordering implications.
 
-\chapter{Parallel Recursion}
-Parallelizing divide-and-conquer algorithms, base case threshold, overhead management.
+\chapter{Lock-Free Stacks and Queues}
+CAS-based push/pop and the Michael-Scott queue; hazard pointers and epoch-based reclamation for safely freeing memory under concurrent access.
 
-\chapter{OpenMP: Parallel Loops}
-Parallel for directive, work sharing, scheduling (static, dynamic, guided), loop dependencies.
-
-\chapter{OpenMP: Data Sharing Clauses}
-Shared, private, firstprivate, lastprivate, reduction, default clauses.
-
-\chapter{OpenMP: Reductions}
-Reduction operations, private copies, combining results, common patterns.
-
-\chapter{OpenMP: Task Parallelism}
-Task directive, task dependencies, taskwait, taskloop, irregular parallelism.
-
-\chapter{OpenMP: SIMD Directives}
-SIMD loops, aligned clauses, vectorization hints, safelen.
-
-\chapter{OpenMP: Memory Model}
-Flush operations, memory ordering, atomic operations, thread-safe programming.
-
-\chapter{Data Races and Race Conditions}
-Concurrent read-write, write-write conflicts, non-deterministic behavior, debugging races.
-
-\chapter{Memory Consistency Models}
-Sequential consistency, total store order (TSO), weak ordering, relaxed models.
-
-\chapter{Happens-Before Relation}
-Partial ordering, synchronizes-with, inter-thread ordering, reasoning about concurrency.
-
-\chapter{Memory Ordering in C++11}
-memory\_order\_relaxed, memory\_order\_acquire, memory\_order\_release, memory\_order\_seq\_cst.
-
-\chapter{Synchronization Primitives: Mutexes}
-Mutual exclusion locks, lock/unlock, critical sections, deadlock potential.
-
-\chapter{Spinlocks vs. Mutexes}
-Busy waiting vs. blocking, context switch overhead, when to use each.
-
-\chapter{Reader-Writer Locks}
-Multiple readers, exclusive writer, read-heavy workloads, fairness considerations.
-
-\chapter{Semaphores}
-Counting semaphores, binary semaphores, signaling, producer-consumer synchronization.
-
-\chapter{Barriers}
-Thread synchronization point, waiting for all threads, reusable barriers, OpenMP barrier.
-
-\chapter{Condition Variables}
-Wait/notify pattern, avoiding busy waiting, producer-consumer queues, spurious wakeups.
-
-\chapter{Lock-Free Programming: Fundamentals}
-Atomic operations, compare-and-swap (CAS), ABA problem, wait-free vs. lock-free.
-
-\chapter{Atomic Operations}
-Atomic reads/writes, fetch-and-add, compare-and-exchange, memory ordering.
-
-\chapter{Lock-Free Stack}
-CAS-based push/pop, ABA problem, tagged pointers, hazard pointers.
-
-\chapter{Lock-Free Queue}
-Michael-Scott queue, enqueue/dequeue with CAS, memory reclamation challenges.
-
-\chapter{Memory Reclamation in Lock-Free Structures}
-Hazard pointers, epoch-based reclamation, reference counting, safe memory reclamation (SMR).
-
-\chapter{Transactional Memory: Concepts}
-Atomic blocks, optimistic concurrency, conflict detection, rollback.
-
-\chapter{Software Transactional Memory (STM)}
-STM implementations, versioning, validation, commit protocol.
-
-\chapter{Hardware Transactional Memory (HTM)}
-Intel TSX, cache-based implementation, capacity limits, fallback paths.
+\chapter{Transactional Memory: Software and Hardware}
+Atomic blocks with optimistic concurrency and rollback; software (versioning, validation, commit) versus hardware (Intel TSX, capacity limits and fallback) implementations.
 
 \chapter{False Sharing}
-Cache line contention, performance degradation, detecting false sharing (perf, VTune).
+Cache-line contention between logically independent variables, its performance cost, and how to detect and eliminate it.
 
-% --- GPU array algorithms (algorithm-level; GPU hardware lives in Volume II) ---
+\chapter{GPU Array Algorithms: Sorting, Reduction, and Scan}
+Bitonic and radix sort on GPU; tree-based reduction with warp-level shuffle primitives; the work-efficient Blelloch scan and bank-conflict avoidance.
 
-\chapter{GPU Sorting Algorithms}
-Bitonic sort, radix sort on GPU, merge sort, library implementations (Thrust).
+\chapter{GPU Matrix and Stencil Operations}
+Tiled matrix multiplication with shared memory (cuBLAS); halo exchange and shared-memory tiling for stencil computations.
 
-\chapter{GPU Reduction Algorithms}
-Tree-based reduction, warp-level primitives, shuffle operations, optimized patterns.
+\chapter{Heterogeneous Computing and OpenCL}
+CPU-GPU task partitioning and host-device coordination; OpenCL's platform/device/context/queue model and its global/local/private/constant memory spaces.
 
-\chapter{GPU Scan (Prefix Sum)}
-Blelloch scan on GPU, work-efficient implementation, bank conflict avoidance.
+\chapter{Distributed Computing Fundamentals and MPI Basics}
+Distributed memory, message passing, latency and bandwidth; MPI communicators, ranks, and basic send/receive.
 
-\chapter{GPU Matrix Operations}
-Matrix multiplication, tiling, shared memory usage, cuBLAS library.
+\chapter{MPI: Point-to-Point and Non-Blocking Communication}
+Blocking vs. non-blocking send/receive (\texttt{MPI\_Isend}/\texttt{MPI\_Irecv}); overlapping communication with computation.
 
-\chapter{GPU Stencil Computations}
-Halo exchange, shared memory tiling, minimizing global memory access.
+\chapter{MPI: Collective Operations and Derived Datatypes}
+Broadcast, scatter, gather, all-to-all, and reduction; \texttt{MPI\_Reduce}/\texttt{MPI\_Allreduce}; describing complex layouts with derived datatypes.
 
-\chapter{Heterogeneous Computing}
-CPU-GPU collaboration, task partitioning, host-device coordination.
+\chapter{Distributed Array Partitioning and Domain Decomposition}
+Block, cyclic, and block-cyclic distribution; 1D/2D/3D domain decomposition and minimizing the surface-to-volume communication ratio.
 
-\chapter{OpenCL Programming Model}
-Platform, device, context, command queue, kernels, portability across devices.
+\chapter{Ghost Cells, Halo Exchange, and Load Balancing}
+Boundary-region communication for stencil computations; static vs. dynamic load balancing, including work stealing across nodes for irregular workloads.
 
-\chapter{OpenCL Memory Model}
-Global, local, private, constant memory, explicit transfers, buffer objects.
+\chapter{Parallel I/O, Checkpointing, and Fault Tolerance}
+Collective I/O and parallel file systems; periodic checkpoint/restart; replication and algorithm-based fault tolerance.
 
-% --- Distributed array processing ---
+\chapter{MapReduce and Hadoop}
+The map/shuffle/reduce model for data-parallel array processing at scale; HDFS block storage, replication, and data locality.
 
-\chapter{Distributed Computing Fundamentals}
-Distributed memory, message passing, latency and bandwidth, network topology.
+\chapter{Spark, RDDs, and Distributed Array Operations}
+Resilient distributed datasets and in-memory transformations/actions; DataFrame array columns and broadcast variables.
 
-\chapter{Message Passing Interface (MPI): Basics}
-Communicators, ranks, MPI\_Init, MPI\_Finalize, basic communication.
+\chapter{Partitioned Global Address Space (PGAS) Languages}
+A global logical view with local control over data placement (UPC, Chapel, X10); distributed array declarations and affinity.
 
-\chapter{MPI Point-to-Point Communication}
-Send, receive, buffering modes, blocking vs. non-blocking, message tags.
+\chapter{Distributed Consensus and Eventual Consistency}
+Paxos and Raft for agreement under failure; CRDTs and conflict resolution as an alternative for convergent distributed arrays.
 
-\chapter{MPI Non-Blocking Communication}
-MPI\_Isend, MPI\_Irecv, overlapping communication and computation, MPI\_Wait.
+\chapter{Real-Time Systems and Scheduling}
+Hard vs. soft deadlines and worst-case execution time (WCET) analysis for array operations; rate-monotonic and earliest-deadline-first scheduling; cache locking and scratchpad memory for predictable access.
 
-\chapter{MPI Collective Operations}
-Broadcast, scatter, gather, all-to-all, reduction, barrier, synchronization.
+\chapter{Energy-Efficient and Green Computing}
+Dynamic voltage and frequency scaling and power-aware algorithm design; minimizing data movement for energy savings; energy proportionality as a system-level goal.
 
-\chapter{MPI Reductions}
-MPI\_Reduce, MPI\_Allreduce, custom reduction operations, combining data.
+\chapter{Parallel Debugging and Performance Analysis Tools}
+Race detection (ThreadSanitizer, Valgrind) and deterministic replay; profiling parallel programs (perf, VTune, HPCToolkit).
 
-\chapter{MPI Derived Datatypes}
-Contiguous, vector, indexed types, describing complex data layouts.
-
-\chapter{Distributed Array Partitioning}
-Block distribution, cyclic distribution, block-cyclic, load balancing.
-
-\chapter{Ghost Cells and Halo Exchange}
-Boundary regions, stencil computations, communication patterns, optimizing exchange.
-
-\chapter{Domain Decomposition}
-1D, 2D, 3D decomposition, minimizing surface-to-volume ratio, communication overhead.
-
-\chapter{Load Balancing in Distributed Systems}
-Static vs. dynamic, work stealing across nodes, balancing irregular workloads.
-
-\chapter{Parallel I/O}
-MPI-IO, parallel file systems (Lustre, GPFS), collective I/O, avoiding bottlenecks.
-
-\chapter{Checkpoint/Restart}
-Fault tolerance, periodic checkpointing, restart from checkpoint, overhead.
-
-\chapter{Fault Tolerance Strategies}
-Replication, algorithm-based fault tolerance, detecting failures, recovery.
-
-\chapter{MapReduce Programming Model}
-Map phase, shuffle/sort, reduce phase, data-parallel programming at scale.
-
-\chapter{MapReduce on Arrays}
-Array processing patterns, sorting, filtering, aggregation, distributed arrays.
-
-\chapter{Hadoop and HDFS}
-Distributed file system, block storage, replication, data locality.
-
-\chapter{Spark and RDDs}
-Resilient distributed datasets, in-memory processing, transformations and actions.
-
-\chapter{Spark Array Operations}
-DataFrame operations, array columns, broadcast variables, distributed array processing.
-
-\chapter{Partitioned Global Address Space (PGAS)}
-Global view with local control, UPC, Chapel, X10, one-sided communication.
-
-\chapter{Array Notation in PGAS Languages}
-Distributed array declarations, affinity, local vs. remote access.
-
-\chapter{Distributed Consensus}
-Paxos, Raft, leader election, maintaining consistency, fault tolerance.
-
-\chapter{Eventual Consistency}
-Convergent data types, CRDTs, conflict resolution, distributed arrays.
-
-% --- Real-time and energy-aware array processing ---
-
-\chapter{Real-Time Systems}
-Hard vs. soft deadlines, WCET (worst-case execution time), predictability.
-
-\chapter{WCET Analysis for Array Operations}
-Static analysis, timing bounds, cache analysis, array access time.
-
-\chapter{Real-Time Scheduling}
-Rate monotonic scheduling (RMS), earliest deadline first (EDF), priority assignment.
-
-\chapter{Cache Locking for Real-Time}
-Locking cache lines, predictable access times, avoiding cache misses.
-
-\chapter{Scratchpad Memory}
-Software-managed memory, predictable access, explicitly controlled, vs. caches.
-
-\chapter{Energy-Efficient Computing}
-Power models, dynamic power, static power, energy-aware algorithms.
-
-\chapter{DVFS and Power Management}
-Dynamic voltage and frequency scaling, race-to-idle vs. energy proportional.
-
-\chapter{Energy-Efficient Array Processing}
-Minimizing memory access, data reuse, approximate computing for energy savings.
-
-\chapter{Green Computing Principles}
-Energy proportionality, workload consolidation, resource efficiency.
-
-\chapter{Parallel Debugging}
-Race detection, Valgrind, ThreadSanitizer, Intel Inspector, deterministic replay.
-
-\chapter{Performance Analysis Tools}
-gprof, perf, VTune, TAU, HPCToolkit, profiling parallel programs.
-
-\chapter{Scalability Analysis}
-Strong scaling, weak scaling, scalability plots, identifying bottlenecks.
-
-\chapter{Communication vs. Computation Ratio}
-Bandwidth-limited vs. compute-limited, optimizing the ratio, hiding latency.
-
-\chapter{Parallel Algorithm Design Patterns}
-Task parallelism, data parallelism, pipeline, master-worker, SPMD.
+\chapter{Scalability Analysis and Parallel Design Patterns}
+Strong vs. weak scaling plots and identifying bottlenecks; the communication-to-computation ratio; recurring design patterns (task parallelism, data parallelism, pipeline, master-worker, SPMD).
 
 % ============================================================
-% SECTION G: Arrays in science, machine learning, and beyond
-%   (merged from old Part 6)
+% STAGE 7: Arrays in Science, Machine Learning, and Beyond
+%
+%   Goal check: this stage is explicitly a tour, not a textbook on any one
+%   of these fields. Each chapter answers "how does this domain lean on
+%   array representation and the techniques from Stages 1-6," not "teach
+%   me this entire field." Compressed hardest here, per the chosen trim
+%   level: the same domains as the original draft are still represented,
+%   but each gets one consolidated chapter instead of a multi-chapter
+%   deep dive that competed with the volume's actual subject.
 % ============================================================
 
-\chapter{Tensors and Multidimensional Arrays}
-Mathematical tensors, rank/order, tensor operations, Einstein summation notation.
-
-\chapter{Tensor Computing Frameworks}
-NumPy, TensorFlow, PyTorch, JAX, computational graphs, automatic differentiation.
-
-\chapter{Broadcasting Semantics}
-NumPy broadcasting rules, implicit dimension expansion, shape compatibility.
-
-\chapter{Einstein Summation (einsum)}
-Concise tensor operations, einsum notation, optimization, implementing einsum.
+\chapter{Tensors and Tensor Computing Frameworks}
+Tensors as a generalization of arrays (rank, Einstein summation); NumPy, TensorFlow, PyTorch, and JAX as computational-graph frameworks built on this generalization. (Broadcasting itself was already covered in Stage 4.)
 
 \chapter{Neural Networks as Array Transformations}
-Weight matrices, bias vectors, activation functions, layer operations.
+Weight matrices, bias vectors, and layer operations as array transforms; convolution (direct, im2col, FFT-based), pooling, batch normalization, and dropout as the standard building blocks of a CNN.
 
-\chapter{Convolutional Neural Networks}
-Convolution operation, filters as arrays, feature maps, receptive fields.
+\chapter{Backpropagation and Automatic Differentiation}
+The chain rule as a backward pass over the computational graph; forward- and reverse-mode automatic differentiation; gradient arrays and optimizers (SGD, momentum, Adam) as array updates.
 
-\chapter{Convolution Implementation}
-Direct convolution, im2col transformation, Winograd convolution, FFT-based convolution.
+\chapter{Training at Scale: Batching, Pipelines, and Parallelism}
+Mini-batching and its memory/parallelism tradeoffs; data-loading pipelines and prefetching; model parallelism and data parallelism (gradient synchronization, all-reduce) for distributed training.
 
-\chapter{Pooling Operations}
-Max pooling, average pooling, global pooling, downsampling arrays.
+\chapter{Model Compression: Quantization, Pruning, and Distillation}
+Post-training and quantization-aware training (INT8, mixed precision); structured and unstructured weight pruning; teacher-student knowledge distillation.
 
-\chapter{Batch Normalization}
-Normalizing activations, running statistics, batch dimension, inference mode.
+\chapter{Attention and Transformer Architectures}
+Query-key-value arrays and scaled dot-product attention; the transformer's self-attention and positional encoding; sparse/local attention variants that reduce the quadratic cost.
 
-\chapter{Dropout and Regularization}
-Random array masking, training vs. inference, regularization effects.
+\chapter{Tensor Cores and Hardware Acceleration for ML}
+Mixed-precision matrix multiplication on NVIDIA Tensor Cores and TPU systolic arrays, and how they map onto the array operations from earlier chapters.
 
-\chapter{Backpropagation as Array Operations}
-Chain rule, gradient computation, forward and backward passes, computational graph.
+\chapter{Matrix Multiplication Optimization and BLAS/LAPACK}
+Blocking/tiling and Strassen's algorithm for matrix multiply; the BLAS Level 1/2/3 hierarchy and LAPACK's decomposition routines as the standard interface vendors optimize against.
 
-\chapter{Automatic Differentiation}
-Forward mode, reverse mode (backpropagation), dual numbers, computational graph.
+\chapter{Dense and Sparse Linear Algebra}
+Matrix decompositions (LU, QR, Cholesky, SVD) and numerical stability; sparse matrix-vector multiply and iterative solvers (Jacobi, conjugate gradient, GMRES) with preconditioning.
 
-\chapter{Gradient Arrays and Optimizers}
-SGD, momentum, Adam, RMSprop, gradient clipping, weight updates as array operations.
+\chapter{Scientific Computing: Finite Differences and Finite Elements}
+Discretizing derivatives via stencil operations (explicit vs. implicit, stability); mesh-based finite element assembly into sparse matrix systems.
 
-\chapter{Mini-Batch Training}
-Batching samples, parallel processing, batch size effects, memory considerations.
+\chapter{Computational Fluid Dynamics and N-Body Simulations}
+Grid-based CFD simulation at scale; particle-array force calculations and the Barnes-Hut and fast-multipole approximations for $N$-body problems.
 
-\chapter{Data Loading Pipelines}
-Prefetching, data augmentation, batching strategies, avoiding bottlenecks.
+\chapter{The Fast Fourier Transform and Its Applications}
+The Cooley-Tukey algorithm and bit-reversal permutation; convolution via FFT and 2D/3D FFTs for image and signal processing.
 
-\chapter{Model Parallelism}
-Splitting models across devices, pipeline parallelism, tensor parallelism.
+\chapter{Image Processing Fundamentals and Filtering}
+Images as 2D/3D pixel arrays; convolution-based filtering (blur, edge detection), morphological operations, geometric transformations, and keypoint/feature detection.
 
-\chapter{Data Parallelism in Training}
-Replicating models, gradient synchronization, all-reduce, parameter servers.
+\chapter{Video and Audio Signal Processing}
+Frame arrays and motion estimation for video; waveform arrays, windowing, and the short-time Fourier transform for audio; FIR/IIR digital filters and spectral analysis.
 
-\chapter{Quantization Techniques}
-Post-training quantization, quantization-aware training, INT8, mixed precision.
+\chapter{Time Series Analysis and Forecasting}
+Trend and seasonal decomposition of temporal arrays; moving averages, exponential smoothing, and wavelet transforms as a multiresolution alternative.
 
-\chapter{Neural Network Pruning}
-Weight pruning, structured vs. unstructured, sparse neural networks, compression.
+\chapter{Geospatial and Climate Data Arrays}
+Raster GIS data and spatial indexing; satellite/multispectral imagery; grid-based climate and weather simulation as a large-scale array workload.
 
-\chapter{Knowledge Distillation}
-Teacher-student models, soft targets, model compression, array operations.
+\chapter{Arrays in Bioinformatics: Sequences and Alignment}
+DNA sequences as character arrays and $k$-mers; De Bruijn-graph genome assembly; dynamic-programming sequence alignment (Smith-Waterman, BLAST).
 
-\chapter{Attention Mechanisms}
-Query-key-value arrays, scaled dot-product attention, multi-head attention.
+\chapter{Arrays in Bioinformatics: Expression and Molecular Simulation}
+Gene-expression matrices and differential expression analysis; mass-spectrometry peak arrays for proteomics; particle position/velocity arrays in molecular dynamics.
 
-\chapter{Transformer Architecture}
-Self-attention, positional encoding, encoder-decoder, array shapes in transformers.
-
-\chapter{Sparse Attention Patterns}
-Reducing quadratic complexity, local attention, strided attention, efficient transformers.
-
-\chapter{Tensor Cores and Hardware Acceleration}
-Mixed-precision matrix multiplication, Tensor Core operations (NVIDIA), TPU systolic arrays.
-
-% --- Linear algebra and scientific computing ---
-
-\chapter{Matrix Multiplication Optimization}
-Blocking/tiling, Strassen's algorithm, cache optimization, BLAS libraries.
-
-\chapter{BLAS and LAPACK}
-Basic Linear Algebra Subprograms, Level 1/2/3 BLAS, LAPACK routines, vendor implementations.
-
-\chapter{Dense Linear Algebra}
-Matrix decompositions (LU, QR, Cholesky, SVD), eigenvalue problems, numerical stability.
-
-\chapter{Sparse Linear Algebra}
-Sparse matrix-vector multiply (SpMV), sparse solvers, iterative methods, preconditioning.
-
-\chapter{Iterative Solvers}
-Jacobi, Gauss-Seidel, conjugate gradient, GMRES, array-based iterations.
-
-\chapter{Scientific Computing: Finite Differences}
-Discretizing derivatives, stencil operations, explicit vs. implicit methods, stability.
-
-\chapter{Finite Element Methods}
-Mesh representation, element arrays, assembly, sparse matrix systems.
-
-\chapter{Computational Fluid Dynamics}
-Grid-based simulations, array representations, parallel CFD, large-scale simulations.
-
-\chapter{N-Body Simulations}
-Particle arrays, force calculations, Barnes-Hut algorithm, fast multipole method.
-
-% --- Signal and media processing ---
-
-\chapter{Fast Fourier Transform (FFT)}
-Cooley-Tukey algorithm, radix-2, DIT vs. DIF, bit-reversal permutation.
-
-\chapter{FFT Applications}
-Signal processing, convolution via FFT, polynomial multiplication, audio processing.
-
-\chapter{Multidimensional FFT}
-2D and 3D FFT, separable transforms, image processing, spectral methods.
-
-\chapter{Image Processing Fundamentals}
-Images as 2D/3D arrays, pixels, color channels, spatial operations.
-
-\chapter{Image Filtering}
-Convolution with kernels, Gaussian blur, edge detection (Sobel, Canny), median filter.
-
-\chapter{Morphological Operations}
-Erosion, dilation, opening, closing, structuring elements, binary image processing.
-
-\chapter{Image Transformations}
-Rotation, scaling, translation, affine transformations, interpolation methods.
-
-\chapter{Feature Detection}
-Corner detection (Harris), SIFT, SURF, ORB, keypoint arrays.
-
-\chapter{Video Processing}
-Frame arrays, temporal dimension, motion estimation, optical flow.
-
-\chapter{Audio Signal Processing}
-Waveform arrays, sampling, windowing, STFT (short-time Fourier transform).
-
-\chapter{Digital Filters}
-FIR filters, IIR filters, filter design, convolution implementation, Z-transform.
-
-\chapter{Spectral Analysis}
-Power spectral density, spectrogram, frequency domain analysis, windowing effects.
-
-\chapter{Time Series Analysis}
-Temporal arrays, trend analysis, seasonal decomposition, ARIMA models.
-
-\chapter{Time Series Forecasting}
-Moving averages, exponential smoothing, LSTM networks, array-based forecasting.
-
-\chapter{Wavelet Transforms}
-Continuous vs. discrete wavelets, multiresolution analysis, image compression.
-
-% --- Geospatial and bioinformatics ---
-
-\chapter{Geospatial Data Arrays}
-Raster data, elevation maps, GIS operations, spatial indexing.
-
-\chapter{Remote Sensing}
-Satellite imagery, multispectral arrays, band operations, image classification.
-
-\chapter{Climate and Weather Models}
-Grid-based simulations, atmospheric models, large-scale array computations.
-
-\chapter{Genomic Sequence Arrays}
-DNA sequences as character arrays, k-mers, sequence alignment algorithms.
-
-\chapter{Genome Assembly}
-De Bruijn graphs, overlap-layout-consensus, array-based algorithms, parallelization.
-
-\chapter{Sequence Alignment}
-Smith-Waterman, BLAST, dynamic programming on arrays, scoring matrices.
-
-\chapter{Gene Expression Analysis}
-Expression matrices, differential expression, clustering, heatmaps.
-
-\chapter{Proteomics and Mass Spectrometry}
-Spectral arrays, peak detection, database searching, peptide identification.
-
-\chapter{Molecular Dynamics Simulations}
-Particle position/velocity arrays, force calculations, integration methods.
-
-% --- Quantum computing ---
-
-\chapter{Quantum Computing Fundamentals}
-Qubits, quantum gates, quantum circuits, measurement, superposition.
-
-\chapter{Quantum State Vectors}
-Complex-valued arrays, state representation, probability amplitudes, normalization.
-
-\chapter{Quantum Gates as Matrix Operations}
-Pauli gates, Hadamard, CNOT, unitary matrices, gate decomposition.
-
-\chapter{Quantum Algorithms}
-Grover's search, Shor's factoring, quantum Fourier transform, amplitude amplification.
-
-\chapter{Quantum Circuit Simulation}
-Statevector simulation, density matrices, simulating quantum computers classically.
-
-% --- DNA storage and emerging paradigms ---
+\chapter{Quantum Computing: Arrays of Complex Amplitudes}
+Qubits and quantum gates as unitary-matrix operations on complex-valued state arrays; a brief tour of Grover's and Shor's algorithms and how statevector simulation maps to classical array hardware.
 
 \chapter{DNA Data Storage}
-Encoding binary data in DNA sequences, error correction, reading/writing DNA.
+Encoding binary data into nucleotide sequences with error correction; mapping bits to bases and the addressing challenge of random access.
 
-\chapter{DNA Storage: Array Representation}
-Mapping bits to nucleotides, redundancy, addressing, random access.
+\chapter{Neuromorphic and Analog Computing}
+Spiking neural networks and event-driven computation; memristor crossbar arrays for in-memory analog matrix multiplication; processing-in-memory as a way to avoid the von Neumann data-movement bottleneck.
 
-\chapter{Neuromorphic Computing}
-Spiking neural networks, event-driven computation, neuromorphic chips (Loihi, TrueNorth).
+\chapter{Array Programming Languages: APL, J, and Julia}
+The array-oriented paradigm's implicit parallelism and concise notation (APL/J rank polymorphism); Julia's multiple dispatch and broadcasting as a modern take on the same idea.
 
-\chapter{Spike Arrays}
-Temporal spike patterns, spike-timing-dependent plasticity, encoding information.
+\chapter{NumPy Internals and Performance}
+The \texttt{ndarray} structure, strides, and ufuncs; vectorization, avoiding Python-level loops, and JIT acceleration (numba) for closing the performance gap.
 
-\chapter{Analog Computing Arrays}
-Memristor crossbar arrays, analog matrix multiplication, in-memory computing.
+\chapter{Pandas, Dask, and Distributed DataFrames}
+Columnar DataFrame storage built on array backing; Dask's lazy evaluation and task graphs for parallel and out-of-core array computing.
 
-\chapter{Processing-in-Memory (PIM)}
-Reducing data movement, near-memory computation, avoiding von Neumann bottleneck.
+\chapter{Array Databases and Columnar Storage}
+Native array query languages (SciDB, TileDB) with chunking and distribution; column-store layout and vectorized, SIMD-accelerated query execution.
 
-% --- Array programming languages and ecosystems ---
+\chapter{JIT Compilation for Array Workloads}
+Runtime specialization (Numba, JAX's \texttt{jit}); XLA's fusion and optimization passes; polyhedral loop transformations for automatic parallelization.
 
-\chapter{Array Programming Languages}
-APL, J, K, Q, array-oriented paradigm, implicit parallelism, concise notation.
+\chapter{Memory-Mapped and Out-of-Core Arrays}
+Using \texttt{mmap} and virtual memory to treat disk-backed arrays as in-memory ones; streaming and blocked processing for arrays larger than RAM.
 
-\chapter{APL and J Notation}
-Array operations, rank polymorphism, operators vs. functions, reading APL.
+\chapter{Persistent and Versioned Arrays}
+Structural sharing and path copying for immutable, persistent arrays; copy-on-write versioning for git-like array history with efficient diffs.
 
-\chapter{Julia for Array Computing}
-Multiple dispatch, broadcasting, SIMD, GPU support, scientific computing.
+\chapter{Compressed Array Encodings for Analytics}
+Run-length, dictionary, delta, and frame-of-reference encoding as used in columnar analytical databases. (The general compression theory behind these techniques is covered in Volume I, Stage 17; this chapter focuses on the array/database-specific application.)
 
-\chapter{NumPy Internals}
-ndarray structure, strides, memory layout, vectorized operations, ufuncs.
+\chapter{Succinct Data Structures and Wavelet Trees}
+Representing data in space close to the information-theoretic minimum while still supporting rank/select queries; the wavelet tree as a succinct structure for range queries and text indexing.
 
-\chapter{NumPy Performance Optimization}
-Vectorization, avoiding loops, broadcasting, numba JIT compilation.
-
-\chapter{Pandas and DataFrames}
-Columnar data, array backing, operations on arrays, time series support.
-
-\chapter{Dask for Parallel Arrays}
-Lazy evaluation, parallel and out-of-core arrays, distributed computing, task graphs.
-
-\chapter{Array Databases}
-SciDB, RasdaMan, TileDB, array query languages, chunking, distribution.
-
-\chapter{Column-Store Databases}
-Columnar storage, vectorized query execution, compression, analytical workloads.
-
-\chapter{Vectorized Query Processing}
-Batch processing, avoiding row-at-a-time, SIMD in databases, MonetDB.
-
-\chapter{Just-In-Time Compilation for Arrays}
-Numba, JAX jit, PyPy, runtime optimization, trace compilation.
-
-\chapter{XLA Compiler}
-Accelerated linear algebra, TensorFlow/JAX backend, fusion, optimization passes.
-
-\chapter{Polyhedral Optimization}
-Loop transformations, dependence analysis, automatic parallelization, tiling.
-
-% --- Out-of-core, persistent, and compressed array representations ---
-
-\chapter{Memory-Mapped Arrays}
-mmap, virtual memory tricks, out-of-core computation, file-backed arrays.
-
-\chapter{Out-of-Core Array Processing}
-Working with arrays larger than RAM, streaming algorithms, blocked processing.
-
-\chapter{Persistent Data Structures}
-Immutable arrays, structural sharing, path copying, functional programming.
-
-\chapter{Versioned Arrays}
-Copy-on-write, tracking versions, git-like array versioning, efficient diffs.
-
-\chapter{Compressed Arrays: Run-Length Encoding}
-Consecutive duplicates, compression ratio, when effective, sparse data.
-
-\chapter{Compressed Arrays: Dictionary Encoding}
-Categorical data, integer codes, lookup table, columnar databases.
-
-\chapter{Compressed Arrays: Delta Encoding}
-Storing differences, time series, sorted data, integer compression.
-
-\chapter{Compressed Arrays: Frame-of-Reference}
-Base value plus small deltas, bit packing, database compression.
-
-\chapter{Succinct Data Structures}
-Near-optimal space, rank and select queries, Jacobson's rank structure.
-
-\chapter{Wavelet Trees}
-Multiary wavelet tree, range queries, succinct representation, text indexing.
-
-\chapter{Cache-Oblivious Algorithms Revisited}
-Recursive algorithms, automatically optimal, no tuning, ideal cache model.
-
-\chapter{Van Emde Boas Layout}
-Recursive array layout, cache-oblivious B-trees, implicit data structures.
-
-\chapter{External Memory Algorithms}
-I/O model, sorting, searching, graph algorithms, minimizing block transfers.
-
-\chapter{Streaming Algorithms}
-Sublinear space, one pass, sampling, sketching, space-time tradeoffs.
+\chapter{The Van Emde Boas Layout and External-Memory Algorithms}
+A recursive, cache-oblivious array layout for implicit search trees; the I/O model and algorithms (sorting, searching, graph algorithms) designed to minimize block transfers.
 
 \chapter{Approximate Computing}
-Trading accuracy for performance/energy, probabilistic guarantees, acceptable error bounds.
+Deliberately trading accuracy for performance or energy under probabilistic guarantees and acceptable error bounds.
 
-\chapter{Probabilistic Data Structures Summary}
-Bloom filters, Count-Min sketch, HyperLogLog, comparison of techniques.
+\chapter{Privacy-Preserving Array Computation}
+Differential privacy (the Laplace and Gaussian mechanisms); homomorphic encryption and secure multi-party computation for computing on arrays without revealing them.
 
-% --- Privacy, security, and distributed-ledger array structures ---
+\chapter{Blockchain, Merkle Trees, and Distributed Ledgers}
+Hash trees over arrays for efficient integrity proofs; append-only ledger arrays, consensus, and Byzantine fault tolerance.
 
-\chapter{Privacy-Preserving Array Operations}
-Homomorphic encryption, secure multi-party computation, differential privacy.
+\chapter{Edge Computing, Federated Learning, and TinyML}
+Local array processing under resource constraints; federated training with gradient aggregation instead of centralized data; quantized neural networks running on microcontrollers.
 
-\chapter{Differential Privacy}
-Adding noise, privacy budget, Laplace mechanism, Gaussian mechanism, query responses.
+\chapter{Hardware Accelerators: FPGAs and Beyond}
+FPGAs, ASICs, and other domain-specific architectures for array workloads; reconfigurable logic, custom datapaths, and high-level synthesis.
 
-\chapter{Homomorphic Encryption on Arrays}
-Computing on encrypted data, fully homomorphic encryption (FHE), performance challenges.
+\chapter{Alternative Computing Paradigms: Optical, Reversible, and Biological}
+Photonic matrix multiplication at the speed of light; reversible logic and the Landauer limit on energy efficiency; DNA computing and cellular automata as array-like biological computation.
 
-\chapter{Secure Multi-Party Computation}
-Secret sharing, garbled circuits, oblivious transfer, distributed array processing.
+\chapter{Looking Ahead: Future Memory and Post-Moore Computing}
+Persistent and storage-class memory; 3D stacking, chiplets, and domain-specific architectures as the industry's response to the end of simple transistor scaling (Volume I, Stage 4); open problems in array computing.
 
-\chapter{Blockchain and Merkle Trees}
-Hash trees over arrays, integrity proofs, efficient verification, cryptocurrency applications.
-
-\chapter{Distributed Ledger Arrays}
-Append-only arrays, consensus, Byzantine fault tolerance, state replication.
-
-% --- Edge, embedded, and emerging hardware paradigms ---
-
-\chapter{Edge Computing and IoT}
-Resource-constrained devices, local array processing, edge inference, federated learning.
-
-\chapter{Federated Learning}
-Distributed training, privacy preservation, aggregating gradients, edge devices.
-
-\chapter{TinyML and Embedded Arrays}
-Running neural networks on microcontrollers, quantization, model compression, real-time inference.
-
-\chapter{Hardware Accelerators for Arrays}
-FPGAs, ASICs, domain-specific architectures, spatial architectures.
-
-\chapter{FPGA Array Processing}
-Reconfigurable logic, custom datapaths, pipelining, HLS (high-level synthesis).
-
-\chapter{Optical Computing}
-Photonic computing, optical matrix multiplication, speed-of-light computation.
-
-\chapter{Reversible Computing}
-Landauer limit, reversible logic, energy efficiency, adiabatic computing.
-
-\chapter{Biological Computing}
-DNA computing, cellular automata, biological circuits, array-like structures.
-
-\chapter{Future Memory Technologies}
-Persistent memory (3D XPoint), NVRAM, storage-class memory, implications for arrays.
-
-\chapter{Post-Moore's Law Computing}
-3D stacking, chiplets, advanced packaging, specialized architectures, domain-specific computing.
-
-\chapter{Array Computing: Future Directions}
-Research frontiers, open problems, emerging paradigms, the next 50 years.
