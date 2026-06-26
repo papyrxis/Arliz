@@ -1,2 +1,30 @@
-\usepackage[backend=biber,style=authoryear]{biblatex}
+\usepackage[
+  backend=biber,
+  citestyle=verbose-note,
+  bibstyle=authortitle,
+  autocite=footnote,
+  ibidtracker=constrict,
+  pagetracker=true,
+  citetracker=true,
+  maxbibnames=99,
+  maxcitenames=3,
+  dashed=false,
+  sorting=nyt,
+  url=true,
+  doi=false,
+  isbn=false,
+  backref=true
+]{biblatex}
 \addbibresource{references/arliz.bib}
+
+\renewcommand{\footnotesize}{\small}
+\renewcommand{\footnoterule}{%
+  \kern -3pt
+  \hrule width 0.4\textwidth height 0.4pt
+  \kern 3pt
+}
+\setlength{\footnotesep}{0.8\baselineskip}
+\AtEveryBibitem{%
+  \ifentrytype{book}{\clearfield{url}}{}%
+  \ifentrytype{article}{\clearfield{url}}{}%
+}
