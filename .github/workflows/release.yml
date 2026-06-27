@@ -222,18 +222,10 @@ jobs:
           else
             echo "flag=false" >> "$GITHUB_OUTPUT"
           fi
-      - name: Delete existing release for this tag
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          TAG="${GITHUB_REF_NAME}"
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "Existing release found for $TAG; deleting it..."
-            gh release delete "$TAG" --yes
-          fi
-      - name: Create GitHub Release
+      - name: Create or update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.ref_name }}
           name: "Arliz ${{ github.ref_name }}"
           body_path: release_body.md
           files: release/*

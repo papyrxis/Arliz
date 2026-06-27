@@ -127,7 +127,7 @@ jobs:
         shell: bash
         run: |
           SRC="build/${{ steps.vol_meta.outputs.basename }}.pdf"
-          DEST="build/${{ steps.vol_meta.outputs.basename }}__${{ needs.metadata.outputs.pre_tag }}.pdf"
+          DEST="build/${{ steps.vol_meta.outputs.basename }}__latest-pre-release.pdf"
           cp "$SRC" "$DEST"
           echo "Pre-release PDF: $DEST"
 
@@ -136,7 +136,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.volume }}-pre-release-pdf
-          path: build/${{ steps.vol_meta.outputs.basename }}__${{ needs.metadata.outputs.pre_tag }}.pdf
+          path: build/${{ steps.vol_meta.outputs.basename }}__latest-pre-release.pdf
           if-no-files-found: warn
           retention-days: 14
 
@@ -176,18 +176,6 @@ jobs:
           PDF_COUNT="$(find release/ -name '*.pdf' | wc -l | tr -d ' ')"
           echo "pdf_count=${PDF_COUNT}" >> "$GITHUB_OUTPUT"
 
-      - name: Remove existing latest-pre-release (if any)
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
-        run: |
-          if gh release view latest-pre-release >/dev/null 2>&1; then
-            echo "Deleting existing latest-pre-release release..."
-            gh release delete latest-pre-release --yes --cleanup-tag || true
-          else
-            echo "No existing latest-pre-release found; skipping."
-          fi
-
       - name: Build release notes
         id: notes
         shell: bash
@@ -220,8 +208,11 @@ jobs:
             echo ""
             echo "Each file follows the naming scheme:"
             echo "\`\`\`"
-            echo "<YEAR>_ARLIZ_<Volume_Title>_Volume_<N>__${PRE_TAG}.pdf"
+            echo "<YEAR>_ARLIZ_<Volume_Title>_Volume_<N>__latest-pre-release.pdf"
             echo "\`\`\`"
+            echo ""
+            echo "This filename is stable across builds — the download URL for each volume"
+            echo "does not change, so you can link to it directly."
             echo ""
             echo "### Disclaimer"
             echo ""
