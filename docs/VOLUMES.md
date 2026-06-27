@@ -6,9 +6,10 @@ Arliz is one continuous work split into three volumes. The path runs from a volt
 
 **Source:** `volumes/vol1/vol1.tex` and chapter files under `volumes/vol1/`  
 **Config:** `configs/volumes/vol1.conf`  
-**Output:** `<YEAR>_ARLIZ_Zero_to_Bit_Volume_1.pdf`
+**Output:** `<YEAR>_ARLIZ_Zero_to_Bit_Volume_1.pdf`  
+**Size:** 78 chapters across 17 stages
 
-The starting question: how does a computer encode information at all, starting from a voltage? This volume covers everything from binary switching and boolean algebra up through integers, floating-point, characters, byte ordering, bitwise operations, memory alignment, pointers, error detection, media encodings, and serialization.
+The starting question: how does a computer encode information at all? This volume starts one level below the transistor, with the physics of charge, current, voltage, and basic circuits, builds up through semiconductors, doping, and CMOS switching to explain *why* a transistor can hold a bit, then treats binary as pure mathematics (Boolean algebra) before moving on to number systems, integers, floating-point, characters, byte ordering, bitwise operations, memory alignment, pointers, error detection, media encodings, and serialization.
 
 By the end of Volume I, the reader has every representational tool needed to understand Volume II (what hardware does with these encodings) and Volume III (how arrays organize them).
 
@@ -17,28 +18,26 @@ By the end of Volume I, the reader has every representational tool needed to und
 
 ## Volume II — Silicon Horizon
 
-**Source:** `volumes/vol2/vol2.tex` and chapter files under `volumes/vol2/`  
+**Source:** `volumes/vol2/vol02.tex` and chapter files under `volumes/vol2/`  
 **Config:** `configs/volumes/vol2.conf`  
-**Output:** `<YEAR>_ARLIZ_Silicon_Horizon_Volume_2.pdf`
+**Output:** `<YEAR>_ARLIZ_Silicon_Horizon_Volume_2.pdf`  
+**Size:** 129 chapters across 12 stages
 
-The hardware that turns encoded information into computation. This volume picks up exactly where Volume I's Boolean algebra leaves off -- composed logic gates -- and covers arithmetic and sequential circuits, SRAM and DRAM, memory hierarchies, cache coherence, ISAs (x86, ARM, RISC-V), pipelining, out-of-order execution, SIMD and vector units, GPU architecture, and interconnects. It deliberately does **not** re-derive semiconductor physics, MOSFETs, or CMOS fundamentals -- that ground belongs to Volume I (Stage 4) and is not repeated here.
+The hardware that turns encoded information into computation. This volume picks up exactly where Volume I's Boolean algebra leaves off -- composed logic gates -- and covers arithmetic and sequential circuits, SRAM and DRAM, memory hierarchies, cache coherence, ISAs (x86, ARM, RISC-V), pipelining, out-of-order execution, virtual memory, I/O and interrupts, SIMD and vector units, GPU architecture, and power/thermal/security concerns.
 
 Volume II explains *why code runs the way it does* at the hardware level. That understanding feeds directly into Volume III's performance discussion.
 
 **Assumes:** Volume I  
 **Required by:** Volume III
 
-Note: this volume does not cover consumer hardware repair, diagnostics, or physical teardowns. The focus is on understanding execution, not on servicing hardware.
-
 ## Volume III — Array Odyssey
 
 **Source:** `volumes/vol3/vol3.tex` and chapter files under `volumes/vol3/`  
 **Config:** `configs/volumes/vol3.conf`  
-**Output:** `<YEAR>_ARLIZ_Array_Odyssey_Volume_3.pdf`
+**Output:** `<YEAR>_ARLIZ_Array_Odyssey_Volume_3.pdf`  
+**Size:** 184 chapters across 7 stages
 
-Arrays themselves. This volume starts with the mathematical definition of an array and works through memory layout, every major array variant (dynamic, multidimensional, sparse, bit arrays, circular buffers), searching and sorting, in-place manipulation, the data structures and algorithms built on arrays (stacks, queues, heaps, hash tables, segment trees, etc.), parallel and distributed array processing, and a representative -- not exhaustive -- tour of applications in machine learning, linear algebra, signal processing, and beyond.
-
-This volume was restructured down from an earlier ~464-chapter outline to ~184 chapters. The cut removed exact duplicates of other chapters in this volume, collapsed minor algorithm variants into single comparative chapters (e.g. five specialized search algorithms into one), and compressed multi-chapter application deep dives (quantum computing, bioinformatics, neuromorphic hardware, ...) into single survey chapters each. See `docs/CHANGELOG.md` for the full rationale before re-expanding any of these -- the compression was deliberate, not an oversight.
+Arrays themselves. This volume starts with the mathematical definition of an array and works through memory layout, every major array variant (dynamic, multidimensional, sparse, bit arrays, circular buffers), searching and sorting, in-place manipulation, vectorized operations, the data structures and algorithms built on arrays (stacks, queues, heaps, hash tables, segment trees, etc.), parallel and distributed array processing, and a representative -- not exhaustive -- tour of applications in machine learning, linear algebra, signal processing, and beyond.
 
 **Assumes:** Volume I and Volume II
 
