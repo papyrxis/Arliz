@@ -22,29 +22,16 @@
 \end{volumeintro}
 
 % ──────────────────────────────────────────────────────────────────────
-% STAGE 1 — What Data Is and What It Means to Represent It
-%
-%   Before a single bit appears, we need to understand what data is,
-%   and what it means for one physical thing to stand for another.
-%   These two chapters are the philosophical foundation everything else
-%   rests on.
+% STAGE 1 — What Data Is, and Why It Must Become Physical
 % ──────────────────────────────────────────────────────────────────────
-
+ 
 \input{volumes/vol1/chapter01/chapter01}
 \input{volumes/vol1/chapter02/chapter02}
+\chapter{From Abstract Representation to Physical Signal}
+\label{ch:representation-to-physical}
 
 % ──────────────────────────────────────────────────────────────────────
 % STAGE 2 — Electricity: The Physical Foundation
-%
-%   Before voltage can mean anything, we need electricity itself.
-%   This stage builds physical intuition from first principles: charge,
-%   current, voltage, resistance, and the basic laws governing how
-%   electricity behaves in circuits. Nothing digital yet — just the
-%   physical world that digital logic sits on top of.
-%
-%   Volume II covers electrical engineering in much greater depth;
-%   here the goal is the minimum needed to understand why a transistor
-%   switching between two voltage levels can represent a bit.
 % ──────────────────────────────────────────────────────────────────────
 
 \chapter{Electric Charge and Matter}
@@ -136,14 +123,6 @@ accumulates and cannot be separated from the signal.
 
 % ──────────────────────────────────────────────────────────────────────
 % STAGE 3 — Electronic Components and Circuit Boards
-%
-%   Electricity happens on hardware. This stage introduces the discrete
-%   components — diodes, transistors, passive elements — and the boards
-%   and packages that assemble them into systems. The goal is vocabulary
-%   and physical intuition, not circuit design.
-%
-%   "Component arrays on PCBs" connects the physical world to the
-%   conceptual arrays that are the subject of this entire work.
 % ──────────────────────────────────────────────────────────────────────
 
 \chapter{Electronic Components: A Survey}
@@ -247,15 +226,6 @@ concerns become severe above roughly 100\,MHz.
 
 % ──────────────────────────────────────────────────────────────────────
 % STAGE 4 — Semiconductors and Transistors
-%
-%   The transistor is the fundamental building block of all digital logic.
-%   This stage covers semiconductor physics at the depth needed to
-%   understand WHY a MOSFET can act as a binary switch — and therefore
-%   why a voltage can represent a bit.
-%
-%   Volume II covers semiconductor physics in full (band theory,
-%   fabrication, CMOS gate families, timing); here we build the
-%   intuition that makes Volume II comprehensible.
 % ──────────────────────────────────────────────────────────────────────
 
 \chapter{Semiconductors: Between Conductor and Insulator}
@@ -370,15 +340,6 @@ doubling form Moore observed.
 
 % ──────────────────────────────────────────────────────────────────────
 % STAGE 5 — From Switch to Bit: The Digital Abstraction
-%
-%   All the physical machinery of the previous three stages exists for
-%   one purpose: to reliably distinguish two states. This stage makes
-%   that abstraction explicit — how voltage ranges become logic levels,
-%   why binary was chosen over alternatives, and what it means for a
-%   transistor to store one bit of information.
-%
-%   This is the pivot point of Volume I. Everything before it is
-%   physical. Everything after it is mathematical.
 % ──────────────────────────────────────────────────────────────────────
 
 \chapter{Analog Versus Digital: The Fundamental Divide}
@@ -471,19 +432,6 @@ the rest of this volume exist as patterns of such stored bits.
 
 % ──────────────────────────────────────────────────────────────────────
 % STAGE 6 — Binary Representation and Boolean Algebra
-%
-%   With the physical foundation built, we can now treat binary as a
-%   mathematical system. This stage covers Boolean algebra — the formal
-%   mathematics of two-valued logic — purely as mathematics, independent
-%   of any particular circuit technology.
-%
-%   Deliberate scope boundary: this stage stops at the algebra. Realising
-%   Boolean operations as CMOS gates (fan-in/fan-out, propagation delay,
-%   static vs. dynamic power, combinational vs. sequential circuits) is
-%   Volume II's job, where it is built up properly alongside arithmetic
-%   circuits and sequential logic. An earlier draft of this volume
-%   duplicated that material here; it has been removed to keep the two
-%   volumes from re-deriving the same ground.
 % ──────────────────────────────────────────────────────────────────────
 
 \chapter{Binary Representation and Boolean Algebra}
@@ -502,10 +450,6 @@ information.
 
 % ──────────────────────────────────────────────────────────────────────
 % STAGE 7 — Number Systems and Bases
-%
-%   Bits are grouped into numbers. This stage covers positional notation
-%   and the bases used throughout systems programming: binary, octal,
-%   decimal, and hexadecimal.
 % ──────────────────────────────────────────────────────────────────────
 
 \chapter{Number Systems and Bases}
@@ -525,9 +469,6 @@ purposes in low-level programming.
 
 % ──────────────────────────────────────────────────────────────────────
 % STAGE 8 — Integer Representation
-%
-%   Numbers are the most fundamental values arrays store. Before
-%   floating point, before characters, before pointers — integers.
 % ──────────────────────────────────────────────────────────────────────
 
 \chapter{Integer Representation: Unsigned}
@@ -563,8 +504,6 @@ and rounding.
 
 % ──────────────────────────────────────────────────────────────────────
 % STAGE 9 — Floating-Point Representation
-%
-%   Real numbers, approximation, and the cost of that approximation.
 % ──────────────────────────────────────────────────────────────────────
 
 \chapter{Floating-Point Representation: IEEE 754}
@@ -615,10 +554,6 @@ for them.
 
 % ──────────────────────────────────────────────────────────────────────
 % STAGE 10 — Character and Text Encoding
-%
-%   Strings are arrays of characters. Before Volume III discusses string
-%   algorithms, we need to understand what a "character" actually is at
-%   the byte level.
 % ──────────────────────────────────────────────────────────────────────
 
 \chapter{Character Encoding: ASCII and Extensions}
@@ -657,9 +592,6 @@ non-trivial in Unicode.
 
 % ──────────────────────────────────────────────────────────────────────
 % STAGE 11 — Byte Ordering and Cross-Platform Data Exchange
-%
-%   Every binary file format, network protocol, and serialised array
-%   blob depends on a defined byte order. A short but critical stage.
 % ──────────────────────────────────────────────────────────────────────
 
 \chapter{Endianness: Byte Ordering}
@@ -681,9 +613,6 @@ systems.
 
 % ──────────────────────────────────────────────────────────────────────
 % STAGE 12 — Bitwise Operations and Bit Manipulation
-%
-%   The toolbox for working at the level of individual bits. Bit arrays
-%   (Volume III) and many low-level techniques depend on this material.
 % ──────────────────────────────────────────────────────────────────────
 
 \chapter{Bitwise Operations Fundamentals}
@@ -724,11 +653,6 @@ techniques; why these matter for high-performance array processing.
 
 % ──────────────────────────────────────────────────────────────────────
 % STAGE 13 — Memory Alignment
-%
-%   Alignment determines how array elements sit in memory and how much
-%   padding the compiler inserts between struct fields. Volume II
-%   discusses cache-line alignment in hardware; Volume III requires
-%   aligned arrays for vectorised operations.
 % ──────────────────────────────────────────────────────────────────────
 
 \chapter{Data Alignment Fundamentals}
@@ -757,11 +681,6 @@ and an unaligned load; practical patterns for high-throughput array code.
 
 % ──────────────────────────────────────────────────────────────────────
 % STAGE 14 — Pointers
-%
-%   A pointer is simply an aligned unsigned integer holding a memory
-%   address. Having covered integers (Stage 8) and alignment (Stage 13),
-%   the reader now has everything needed to understand pointers as a
-%   first-class encoding, rather than as magic.
 % ──────────────────────────────────────────────────────────────────────
 
 \chapter{Pointer Representation}
@@ -791,10 +710,6 @@ slice pointers in Go as examples of richer pointer encodings.
 
 % ──────────────────────────────────────────────────────────────────────
 % STAGE 15 — Error Detection and Correction
-%
-%   Data stored in arrays and transmitted across networks can be
-%   corrupted. This stage covers the encoding techniques that detect and
-%   correct such errors.
 % ──────────────────────────────────────────────────────────────────────
 
 \chapter{Error Detection Codes}
@@ -824,9 +739,6 @@ storage and network stacks.
 
 % ──────────────────────────────────────────────────────────────────────
 % STAGE 16 — Media Encodings
-%
-%   The synthesis stage: colour, images, video, and audio are all arrays
-%   of encoded values. Every concept from Stages 8-15 appears here.
 % ──────────────────────────────────────────────────────────────────────
 
 \chapter{Color Representation Models}
@@ -881,10 +793,6 @@ transforms; a preview of the FFT algorithms treated fully in Volume~III.
 
 % ──────────────────────────────────────────────────────────────────────
 % STAGE 17 — Serialisation and Compression
-%
-%   The closing stage: how in-memory array data is written to disk or
-%   transmitted across a network, and how it is compacted to reduce
-%   storage and bandwidth costs. The natural handoff to Volume II.
 % ──────────────────────────────────────────────────────────────────────
 
 \chapter{Data Serialisation Fundamentals}

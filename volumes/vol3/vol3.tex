@@ -25,11 +25,6 @@
 
 % ============================================================
 % STAGE 1: Array Theory, Memory Layout, and Lifecycle
-%
-%   Goal check: after this stage, the reader can explain what an array
-%   formally is, how it sits in memory, and how its lifecycle (alloc,
-%   init, copy, grow, shrink) is managed -- the vocabulary every later
-%   stage assumes.
 % ============================================================
 
 \chapter{Mathematical Foundations of Arrays}
@@ -103,11 +98,6 @@ Wrap-around indexing, modulo arithmetic; tracking fill level, full vs. empty dis
 
 % ============================================================
 % STAGE 2: Searching and Sorting
-%
-%   Goal check: after this stage, the reader can choose and implement the
-%   right search or sort for a given constraint (memory, stability,
-%   data distribution, I/O-boundedness) rather than defaulting to
-%   whatever they memorized.
 % ============================================================
 
 \chapter{Linear and Binary Search}
@@ -157,10 +147,6 @@ Comparator networks, Batcher's sort, bitonic sort, and why fixed, data-independe
 
 % ============================================================
 % STAGE 3: In-Place Manipulation, Two Pointers, and Prefix Sums
-%
-%   Goal check: after this stage, the reader recognizes a wide class of
-%   interview-style and real-world array problems as instances of a small
-%   number of reusable patterns, instead of memorizing each one separately.
 % ============================================================
 
 \chapter{Array Rotation: Algorithms and Tradeoffs}
@@ -207,11 +193,6 @@ Alternating positive/negative, even/odd segregation, and other custom-order rear
 
 % ============================================================
 % STAGE 4: Alignment, Views, and Vectorized Operations
-%
-%   Goal check: after this stage, the reader understands the layer
-%   between "an array sits in memory" (Stage 1) and "a SIMD/GPU unit
-%   processes it" (Volume II, Stage 6) -- the views, alignment rules, and
-%   bulk operations that make vectorized array code possible.
 % ============================================================
 
 \chapter{Memory Alignment for Cache and SIMD}
@@ -261,13 +242,6 @@ Measuring access patterns and using hardware counters; arithmetic intensity and 
 
 % ============================================================
 % STAGE 5: Foundational Structures Built on Arrays
-%
-%   Goal check: this is the core of the volume. After this stage, the
-%   reader can implement and reason about the classic data structures and
-%   algorithms (stacks, queues, heaps, hash tables, strings, tries,
-%   graphs, segment/Fenwick trees, dynamic programming, greedy,
-%   backtracking) that are themselves built on top of arrays. This stage
-%   keeps the most chapters because it IS the goal, not a side path to it.
 % ============================================================
 
 \chapter{Stacks: Implementation and Applications}
@@ -419,12 +393,6 @@ Achieving optimal cache usage without knowing cache parameters (the ideal-cache 
 
 % ============================================================
 % STAGE 6: Parallel and Distributed Array Processing
-%
-%   Goal check: after this stage, the reader can take an array algorithm
-%   from Stages 1-5 and scale it correctly across cores, GPUs, and
-%   machines -- and knows the concurrency-correctness pitfalls along the
-%   way. The real-time and energy clusters are kept brief: relevant to
-%   arrays, but not the volume's center of gravity.
 % ============================================================
 
 \chapter{Concurrency, Parallelism, and Performance Metrics}
@@ -519,14 +487,6 @@ Strong vs. weak scaling plots and identifying bottlenecks; the communication-to-
 
 % ============================================================
 % STAGE 7: Arrays in Science, Machine Learning, and Beyond
-%
-%   Goal check: this stage is explicitly a tour, not a textbook on any one
-%   of these fields. Each chapter answers "how does this domain lean on
-%   array representation and the techniques from Stages 1-6," not "teach
-%   me this entire field." Compressed hardest here, per the chosen trim
-%   level: the same domains as the original draft are still represented,
-%   but each gets one consolidated chapter instead of a multi-chapter
-%   deep dive that competed with the volume's actual subject.
 % ============================================================
 
 \chapter{Tensors and Tensor Computing Frameworks}
