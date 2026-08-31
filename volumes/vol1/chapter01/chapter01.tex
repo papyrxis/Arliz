@@ -1,330 +1,92 @@
 \chapter{The Nature of Data}
 \label{ch:nature-of-data}
 
-\begin{chapterintro}
-Before a single line of code runs, before a CPU executes a single instruction,
-before a bit flips in memory, there is data. This chapter asks a question
-most programmers skip: what is data, exactly? Not how to store it, not how
-to query it, but what it fundamentally is. The answer matters more than it
-first appears to. The way you think about data shapes every decision you
-make when working with it.
-\end{chapterintro}
-{\small \linespread{1.5}\selectfont
-We no longer suffer from the weight of history, the way Marx once put it.
-Instead, we suffer from the burden of an ever-growing accumulation of
-information. Given the sheer volume of data that
-saturates contemporary society, an answer to almost any question is only a
-few nanoseconds away, regardless of where that question is asked.
-Because answers are so easily available, it is
-understandable that many members of what is loosely called the
-\term{millennial generation} have begun to question the value of a research
-paper, or the point of an assignment, at all.\\
-That question deserves a real answer, and a real answer has to start
-further back than it first appears to. Before any discussion of types of
-data can be useful, a more basic confusion needs clearing up: everyday
-usage stretches the word ``data'' loosely enough that it ends up meaning
-several different things depending on who is using it. This chapter is, in
-large part, an attempt to slow down long enough to say what the word
-actually commits us to, not a survey of data types, and not yet a theory of
-how data are stored, only an answer to what counts as data at all.\\
-The title of this chapter, ``the nature of data,'' is fairly broad. What we
-are actually discussing here are the fundamentally different ways of
-approaching data, and of working with it once you have it. The discussion
-that follows may read as somewhat academic, and dry in places, but the view
-it builds is the one the rest of this book keeps coming back to, all the
-way down to the last byte and the last array.}
-\newpage
+This chapter raises a question that most people skip past and pretend they already know the answer to: what is data?\\
+Usually this question is answered very briefly, and the discussion quickly moves on to more "practical" territory. Things like:
+how data is stored, how it is searched, how it is compressed, and other practical matters. The answer matters more than it first appears to. The way you think about data shapes every decision you make when working with it.
 
-% ============================================================
-\section{What Is Data?}
-\label{sec:what-is-data}
-% ============================================================
+\section{A Question Everyone Thinks They Already Know}
+\label{sec:question-everyone-thinks-they-know}
 
-\begin{sectionintro}
-The word \textit{data} appears everywhere in computing, in textbooks, job
-titles, product names, yet it is rarely defined with any precision. Before
-we can talk about how computers represent and process data, we need a
-working definition that is precise enough to be useful.
-\end{sectionintro}
-A simple example is the best place to start. Looking at the trunk of a tree
-reveals facts about it without anyone first explaining what a tree trunk
-is. The number of growth rings gives a reasonable estimate of the tree's
-age, since each ring corresponds to one year of growth, laid down during
-the annual cycle of dormancy and activity. The texture and color of the
-bark suggest its species; warped grain, discoloration, or insect tunnels
-point toward its health. Look more closely still, and the wood itself, its
-density, the direction of its grain, its moisture content, accounts for how
-much that piece of wood weighs and how much space it occupies. None of
-these facts were created the moment they were noticed; they existed in the
-tree itself, available to anyone who knew how to read them. That
-correspondence, between a physical state and a fact about the world that
-can be read off from it, is the simplest possible illustration of what
-this chapter means by \term{data}.\\
-The word \term{data} comes from the Latin \textit{datum}, the past
-participle of \textit{dare}, ``to give.'' A datum is, quite literally, a
-``given'': a piece of information handed over, taken as a starting point
-for reasoning rather than derived from something else. In everyday speech,
-the plural form ``data'' is often treated as a singular collective noun
-(``the data is clear''), but in technical writing the plural is preferred:
-data \textit{are} observations, measurements, or recorded facts, not a
-single undivided thing. For the sake of consistency, this book treats
-\textit{data} as a plural throughout.
-\vfill
-\begin{historical}
-The Latin origin is not merely a piece of trivia. It carries real weight
-that survives into technical usage: a datum is something received from
-the world, not invented by the observer who records it.
-\end{historical}
-\newpage
-{\small \linespread{1.1}\selectfont
-Different sources define the term in different, only partially overlapping,
-ways. Rob, Morris, and Coronel describe data as \term{raw facts}: facts
-that have not yet been processed for their meaning to become apparent
-\autocite{rob2013}. Ratzan defines the companion term instead:
-\term{information} is a coherent collection of data, organized in a
-particular way and meaningful as a result \autocite{ratzan2004}. The two
-definitions agree on more than they disagree about: in both, data precede
-meaning rather than supply it directly.\\
-General dictionaries describe much the same shape from a different angle.
-Webster's \textit{New International Dictionary} treats data as something
-given or accepted: facts or principles granted, the basis from which an
-inference or a line of reasoning proceeds, or the material out of which an
-idealized system of any kind is built \autocite{websters1934}. The
-\textit{Oxford English Dictionary} is more compact: data are facts or
-things known, used as the basis for inference or calculation
-\autocite{oed2023}. Both dictionaries note, in passing, the detail
-mentioned above: ``data'' is grammatically the plural of ``datum,'' yet it
-is used so often as a singular, collective noun that treating it as
-singular is equally acceptable in ordinary writing.
+If we look back at human history, we see that in the last 20--30 years, unlike most of the rest of human history, humanity has gained access to nearly instant data, and the answer to almost any question is only a few nanoseconds away (and with the beginning of the AI era, we could say this speed has only increased).\\
+Or, in Marx's words:\\
+In the past, tradition, or the weight of past generations, pressed on the minds of the living like a mountain (THE EIGHTEENTH BRUMAIRE --- OF --- LOUIS BONAPARTE.). But over these past 20--30 years, this unprecedented access has brought a paradox along with it. Many members of what is called the millennial generation and Generation Z have begun questioning values, goals, beliefs, and so on. Because if the answer is always available, what is the need to suffer to reach it?\\
+And well, having every answer available before the question is even asked creates a strange and unexpected paradox, one that tends to get framed as "there's too much data, and that's bad", but the real issue is that \textbf{having access to data and possessing wisdom are two entirely different things.} For example, I could find thousands of credible sources for a random person without knowing anything about French history myself, without knowing what that history is even about or why it unfolded the way it did. In what follows, we can categorize this large gap between understanding and merely possessing well-dressed, decorated texts.
 
-\begin{definition}[Data, UNESCO]
-Facts, concepts, or instructions expressed in a standardized way, suitable
-for being communicated, interpreted, or processed, whether by people or by
-automated systems \autocite{unesco2008}.
-\end{definition}
-Taken together, these definitions point at something none of them states
-outright. Data have no shape that belongs to them independently of some
-particular point of view. A fact only counts as data if it sits within a
-framework, a framework of meaning, of purpose, or of use, relative to
-which it is relevant, organized, coherent, and useful. A growth ring means
-nothing to a system with no concept of seasons; a voltage means nothing to
-a circuit built to ignore it. Data presuppose some prior agreement, however
-informal, about what is worth attending to in the first place.
-\newpage
-\begin{example}[The Same Bytes, Different Meanings]
-The five bytes \texttt{0x41 0x52 0x4C 0x49 0x5A} can be interpreted in several
-different ways:
+\subsection{Back to the Main Question}
+\label{sub:return-to-main-question}
 
-\begin{itemize}
-    \item the ASCII string \texttt{"ARLIZ"}
-    \item five separate unsigned 8-bit integers:
-          65, 82, 76, 73, and 90
-    \item the first five bytes of some binary file format
-    \item a sequence of bytes transmitted over a network connection
-\end{itemize}
+So let's return to the main question: what is data? Data can be considered to be almost anything. So that this claim doesn't stay abstract, let's test it on a real text. For example, in the book \textit{The Eighteenth Brumaire of Louis Bonaparte}, written by Karl Marx:
 
-The bytes themselves are identical in every case. What changes is not the
-underlying data, but the interpretation imposed by context. Meaning is not
-contained in the bytes themselves; it arises from the agreement between the
-system that produced them and the system that reads them.
-\end{example}
-}
-\newpage
-% ------------------------------------------------------------
-\subsection{Data in Mathematics}
-\label{subsec:data-in-mathematics}
-% ------------------------------------------------------------
+\begin{quote}
+\itshape
+``Upon the overthrow of the first Napoleon came the restoration of the Bourbon throne (Louis XVIII, succeeded by Charles X). In July, 1830, an uprising of the upper tier of the bourgeoisie, or capitalist class --- the aristocracy of finance ---, overthrew the Bourbon throne, or landed aristocracy, and set up the throne of Orleans, a younger branch of the house of Bourbon, with Louis Philippe as king. From the month in which this revolution occurred, Louis Philippe's monarchy is called the ``July Monarchy.'' In February, 1848, a revolt of a lower tier of the capitalist class --- the industrial bourgeoisie ---, against the aristocracy of finance, in turn dethroned Louis Philippe. This affair, also named from the month in which it took place, is the ``February Revolution.'' The ``Eighteenth Brumaire'' starts with that event.
 
-\begin{subsectionintro}
-The definitions above are useful, but they are also informal, the same
-word doing slightly different work in each one. Mathematics offers a
-sharper handle on the same idea, and it is the handle this book keeps
-returning to.
-\end{subsectionintro}
-In mathematics, data are most naturally thought of as a \textit{function}:
-a mapping from some index set to some value set.
+Despite the inapplicableness to our own affairs of the political names and political leadership herein described, both these names and leaderships are to such an extent the products of an economic-social development that has here too taken place with even greater sharpness, and they have their present or threatened counterparts here so completely, that, by the light of this work of Marx', we are best enabled to understand our own history, to know whence we came, and whither we are going, and how to conduct ourselves.''
+\end{quote}
+Before reading on, ask yourself: exactly what information and data do you get from this text?\\
+If we want to be very general, we can get the fate of the first and second Napoleon, and also the revolutions of France, from this text. If we look more closely, we can extract information such as the names of kings, specific dates (1830, 1848), and even social classifications (the aristocracy of finance, the industrial bourgeoisie), from these few lines alone.\\
+But things get really interesting when we change the reader's point of view.
 
-\begin{definition}[Datum, formal]
-A \term{datum} is a value drawn from some set of possible values, called
-its \term{domain}. A \term{collection of data} is most simply modeled as a
-function from an \term{index set} into a \term{value set}: each index
-names a position, and the function returns the value held at that
-position, and only at that position.
-\end{definition}
-This framing looks abstract, but it matches ordinary cases closely. A
-single temperature reading is a datum drawn from the real numbers; a
-calendar date is a datum drawn from a finite set of valid dates; a pixel's
-color is a datum drawn from the set of representable RGB triples. A weather
-station's log of one reading per hour is, formally, a function from
-\textit{hour number} (the index set) to \textit{temperature} (the value
-set), which is already, without yet using the word, an array. That is not
-a coincidence: a closely related definition, a function from an index set
-to a value set, is standard throughout the mathematical literature on
-sequences and tuples \autocite{knuth1997}, and starting with the next
-chapter this book uses exactly that definition as the formal starting
-point for arrays themselves.\\
-This framing is more than abstract elegance. It tells you immediately what
-operations make sense on a piece of data. A function from indices to
-values supports indexing (``give me the value at position 3'') and
-iteration (``apply this operation to every value''). It does not, by
-itself, support operations that require knowing the \textit{type} of the
-values; for that, you need to know more about the value set itself. The
-mathematical view also makes precise what it means for two pieces of data
-to be the \textit{same}: two arrays are equal only if they have the same
-index set and the same value at every index. Equality, in this view, is
-not about appearance; it is about structure. The mathematical view does
-not replace the informal ``raw facts'' definition; it gives that
-definition a shape precise enough to build on.
-\newpage
-% ------------------------------------------------------------
-\subsection{The Perishability of Data}
-\label{subsec:perishability-of-data}
-% ------------------------------------------------------------
+\subsubsection{A Child}
+reading this text would recognize only much simpler data: "This text is in English, it talks about people named Napoleon and Louis, and there are a few years like 1830 and 1848 in it."
+\subsubsection{A Reader Familiar With English}
+might receive more linguistic data: "This text is written in English, uses certain sentence structures, and has historical and political vocabulary."
+\subsubsection{A Historian}
+might see something else: "This text is about political developments in France, in the period from Napoleon's fall to the 1848 revolution, and describes the shift of power among different social and political groups."
+\subsubsection{A Political Economist}
+instead of focusing on the names of kings, pays attention to the class structure and the relationship among economic groups: the role of the bourgeoisie, the financial aristocracy, and the industrial bourgeoisie.
+\subsubsection{A Political Philosopher}
+sees the text as data about power, class, the state, revolution, and the transformation of social structures.
+\subsubsection{A Literary Scholar}
+pays attention to the writing style, vocabulary, narrative structure, and the way history is represented in the text.\\
+From this same text, we can also gather the division of power between the proletariat and the bourgeoisie in France, and, as already mentioned, we can tell that this text is a work by Marx, a German philosopher and theorist.\\
+The next thing that can be drawn from the text is analytical points that aren't written directly in the text, but are arrived at through analysis of the text. For example, the phrase:
 
-\begin{subsectionintro}
-Data are not a permanent, objective record of the world. They are a
-snapshot taken at a particular moment, by a particular observer, using a
-particular method. Understanding this keeps you from over-trusting your
-data, and from under-appreciating the engineering required to make it
-reliable.
-\end{subsectionintro}
-A common assumption, especially early in one's programming career, is that
-data are fixed and objective: you record a fact, and the fact is stored.
-This is only partially true, and the part that is not true matters.
-Walliman observes that data are not only imprecise but \term{transient}
-and \term{perishable} \autocite{walliman2011}. A poll measuring voting
-intentions ahead of an election will not produce the same result as an
-otherwise identical poll conducted at a different time, even with the same
-sampling method and, in principle, the same respondents.
-\begin{notebox}
-``Perishable'' here does not mean that data physically vanish. A
-measurement recorded yesterday is still there to be read today. What
-perishes is its \textit{currency}: its claim to describe the present state
-of whatever it measured.
-\end{notebox}
-Data perish in a second sense as well. Secondhand reports and biased
-accounts are routinely presented as settled fact, because no method of
-recording information is perfectly reliable, and some distortion of
-interpretation enters at almost every stage of transmission. This is not
-a rare edge case confined to opinion polling; it is a fundamental property
-of how facts move from the world into a recorded form, and a significant
-portion of this book is dedicated to the engineering that addresses it
-(error detection, error correction, checksums, and so on).
-\begin{notebox}
-None of this means data are unreliable or useless. It means that
-reliable, useful data require careful engineering: choosing the right
-precision, designing for integrity in transmission, recording provenance
-and timestamp, and being explicit about what was measured and how.
-\end{notebox}
-On the question of how data connect to the rest of what we know, Walliman
-describes data as related to knowledge through a hierarchical system: data
-sit at the general, abstract end of that hierarchy, and become more
-particular and more concrete only as they are organized, interpreted, and
-put to use \autocite{walliman2011}. That hierarchy is the subject of the
-next section.
-\newpage
-% ============================================================
-\section{Data, Information, and Knowledge}
-\label{sec:data-information-knowledge}
-% ============================================================
-{\small \linespread{1.1}\selectfont
-\begin{sectionintro}
-The words \textit{data}, \textit{information}, and \textit{knowledge} are
-used interchangeably in casual conversation, but they describe three
-distinct things. The distinction matters in practice: confusing them
-leads to building systems that produce numbers when people need answers.
-\end{sectionintro}
-The relationship between data, information, and knowledge is often
-described as a hierarchy. We will not attempt a complete account of that
-hierarchy here, but the first two transitions are worth understanding
-precisely, since they are the ones this book depends on.\\
-Return to the tree. A raw count of growth rings is data: fifty-three
-concentric lines, nothing more. Data are syntactic; they have structure,
-but not yet meaning. Noticing that fifty-three rings means the tree is
-roughly fifty-three years old, and that the unusually narrow rings around
-year thirty correspond to a known regional drought, turns that count into
-\term{information}: data organized and placed in context, in keeping with
-Ratzan's definition above \autocite{ratzan2004}. Information answers
-questions like ``what happened?'' and ``how much?''. It is still factual
-and objective, but it is now interpretable by a human being. Knowing how
-to read ring width as a record of annual rainfall, reliably enough to
-apply the same method to a tree no one has studied before, is
-\term{knowledge}: information understood thoroughly enough to be put to
-new use.
+\begin{quote}
+``Louis Philippe's monarchy is called the `July Monarchy'''
+\end{quote}
+directly states a relation between \textit{Louis Philippe} and \textit{July Monarchy}, a relation the text itself never explicitly announces, but which the reader arrives at through analysis and examination.\\
+Now, having understood these points, we should turn to the central point. All of these came out of one fixed string of identical characters. Nothing in the text itself changed, and each reader judges the text based on their own knowledge.\\
+\section{The DIKW Pyramid: From Raw String to Wisdom}
+\label{sec:levels-of-data}
 
-\begin{example}[From Data to Knowledge]
-\begin{itemize}
-    \item \textbf{Data:} \texttt{39.5}
-    \item \textbf{Information:} Patient temperature is 39.5\textdegree C, recorded
-          at 14:32.
-    \item \textbf{Knowledge:} This patient has a significant fever. Combined with
-          the readings from the past six hours, the temperature is rising. The
-          attending physician should be notified.
-\end{itemize}
-\end{example}
-The three terms are often used as if they were interchangeable, and the
-confusion this causes is part of what motivates an observation worth
-repeating: easy access to information makes the work of building
-knowledge look optional. It is not. A search engine
-can return information in a few nanoseconds; it
-cannot, by itself, supply the understanding required to know whether that
-information is relevant, reliable, or correctly applied. The gap between
-having information and having knowledge is exactly the gap that instant
-retrieval does not close.
+What we saw above is, in fact, a hierarchy of different levels. Something known in the data science and information management literature under the standard name of the \textbf{DIKW} pyramid, which consists of Data, Information, Knowledge, and Wisdom.\\
+This pyramid is exactly the same gap referred to at the beginning, and it's the strange paradox among the newer generations of humanity that shows having a lot of data provides no guarantee of reaching the fourth layer: wisdom.
 
-\begin{notebox}
-This is a simplification of a genuinely contested area. Some writers add
-a fourth tier, wisdom, above knowledge, and some order the lower tiers
-differently. That debate is not settled here, and it does not need to be:
-the three-term version above is enough to keep data, information, and
-knowledge from collapsing into one another for the rest of this book.
-\end{notebox}
-}Why does this matter for a book about arrays and data representation?
-Because computers operate almost entirely at the level of \textit{data}.
-A CPU does not understand information; it manipulates bits. A memory array
-does not know what its contents mean; it stores and retrieves bytes at
-addresses. The transition from data to information is something that
-software engineers design into their systems deliberately, through type
-systems, schemas, protocols, and documentation. When you write
-\texttt{int temperature = 39;}, you are asserting that this particular
-sequence of bits represents a temperature, measured in some unit, with
-some precision. The meaning is in your head and in your documentation, not
-in the machine. The machine stores \texttt{00000027} and nothing else.\\
-This is not a criticism of computers. It is a description of how they
-work, and understanding it is the first step toward understanding why the
-rest of Volume~I, all the encoding schemes, type systems, and
-representation formats, exists. Each one is an answer to the question: how
-do we encode information, which has meaning, as data, which does not, in a
-way that preserves the meaning reliably?
-\newpage
-% ============================================================
-\section{The Relationship Between Data and Representation}
-\label{sec:data-and-representation}
-% ============================================================
+\subsection{What Is the DIKW Pyramid?}
+\label{sub:what-is-dikw}
 
-\begin{sectionintro}
-Data and representation are two different things, easy to blur together.
-This section draws the line between them; the next chapter takes
-representation up as a subject in its own right.
-\end{sectionintro}
-Consider the number seven. The number seven is an abstract mathematical
-object; it exists independently of how we write it, speak it, or store
-it. To communicate or store it, we must choose a \textit{representation}:
-the digit \texttt{7}, the Roman numeral \texttt{VII}, the binary string
-\texttt{0111}, three fingers held up. Each of these stands for the same
-abstract value; none of them \textit{is} that value.\\
-The same separation holds for data. A growth ring is a fact about a tree
-whether or not anyone counts it; the fact only becomes data, in the sense
-this chapter has been building toward, once it is expressed in some form
-that can be communicated or processed, Roman numerals, binary, notches on
-a tally stick, a single byte in a file. Data are the facts; a
-representation is whatever has been chosen to carry them. The choice is
-never forced by the data alone, and changing the representation never
-changes what the data are about.\\
-That is as far as this chapter needs to go. \textit{What} a representation
-is, formally, and what makes one representation better than another, is
-the subject of Chapter~\ref{ch:philosophy-of-representation}.
-\bigskip
-\noindent\textit{The next chapter asks a more fundamental question: what
-does it mean to represent something at all? That question turns out to
-have a surprisingly deep answer.}
+\subsubsection{Data}
+Something directly available to us: a string of characters or words, without any interpretation or additional organization. In the example above, the English text quoted, prior to any analysis, is raw data. This is the same layer mentioned earlier, available to anyone in a fraction of a second.
+
+\subsubsection{Information}
+When raw data is extracted from the text and organized into a specific format, and takes on meaning within a defined structure and context. For example, "the February Revolution of 1848" or "the July Monarchy" are information: raw data organized into the form of specific historical events.
+
+\subsubsection{Knowledge}
+When the combination of information and the relationships among them gives us an understanding of a subject. Understanding the political and class transformation of France in this period, and the fate of France after Napoleon's fall, is knowledge. Not merely a list of dates and names, but an understanding of the \emph{why} and the \emph{relationship} between them.
+
+\subsubsection{Wisdom}
+The highest layer of this pyramid, where knowledge turns into sound judgment and correct action: not merely knowing why the July Monarchy fell, but the ability to apply that understanding to correctly read similar events today. The very thing missing at the start of the chapter: instant access to thousands of historical documents (data) itself never substitutes for the wisdom needed to understand \emph{why} an event matters. In fact, we could say the difference among individuals, organizations, and systems is often revealed not in the amount of data they have, but in their ability to organize, interpret, and use that data.
+
+\section{What No Definition Directly Says}
+\label{sec:what-no-definition-says}
+
+Now that we understand where data sits and the path to wisdom, before drawing any conclusions or prejudgments, let's look at the root of the word itself: data.\\
+Historically, the word data comes from the Latin word datum, the past participle of the verb dare, meaning "to give."\\
+In everyday speech, we often treat the form data as a mass singular noun ("the data is clear"), but in technical writing, the plural form is preferred.\\
+Since anyone can hold their own judgment about any text, the word data itself is no exception, and at a global level every person or organization has defined data from their own point of view:
+\textbf{Rob, Morris, and Coronel} describe it as "raw facts": facts that have not yet been processed for their meaning to become clear;
+\textbf{Webster's Dictionary} regards it as something "given or accepted," a basis from which an inference is drawn;
+\textbf{The Oxford English Dictionary}, more briefly, regards it as facts or things known that are used as a basis for inference or calculation.
+Taken together, all these definitions point to something that none of them state directly:
+
+\begin{quote}
+\itshape
+Data has no shape that belongs to it independent of a particular point of view. A fact is only counted as data when it is placed within a framework, a framework of meaning, purpose, or use, relative to which it is relevant, organized, coherent, and useful.
+\end{quote}
+A growth ring means nothing to a system with no concept of seasons; a voltage means nothing to a circuit built to ignore it. Data presupposes a kind of prior agreement, however informal, about what is worth paying attention to in the first place. This is exactly the point the Marx example made clear: the child, the historian, and the economist all looked at the same identical string of characters, but received three different "data," because they brought three different frameworks with them.\\
+But one thing in that same Marx text still remains unanswered. A monarchy that had no inherent connection to the month of July was named the July Monarchy, simply because it began in that month. Was that a good enough reason? Just as a revolution that had nothing to do with the concept of February was called the February Revolution. Why wasn't a different name chosen for it? A name for something it itself is not was put to use, and everyone, without any objection, accepted that same name and recognized that revolution by that name.\newpage
+In fact, we could say these names carried nothing within the text itself; they were used only as a sign pointing to something else, outside themselves. So what is that unanswered question?\\
+How can a word, a number, or a sign take the place of something else in this way?\\
+This question takes us from data itself to a more fundamental issue: the relationship between the thing we see and the thing it represents.
