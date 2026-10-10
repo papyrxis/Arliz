@@ -42,7 +42,6 @@ Contributions — corrections, clarifications, new examples, diagrams, or whole 
 
 ## License
 
-- **Book content** (chapters, explanations, diagrams, prose) is licensed under **CC BY-SA 4.0**.
+- **Book content** (chapters, explanations, diagrams, prose) is licensed under **CC BY-SA 4.0**. See [`CONTENT-LICENSE.md`](./CONTENT-LICENSE.md) and [`frontmatter/copyright.tex`](./frontmatter/copyright.tex).
 - **Source code, build scripts, and LaTeX tooling** are licensed under the **MIT License** (see [`LICENSE`](./LICENSE)).
-
-See [`frontmatter/copyright.tex`](./frontmatter/copyright.tex) for the full copyright and citation notice.
+- Third-party material is excluded unless its own notice explicitly says otherwise.
