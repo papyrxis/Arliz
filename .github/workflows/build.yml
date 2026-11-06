@@ -34,21 +34,50 @@ jobs:
         uses: actions/setup-go@v7
         with:
           go-version: "1.25.x"
-          cache: true
+          # Arliz has no go.mod/go.sum; the explicit lock-scoped cache below
+          # also stores the installed command binaries.
+          cache: false
+
+      - name: Record the resolved Go version
+        id: go-version
+        shell: bash
+        run: echo "version=$(go version | awk '{print $3}')" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Go modules, build cache and pinned tools
+        id: go-tools-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+            ~/go/bin
+          key: arliz-go-${{ runner.os }}-${{ runner.arch }}-${{ steps.go-version.outputs.version }}-${{ hashFiles('.ci/locks/go-tools.lock') }}
 
       - name: Install repository tooling
         shell: bash
+        env:
+          GO_TOOLS_CACHE_HIT: ${{ steps.go-tools-cache.outputs.cache-hit }}
         run: |
           set -euo pipefail
-          go install github.com/m-mdy-m/gix/cmd/gix@latest
-          go install github.com/m-mdy-m/psx/cmd/psx@v0.3.2
-          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+          # This file is intentionally data-only: exact module versions define
+          # the cache key and make tool upgrades an explicit reviewed change.
+          source .ci/locks/go-tools.lock
+          : "${GIX_VERSION:?GIX_VERSION is required in .ci/locks/go-tools.lock}"
+          : "${PSX_VERSION:?PSX_VERSION is required in .ci/locks/go-tools.lock}"
+          tool_bin="$(go env GOPATH)/bin"
+          if [[ "$GO_TOOLS_CACHE_HIT" != "true" || ! -x "$tool_bin/gix" || ! -x "$tool_bin/psx" ]]; then
+            go install "github.com/m-mdy-m/gix/cmd/gix@${GIX_VERSION}"
+            go install "github.com/m-mdy-m/psx/cmd/psx@${PSX_VERSION}"
+          else
+            echo "Restored gix ${GIX_VERSION} and psx ${PSX_VERSION} from the lock-scoped cache."
+          fi
+          echo "$tool_bin" >> "$GITHUB_PATH"
 
       - name: Check gix release metadata
         run: gix version show
 
       - name: Run Pipeline LaTeX preset
-        uses: m-mdy-m/pipeline/.github/actions/toolchain-quality@main
+        uses: m-mdy-m/pipeline/.github/actions/toolchain-quality@feat/toolchain-cache-locks
         with:
           language: latex
           working-directory: .
@@ -58,6 +87,10 @@ jobs:
           build-command: make build
           test-command: make test
           timeout-seconds: "3600"
+          cache: "true"
+          python-cache-dependency-path: workspace/pyproject.toml
+          latex-setup-mode: install
+          latex-packages-file: .ci/locks/texlive-packages.ubuntu-24.04.lock
         env:
           PROJECT_VERSION: ${{ inputs.version }}
           BUILD_DATE: ${{ github.run_started_at }}
