@@ -47,6 +47,18 @@ jobs:
       - name: Check gix release metadata
         run: gix version show
 
+      - name: Install Arliz-specific TeX fonts
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The shared Pipeline LaTeX preset intentionally installs a lean
+          # baseline. Arliz's configs/fonts.tex additionally uses Math Design.
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-fonts-extra
+          mathdesign="$(kpsewhich mathdesign.sty)"
+          test -n "$mathdesign"
+          echo "Math Design package found: $mathdesign"
+
       - name: Run Pipeline LaTeX preset
         uses: m-mdy-m/pipeline/.github/actions/toolchain-quality@main
         with:

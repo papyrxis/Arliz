@@ -70,6 +70,8 @@ doctor:
 	@command -v python3 >/dev/null
 	@command -v latexmk >/dev/null
 	@command -v pdflatex >/dev/null
+	@command -v kpsewhich >/dev/null
+	@kpsewhich mathdesign.sty >/dev/null || { echo "Math Design is missing; install TeX Live's texlive-fonts-extra package." >&2; exit 1; }
 	@command -v biber >/dev/null
 	@command -v gix >/dev/null
 	@command -v psx >/dev/null

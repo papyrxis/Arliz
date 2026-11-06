@@ -8,6 +8,7 @@ For repository boundaries, see `ARCHITECTURE.md`. For content placement, see `VO
 
 - Python 3.10+ and PyYAML.
 - TeX Live with `pdflatex`, `latexmk`, and Biber.
+- The TeX Live `texlive-fonts-extra` collection, which provides the Math Design package used by the project font override.
 - GNU Make, Git, and Bash.
 - [gix](https://github.com/m-mdy-m/gix) and [psx](https://github.com/m-mdy-m/psx) for branch flow, versioning, and quality checks.
 
