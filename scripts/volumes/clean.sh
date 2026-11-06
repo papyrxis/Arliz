@@ -2,26 +2,42 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+CONFIG_DIR="$ROOT/configs/volumes"
 
-echo "==> Cleaning volume build artifacts"
+die() { echo "error: $*" >&2; exit 1; }
 
-for conf in "$ROOT/configs/volumes"/*.conf; do
-  [[ -f "$conf" ]] || continue
-  (
-    source <(tr -d '\r' < "$conf")
-    if [[ -n "${VOLUME_NUM:-}" && -n "${VOLUME_TITLE:-}" ]]; then
-      year="$(date -u '+%Y')"
-      f="$ROOT/${year}_ARLIZ_${VOLUME_TITLE}_Volume_${VOLUME_NUM}.tex"
-      [[ -f "$f" ]] && rm -v "$f"
-    fi
-  )
-done
+clean_one() {
+  local vol="$1"
+  local conf="$CONFIG_DIR/$vol.conf"
+  [[ -f "$conf" ]] || die "unknown volume '$vol' (no $conf)"
 
-# Also catch any leftover generated files
-for f in "$ROOT"/*_ARLIZ_*_Volume_*.tex; do
-  [[ -f "$f" ]] && rm -v "$f"
-done
+  # These configuration files are maintained in this repository.
+  source <(tr -d '\r' < "$conf")
+  : "${VOLUME_NUM:?VOLUME_NUM not set in $conf}"
+  : "${VOLUME_TITLE:?VOLUME_TITLE not set in $conf}"
 
-[[ -d "$ROOT/build" ]] && rm -rf "$ROOT/build" && echo "removed build/"
+  local basename
+  basename="$(date -u '+%Y')_ARLIZ_${VOLUME_TITLE}_Volume_${VOLUME_NUM}"
+  rm -f "$ROOT/$basename.tex" "$ROOT/build/$basename.pdf"
+  rm -rf "$ROOT/build/$vol"
+  echo "cleaned $vol"
+}
 
-echo "==> Clean complete"
+case "${1:-all}" in
+  all)
+    for conf in "$CONFIG_DIR"/*.conf; do
+      [[ -f "$conf" ]] || continue
+      clean_one "$(basename "$conf" .conf)"
+    done
+    # Remove generated files from earlier calendar years as well.
+    find "$ROOT" -maxdepth 1 -type f -name '*_ARLIZ_*_Volume_*.tex' -delete
+    rm -rf "$ROOT/build"
+    ;;
+  vol*)
+    [[ $# -eq 1 ]] || die "usage: $0 [all|vol1|vol2|vol3]"
+    clean_one "$1"
+    ;;
+  *)
+    die "usage: $0 [all|vol1|vol2|vol3]"
+    ;;
+esac

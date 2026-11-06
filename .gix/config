@@ -1,0 +1,44 @@
+gix:
+  version: "1"
+remote: origin
+branch:
+  main:
+    name: main
+    type: base
+  develop:
+    name: develop
+    type: base
+    parent: main
+    autosync: true
+  feature:
+    type: topic
+    prefix: feature/
+    parent: develop
+    upstream_strategy: squash
+    downstream_strategy: merge
+    delete_on_finish: true
+  bugfix:
+    type: topic
+    prefix: bugfix/
+    parent: develop
+    upstream_strategy: merge
+    downstream_strategy: merge
+    delete_on_finish: true
+  hotfix:
+    type: topic
+    prefix: hotfix/
+    parent: main
+    merge_into: [main, develop]
+    upstream_strategy: merge
+    downstream_strategy: merge
+    tag: true
+    delete_on_finish: true
+  release:
+    type: topic
+    prefix: release/
+    parent: develop
+    merge_into: [main, develop]
+    upstream_strategy: merge
+    downstream_strategy: merge
+    tag: true
+    delete_on_finish: true

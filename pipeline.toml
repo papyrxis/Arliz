@@ -1,0 +1,28 @@
+[project]
+name = "arliz"
+description = "Three-volume LaTeX book on arrays, reasoning, logic and data representation"
+
+[defaults]
+timeout_seconds = 3600
+fail_fast = true
+
+[tasks.quality]
+description = "Check repository structure and project standards"
+command = ["psx", "check", "--config", "psx.yml"]
+
+[tasks.build]
+description = "Build all Arliz volumes"
+command = ["make", "build"]
+depends_on = ["quality"]
+
+[tasks.test]
+description = "Run unit tests and validate all generated PDFs"
+command = ["make", "test"]
+depends_on = ["build"]
+
+[ci]
+language = "latex"
+
+[ci.options]
+engine = "pdflatex"
+output = "build"
