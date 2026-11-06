@@ -1,0 +1,17 @@
+# Ubuntu 24.04 apt package manifest for the Arliz LaTeX build.
+# One package (or package=version) per line. This file is also the cache key.
+latexmk
+biber
+texlive-latex-base
+texlive-latex-recommended
+texlive-latex-extra
+texlive-bibtex-extra
+texlive-science
+texlive-xetex
+texlive-luatex
+texlive-lang-arabic
+texlive-fonts-recommended
+fonts-liberation
+fonts-noto
+fonts-vazirmatn
+fontconfig
