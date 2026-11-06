@@ -25,6 +25,14 @@ If you cloned without submodules:
 git submodule update --init --recursive
 ```
 
+## CI toolchain versions and caches
+
+CI uses the reviewed version pins in `.ci/locks/go-tools.lock` for Gix and PSX. The file content is part of the Go cache key, together with the resolved Go version; a cache hit restores the command binaries, Go modules and compiler cache instead of downloading and compiling the tools again.
+
+The TeX package set is listed in `.ci/locks/texlive-packages.ubuntu-24.04.lock`. Pipeline keys its apt archive cache from that manifest, runner OS and architecture. Change the manifest deliberately when the build needs another TeX package. The first cold GitHub-hosted run still needs to install TeX Live; matching downloaded archives can be reused by later runs.
+
+The shared Pipeline action also accepts `latex-setup-mode: verify` for a pre-provisioned runner. It checks the required commands and TeX packages without running apt. Use that mode only on a trusted, persistent runner that already contains the complete manifest; do not expose a persistent self-hosted runner to untrusted public pull requests.
+
 ## Building
 
 ```sh
