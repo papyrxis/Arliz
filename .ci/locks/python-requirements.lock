@@ -1,0 +1,2 @@
+# Exact Python dependencies required by the Arliz Workspace build.
+PyYAML==6.0.3
