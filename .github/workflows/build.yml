@@ -90,7 +90,7 @@ jobs:
           cache: "true"
           python-cache-dependency-path: workspace/pyproject.toml
           latex-setup-mode: install
-          latex-packages-file: .ci/locks/texlive-packages.ubuntu-24.04.lock
+          latex-packages-file: .ci/locks/texlive-packages.ubuntu.lock
         env:
           PROJECT_VERSION: ${{ inputs.version }}
           BUILD_DATE: ${{ github.run_started_at }}
