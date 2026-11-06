@@ -33,6 +33,8 @@ The TeX package set is listed in `.ci/locks/texlive-packages.ubuntu.lock`. Pipel
 
 The shared Pipeline action also accepts `latex-setup-mode: verify` for a pre-provisioned runner. It checks the required commands and TeX packages without running apt. Use that mode only on a trusted, persistent runner that already contains the complete manifest; do not expose a persistent self-hosted runner to untrusted public pull requests.
 
+The Python build dependency is pinned in `.ci/locks/python-requirements.lock` and the same file keys the pip download cache. Update it deliberately when Workspace adds or changes a runtime dependency; keep the lock and Workspace package metadata compatible.
+
 ## Building
 
 ```sh
