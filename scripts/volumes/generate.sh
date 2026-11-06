@@ -30,6 +30,25 @@ source <(tr -d '\r' < "$CONF")
 : "${VOLUME_TITLE:?VOLUME_TITLE not set in $CONF}"
 : "${VOLUME_DISPLAY_TITLE:?VOLUME_DISPLAY_TITLE not set in $CONF}"
 
+# Fail before LaTeX starts when a configured source path is misspelled.
+require_tex_source() {
+  local entry="$1"
+  local label="$2"
+  local relative="$entry"
+  [[ "$relative" == *.tex ]] || relative="${relative}.tex"
+  [[ -f "$ROOT/$relative" ]] || die "$label source not found: $relative (configured in $CONF)"
+}
+
+for source in "${CHAPTERS[@]}"; do
+  require_tex_source "$source" "chapter"
+done
+for source in "${BACKMATTER[@]}"; do
+  require_tex_source "$source" "back matter"
+done
+for source in title copyright about_author; do
+  require_tex_source "$MAIN_FRONTMATTER/$source" "shared front matter"
+done
+
 YEAR="$(date -u '+%Y')"
 OUT_BASENAME="${YEAR}_ARLIZ_${VOLUME_TITLE}_Volume_${VOLUME_NUM}"
 
