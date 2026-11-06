@@ -34,6 +34,13 @@ class OptionalVolumeFrontmatterTests(unittest.TestCase):
                 self.assertIn(r"\end{volumeintro}", content)
                 self.assertNotIn("volumesintro", content)
 
+    def test_ci_uses_pinned_python_build_dependencies(self) -> None:
+        lock = Path(".ci/locks/python-requirements.lock").read_text(encoding="utf-8")
+        workflow = Path(".github/workflows/build.yml").read_text(encoding="utf-8")
+        self.assertIn("PyYAML==6.0.3", lock)
+        self.assertIn("pip install -r .ci/locks/python-requirements.lock -e workspace", workflow)
+        self.assertIn("python-cache-dependency-path: .ci/locks/python-requirements.lock", workflow)
+
     def test_font_stack_uses_only_the_shared_toolchain(self) -> None:
         fonts = Path("configs/fonts.tex").read_text(encoding="utf-8")
         for optional_package in ("mathdesign", "beramono", "charter"):
