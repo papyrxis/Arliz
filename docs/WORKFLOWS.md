@@ -8,7 +8,6 @@ For repository boundaries, see `ARCHITECTURE.md`. For content placement, see `VO
 
 - Python 3.10+ and PyYAML.
 - TeX Live with `pdflatex`, `latexmk`, and Biber.
-- The TeX Live `texlive-fonts-extra` collection, which provides the Math Design package used by the project font override.
 - GNU Make, Git, and Bash.
 - [gix](https://github.com/m-mdy-m/gix) and [psx](https://github.com/m-mdy-m/psx) for branch flow, versioning, and quality checks.
 
@@ -38,6 +37,12 @@ make vol3        # build only Volume III
 Each volume is generated from `main.tex` plus its `configs/volumes/volN.conf` file, then compiled with `latexmk`. PDFs are written to `build/`; per-volume intermediate files are isolated under `build/volN/`.
 
 The default `make build` starts clean and builds all configured volumes. It is the same entry point used by CI and both release workflows.
+
+## Volume front matter
+
+The shared title, copyright and author pages are required for every volume. The volume-specific cover, acknowledgments, preface and introduction files are optional; the template includes them only when the corresponding source file exists. This allows a volume to compile while its editorial front matter is still being written, without committing empty placeholder files.
+
+When a cover or other front-matter section is ready, add it under `frontmatter/volN/`; it will be included automatically on the next build.
 
 ## Generate without compiling
 
