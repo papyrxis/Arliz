@@ -1,0 +1,4 @@
+# Exact Go-installed command versions used by CI.
+# Upgrade these deliberately and review the tool changelog before changing them.
+GIX_VERSION=v1.2.0
+PSX_VERSION=v0.3.2
