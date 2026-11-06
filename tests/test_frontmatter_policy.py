@@ -20,6 +20,20 @@ class OptionalVolumeFrontmatterTests(unittest.TestCase):
             with self.subTest(section=section):
                 self.assertIn(f"\\input{{@MAIN_FRONTMATTER@/{section}}}", template)
 
+    def test_volume_intro_environment_matches_the_project_definition(self) -> None:
+        environment = Path("configs/env.tex").read_text(encoding="utf-8")
+        self.assertIn(r"\\newenvironment{volumeintro}", environment)
+        for source in (
+            "volumes/vol1/vol1.tex",
+            "volumes/vol2/vol02.tex",
+            "volumes/vol3/vol3.tex",
+        ):
+            content = Path(source).read_text(encoding="utf-8")
+            with self.subTest(source=source):
+                self.assertIn(r"\\begin{volumeintro}", content)
+                self.assertIn(r"\\end{volumeintro}", content)
+                self.assertNotIn("volumesintro", content)
+
     def test_font_stack_uses_only_the_shared_toolchain(self) -> None:
         fonts = Path("configs/fonts.tex").read_text(encoding="utf-8")
         for optional_package in ("mathdesign", "beramono", "charter"):
