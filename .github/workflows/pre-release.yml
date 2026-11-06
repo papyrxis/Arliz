@@ -1,0 +1,101 @@
+name: Pre-release
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - ".editorconfig"
+      - ".gitignore"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: arliz-pre-release
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build all volumes
+    uses: ./.github/workflows/build.yml
+    with:
+      version: latest-pre-release
+
+  publish:
+    name: Publish rolling pre-release
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download volume PDFs
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.pdf-artifact }}
+          path: dist/publications
+
+      - name: Prepare deterministic release assets
+        run: python scripts/prepare_release_assets.py dist/publications dist/release-assets
+
+      - name: Move rolling tag to the tested commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git tag -f latest-pre-release "$GITHUB_SHA"
+          git push origin --force refs/tags/latest-pre-release:refs/tags/latest-pre-release
+
+      - name: Generate release notes
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="latest-pre-release"
+          REPO="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+          SHORT_SHA="${GITHUB_SHA:0:7}"
+          BUILD_TIME="$(date -u '+%Y-%m-%d %H:%M UTC')"
+          rows=""
+          while IFS= read -r -d '' file; do
+            name="$(basename "$file")"
+            size="$(du -sh "$file" | cut -f1)"
+            url="${REPO}/releases/download/${TAG}/${name}"
+            rows="${rows}| [${name}](${url}) | ${size} |"$'\n'
+          done < <(find dist/release-assets -type f -name '*.pdf' -print0 | sort -z)
+
+          cat > release_body.md <<EOF
+          ## Latest Arliz build
+
+          This rolling pre-release contains all three independently compiled volumes.
+
+          | | |
+          |---|---|
+          | Commit | [${SHORT_SHA}](${REPO}/commit/${GITHUB_SHA}) |
+          | Built | ${BUILD_TIME} |
+
+          | PDF | Size |
+          |---|---:|
+          ${rows:-| No PDFs were produced | — |}
+
+          This is an automated preview build from `main`, not a stable release.
+          For versioned releases, see [Releases](${REPO}/releases).
+          EOF
+
+      - name: Replace rolling pre-release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t assets < <(find dist/release-assets -type f -name '*.pdf' | sort)
+          test "${#assets[@]}" -eq 3
+          gh release delete latest-pre-release --yes 2>/dev/null || true
+          gh release create latest-pre-release \
+            --title "Latest Arliz Pre-release" \
+            --notes-file release_body.md \
+            --prerelease \
+            --verify-tag \
+            "${assets[@]}"

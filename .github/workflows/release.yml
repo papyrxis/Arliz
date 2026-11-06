@@ -1,235 +1,92 @@
-name: Build & Release Volumes
+name: Release
 
 on:
   push:
     tags:
-      - 'v*.*.*'
-  workflow_dispatch: {}
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+-*"
 
 permissions:
   contents: write
 
 concurrency:
-  group: release-${{ github.ref }}
-  cancel-in-progress: true
+  group: arliz-release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  # ----------------------------------------------------------------------
-  # Job 1: Build each volume's PDF (and the generated standalone .tex file)
-  # ----------------------------------------------------------------------
-  build-volumes:
-    name: Build ${{ matrix.volume }}
+  build:
+    name: Build release PDFs
+    uses: ./.github/workflows/build.yml
+    with:
+      version: ${{ github.ref_name }}
+
+  publish:
+    name: Publish stable release
+    needs: build
     runs-on: ubuntu-latest
-    container:
-      image: texlive/texlive:latest
-    continue-on-error: true
-    strategy:
-      fail-fast: false
-      matrix:
-        volume: [vol1, vol2, vol3]
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Install build prerequisites
-        run: |
-          apt-get update
-          apt-get install -y --no-install-recommends make git bash
-
-      - name: Verify committed .pxis/preset.tex is present
-        run: |
-          test -f .pxis/preset.tex || {
-            echo "::error::.pxis/preset.tex is missing from this checkout."
-            echo "::error::Run 'make sync' locally and commit .pxis/ before tagging a release."
-            exit 1
-          }
-
-      - name: Resolve output basename for this volume
-        id: meta
-        shell: bash
-        run: |
-          CONF="configs/volumes/${{ matrix.volume }}.conf"
-          if [[ ! -f "$CONF" ]]; then
-            echo "::error::Config not found: $CONF"
-            exit 1
-          fi
-          source <(tr -d '\r' < "$CONF")
-          if [[ -z "${VOLUME_TITLE:-}" || -z "${VOLUME_NUM:-}" ]]; then
-            echo "::error::VOLUME_TITLE or VOLUME_NUM not set in $CONF"
-            exit 1
-          fi
-          YEAR="$(date -u '+%Y')"
-          BASENAME="${YEAR}_ARLIZ_${VOLUME_TITLE}_Volume_${VOLUME_NUM}"
-          echo "basename=${BASENAME}" >> "$GITHUB_OUTPUT"
-          echo "Resolved basename: ${BASENAME}"
-
-      - name: Generate and compile ${{ matrix.volume }}
-        shell: bash
-        run: |
-          bash scripts/volumes/build.sh ${{ matrix.volume }}
-
-      - name: Verify PDF was produced
-        shell: bash
-        run: |
-          PDF="build/${{ steps.meta.outputs.basename }}.pdf"
-          if [[ ! -f "$PDF" ]]; then
-            echo "::error::Expected PDF not found: $PDF"
-            echo "Contents of build/:"
-            find build/ -type f 2>/dev/null || echo "(build/ is empty or missing)"
-            exit 1
-          fi
-          echo "PDF found: $PDF ($(du -sh "$PDF" | cut -f1))"
-
-      - name: Upload PDF artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.volume }}-pdf
-          path: build/${{ steps.meta.outputs.basename }}.pdf
-          if-no-files-found: warn
-          retention-days: 7
-
-      - name: Upload generated LaTeX source
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.volume }}-tex
-          path: ${{ steps.meta.outputs.basename }}.tex
-          if-no-files-found: warn
-          retention-days: 7
-
-  # ----------------------------------------------------------------------
-  # Job 2: On a tag push, collect the built volumes and publish a Release
-  # ----------------------------------------------------------------------
-  create-release:
-    name: Create GitHub Release
-    needs: build-volumes
-    if: always() && startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository (full history for contributor detection)
+      - name: Checkout full history
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Download all build artifacts
+      - name: Download volume PDFs
         uses: actions/download-artifact@v4
         with:
-          path: artifacts
-        continue-on-error: true
+          name: ${{ needs.build.outputs.pdf-artifact }}
+          path: dist/publications
 
-      - name: Collect release assets
-        run: |
-          mkdir -p release
-          if [[ -d artifacts ]]; then
-            find artifacts -type f \( -name '*.pdf' -o -name '*.tex' \) \
-              -exec cp {} release/ \;
-          else
-            echo "::warning::No artifacts directory found; release will have no assets."
-          fi
-          echo "Release assets:"
-          ls -lh release/ || echo "(none)"
+      - name: Prepare deterministic release assets
+        run: python scripts/prepare_release_assets.py dist/publications dist/release-assets
 
-      - name: Extract version from tag
-        id: version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
-
-      - name: Determine contributors for this release
-        id: contributors
+      - name: Generate release notes
         shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF_NAME}"
+          REPO="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+          PREVIOUS="$(git tag --list 'v*' --sort=-version:refname | grep -v -F "$TAG" | head -1 || true)"
+          if [[ -n "$PREVIOUS" ]]; then
+            RANGE="${PREVIOUS}..${TAG}"
+            SINCE="Changes since ${PREVIOUS}"
+          else
+            RANGE="$TAG"
+            SINCE="Initial versioned release"
+          fi
+          COMMITS="$(git log "$RANGE" --oneline --no-merges | head -30 || true)"
+          BUILD_TIME="$(date -u '+%Y-%m-%d %H:%M UTC')"
+          files=""
+          while IFS= read -r -d '' file; do
+            name="$(basename "$file")"
+            files="${files}- [${name}](${REPO}/releases/download/${TAG}/${name})"$'\n'
+          done < <(find dist/release-assets -type f -name '*.pdf' -print0 | sort -z)
+
+          cat > release_body.md <<EOF
+          ## Arliz ${TAG}
+
+          **${SINCE}** — built on ${BUILD_TIME}
+
+          ### Volume PDFs
+
+          ${files:-No PDF assets were produced.}
+
+          ### Changes
+
+          ${COMMITS:-No commit summary available.}
+
+          Full editorial history: [docs/CHANGELOG.md](${REPO}/blob/${TAG}/docs/CHANGELOG.md).
+          EOF
+
+      - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
         run: |
-          CURRENT_TAG="${GITHUB_REF#refs/tags/}"
-          REPO="${{ github.repository }}"
-
-          # Find the previous tag (exclude the current one)
-          PREV_TAG=$(git tag --sort=v:refname \
-            | grep -B1 "^${CURRENT_TAG}$" \
-            | head -1)
-
-          if [[ -z "$PREV_TAG" || "$PREV_TAG" == "$CURRENT_TAG" ]]; then
-            HEADER="## Contributors"
-            # First release: list all-time contributors via GitHub API
-            CONTRIB=$(gh api "repos/${REPO}/contributors?per_page=100" \
-              --jq '.[].login' \
-              | grep -v 'github-actions\[bot\]' \
-              | sed 's/^/- @/')
-          else
-            HEADER="## Contributors (${PREV_TAG} → ${CURRENT_TAG})"
-            # Incremental: map commits between tags to GitHub logins
-            CONTRIB=$(git log "${PREV_TAG}..${CURRENT_TAG}" \
-              --format='%H' \
-              | while read -r sha; do
-                  gh api "repos/${REPO}/commits/${sha}" \
-                    --jq '.author.login // empty' 2>/dev/null
-                done \
-              | grep -v '^$' \
-              | grep -v 'github-actions\[bot\]' \
-              | sort -u \
-              | sed 's/^/- @/')
+          set -euo pipefail
+          mapfile -t assets < <(find dist/release-assets -type f -name '*.pdf' | sort)
+          test "${#assets[@]}" -eq 3
+          args=(--title "Arliz ${GITHUB_REF_NAME}" --notes-file release_body.md --verify-tag)
+          if [[ "${GITHUB_REF_NAME}" == *-* ]]; then
+            args+=(--prerelease)
           fi
-
-          # Write multi-line outputs safely
-          {
-            echo "header=${HEADER}"
-            echo "list<<EOF"
-            echo "${CONTRIB}"
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Extract release notes from docs/CHANGELOG.md
-        id: notes
-        run: |
-          VERSION="${{ steps.version.outputs.VERSION }}"
-          CHANGELOG="docs/CHANGELOG.md"
-
-          if grep -q "## \[${VERSION}\]" "$CHANGELOG"; then
-            # Extract the section for this version, drop the next heading line
-            sed -n "/## \[${VERSION}\]/,/^## \[/p" "$CHANGELOG" \
-              | sed '$d' > release_body.md
-          else
-            {
-              echo "## Release ${{ github.ref_name }}"
-              echo ""
-              echo "See [CHANGELOG](https://github.com/${{ github.repository }}/blob/main/docs/CHANGELOG.md) for details."
-            } > release_body.md
-          fi
-
-          # Append contributors section
-          {
-            echo ""
-            echo "---"
-            echo ""
-            echo "${{ steps.contributors.outputs.header }}"
-            echo ""
-            echo "${{ steps.contributors.outputs.list }}"
-          } >> release_body.md
-
-          echo "--- release_body.md ---"
-          cat release_body.md
-
-      - name: Determine prerelease flag
-        id: pre
-        run: |
-          VERSION="${{ steps.version.outputs.VERSION }}"
-          if [[ "$VERSION" == *-* ]]; then
-            echo "flag=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "flag=false" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Create or update GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: "Arliz ${{ github.ref_name }}"
-          body_path: release_body.md
-          files: release/*
-          draft: false
-          prerelease: ${{ steps.pre.outputs.flag }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          gh release create "${GITHUB_REF_NAME}" "${args[@]}" "${assets[@]}"

@@ -31,14 +31,16 @@ build_one() {
 
   info "[$vol] generate ${out_basename}.tex"
   bash "$GENERATE" "$vol"
+  [[ -f "$ROOT/${out_basename}.tex" ]] || die "generation did not produce $ROOT/${out_basename}.tex"
 
-  info "[$vol] compile (latexmk → pdflatex, 2 passes + biber)"
+  info "[$vol] compile (latexmk → pdflatex + biber)"
   mkdir -p "$BUILD_DIR/$vol"
 
   (
     cd "$ROOT"
     latexmk \
       -pdf \
+      -halt-on-error \
       -pdflatex="pdflatex -file-line-error -interaction=nonstopmode %O %S" \
       -use-make \
       -recorder \
@@ -59,6 +61,7 @@ build_one() {
 case "$1" in
   all)
     for conf in "$ROOT/configs/volumes"/*.conf; do
+      [[ -f "$conf" ]] || continue
       build_one "$(basename "$conf" .conf)"
     done
     ;;

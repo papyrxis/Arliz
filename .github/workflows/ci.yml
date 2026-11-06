@@ -1,0 +1,15 @@
+name: Arliz CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build, quality and PDF verification
+    uses: ./.github/workflows/build.yml
+    with:
+      version: ci

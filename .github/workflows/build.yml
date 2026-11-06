@@ -1,0 +1,76 @@
+name: Arliz Build
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: Version label injected into the build.
+        required: false
+        type: string
+        default: dev
+    outputs:
+      pdf-artifact:
+        description: Artifact containing all successfully built volume PDFs.
+        value: ${{ jobs.build.outputs.artifact-name }}
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and verify all volumes
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    outputs:
+      artifact-name: ${{ steps.artifact.outputs.name }}
+    steps:
+      - name: Checkout with shared Workspace
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Set up Go for gix and psx
+        uses: actions/setup-go@v7
+        with:
+          go-version: "1.25.x"
+          cache: true
+
+      - name: Install repository tooling
+        shell: bash
+        run: |
+          set -euo pipefail
+          go install github.com/m-mdy-m/gix/cmd/gix@latest
+          go install github.com/m-mdy-m/psx/cmd/psx@v0.3.2
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Check gix release metadata
+        run: gix version show
+
+      - name: Run Pipeline LaTeX preset
+        uses: m-mdy-m/pipeline/.github/actions/toolchain-quality@main
+        with:
+          language: latex
+          working-directory: .
+          stages: install,lint,build,test
+          install-command: python -m pip install -e workspace
+          lint-command: psx check --config psx.yml
+          build-command: make build
+          test-command: make test
+          timeout-seconds: "3600"
+        env:
+          PROJECT_VERSION: ${{ inputs.version }}
+          BUILD_DATE: ${{ github.run_started_at }}
+
+      - name: Set PDF artifact name
+        id: artifact
+        shell: bash
+        run: echo "name=arliz-pdfs-${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload all volume PDFs
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.artifact.outputs.name }}
+          path: build/*.pdf
+          if-no-files-found: error
+          retention-days: 30
