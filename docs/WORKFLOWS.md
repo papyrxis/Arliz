@@ -1,132 +1,125 @@
 # Workflows
 
-Day-to-day commands for building, generating, and cleaning Arliz.
+Commands for building, validating, and publishing Arliz.
 
-For the why behind the structure, see `ARCHITECTURE.md`. For where content goes, see `VOLUMES.md`. For how to submit changes, see `CONTRIBUTING.md`.
+For repository boundaries, see `ARCHITECTURE.md`. For content placement, see `VOLUMES.md`.
 
 ## Prerequisites
 
-- TeX Live (or equivalent) with `pdflatex`, `latexmk`, and `biber` on `PATH`. A full TeX Live install covers all required packages.
-- `bash` — the build scripts use bash-specific syntax.
-- `make` — optional, wraps the scripts with short target names.
+- Python 3.10+ and PyYAML.
+- TeX Live with `pdflatex`, `latexmk`, and Biber.
+- GNU Make, Git, and Bash.
+- [gix](https://github.com/m-mdy-m/gix) and [psx](https://github.com/m-mdy-m/psx) for branch flow, versioning, and quality checks.
 
-Clone with submodules:
+Clone with submodules and install the shared Python package:
 
-```bash
+```sh
 git clone --recurse-submodules https://github.com/papyrxis/Arliz.git
 cd Arliz
+python3 -m pip install -e workspace
 ```
 
-If you already cloned without `--recurse-submodules`:
+If you cloned without submodules:
 
-```bash
+```sh
 git submodule update --init --recursive
 ```
 
-## Building a Volume
+## Building
 
-```bash
-make vol1      # Volume I  — Zero to Bit
-make vol2      # Volume II — Silicon Horizon
-make vol3      # Volume III — Array Odyssey
-make volumes   # all three
+```sh
+make build       # build all configured volumes
+make vol1        # build only Volume I
+make vol2        # build only Volume II
+make vol3        # build only Volume III
 ```
 
-Each target cleans the previous build for that volume, generates the `.tex` file, runs `latexmk` (pdflatex + biber, multiple passes), and writes the PDF to `build/`.
+Each volume is generated from `main.tex` plus its `configs/volumes/volN.conf` file, then compiled with `latexmk`. PDFs are written to `build/`; per-volume intermediate files are isolated under `build/volN/`.
 
-Output for Volume I in 2026:
+The default `make build` starts clean and builds all configured volumes. It is the same entry point used by CI and both release workflows.
 
-```
-build/2026_ARLIZ_Zero_to_Bit_Volume_1.pdf
-```
+## Generate without compiling
 
-## Generating Without Compiling
-
-If you want to compile manually (e.g. in TeXstudio), generate the `.tex` file without running latexmk:
-
-```bash
+```sh
 make generate-vol1
 make generate-vol2
 make generate-vol3
 ```
 
-Or call the script directly:
+Generated root-level `.tex` files are build artifacts. Do not edit them directly.
 
-```bash
-bash scripts/volumes/generate.sh vol1
+## Verify and test
+
+Run these after a successful build:
+
+```sh
+make verify       # check every configured PDF signature and EOF marker
+make test         # unit tests plus PDF verification
+make doctor       # check local toolchain, Workspace, gix, and psx
 ```
 
-Open the generated file in your editor and compile with `pdflatex` + `biber`, two or three passes.
-
-> Do not edit the generated `.tex` file. It is a build artifact and gets overwritten on every build. Edit the source files under `volumes/`, `frontmatter/`, `backmatter/`, etc.
+The PDF verifier reads the volume configurations and requires every configured output. A partial build cannot pass verification.
 
 ## Cleaning
 
-```bash
-make clean         # remove build/ and all stray .aux/.log/.toc/... files
-make clean-vols    # remove all generated volume .tex files and build/
-make clean-vol1    # remove only Volume I artifacts
+```sh
+make clean
+make clean-vol1
 make clean-vol2
 make clean-vol3
 ```
 
-`make volN` already runs `clean-volN` first, so a normal build always starts from a clean state for that volume.
+`make clean` removes all generated volume source files, PDFs, and LaTeX intermediates.
 
-## Quick Build Test
+## Workspace synchronization
 
-```bash
-make test
-```
+Workspace is a Git submodule. To refresh it to the commit pinned by the current branch:
 
-Runs `make clean` then `make build` and reports success or failure. For volume-specific changes, prefer `make volN` directly.
-
-## Adding a Chapter
-
-1. Decide which volume the chapter belongs to (see `VOLUMES.md`).
-2. Optionally scaffold it with the generator:
-
-   ```bash
-   make chapter ARGS='-p 1 -c 3 -t "Chapter Title"'
-   ```
-
-   `-p` = volume number, `-c` = chapter number, `-t` = title. This creates the chapter file under `volumes/volN/chapterNN/` using the standard skeleton.
-
-3. Add an `\input{}` reference in `volumes/volN/volN.tex` at the right position.
-4. Run `make volN` and confirm it compiles with no new warnings.
-
-## Adding a New Volume
-
-1. Create `configs/volumes/volN.conf` (copy an existing one as a starting point).
-2. Fill in all variables: `PDF_TITLE`, `PDF_TITLE_FRONT`, `PDF_COVER_TITLE`, `PDF_SUBJECT`, `PDF_KEYWORDS`, `FRONTMATTER_DIR`, `MAIN_FRONTMATTER`, `CHAPTERS`, `BACKMATTER`, `VOLUME_NUM`, `VOLUME_TITLE`, `VOLUME_DISPLAY_TITLE`, `COVER_IMAGE`.
-3. Create `frontmatter/volN/` with `cover.tex`, `preface.tex`, `introduction.tex`, and `acknowledgments.tex`.
-4. Create `backmatter/volN/` with at least `backmatter.tex` and `note.tex`.
-5. Add Makefile targets following the `vol1`/`vol2`/`vol3` pattern.
-6. Run `make volN` — it should produce `build/<YEAR>_ARLIZ_<VOLUME_TITLE>_Volume_<N>.pdf`.
-
-## Syncing the Workspace Preset
-
-After changing `workspace.yml` or anything under `configs/`:
-
-```bash
+```sh
+git submodule update --init --recursive
 make sync
 ```
 
-This regenerates `.pxis/preset.tex`. Never edit that file by hand.
+The committed `.pxis/preset.tex` is generated by Workspace from `workspace.yml` and the project overrides. Never edit generated files by hand.
 
-## Regenerating the Cover
+## Git flow and versioning
 
-```bash
-make cover
+The repository follows the `main` / `develop` flow defined in `.gix/config`.
+
+```sh
+gix doctor
+gix feature start improve-volume-i
+# make changes and commit
+gix feature finish
 ```
 
-Regenerates cover art based on `workspace.yml` and the `COVER_IMAGE` path in the volume config.
+Inspect the current version with:
 
-## Troubleshooting
+```sh
+make version
+```
 
-**`error: unknown volume 'volX'`** — check that the volume name matches a file in `configs/volumes/` exactly (`vol1`, `vol2`, `vol3`).
+Before using `make bump`, review the existing tags. The historical tag `v1.0.0-beta-Volume_I` contains an underscore and is not a Gix-compatible SemVer tag. The guard script intentionally blocks version bumps while a SemVer-shaped incompatible tag remains. Do not rewrite or delete the historical tag automatically; decide on a normalized replacement tag in a separate release decision.
 
-**`VOLUME_NUM not set` / `VOLUME_TITLE not set`** — the `.conf` file is missing one of these variables.
+Once the tag history is normalized:
 
-**Undefined references / missing `.bbl`** — run the build again. `latexmk -bibtex` handles multi-pass compilation, but a first-time build sometimes needs an extra pass.
+```sh
+make bump LEVEL=patch
+make push TAGS=1
+```
 
-**Missing images** — confirm new images are placed under the correct path and referenced relative to the chapter file, not the root.
+Alternatively, create a reviewed explicit tag:
+
+```sh
+make tag RELEASE_VERSION=v1.2.0
+make push TAGS=1
+```
+
+Pushing to `main` updates the rolling [latest-pre-release](https://github.com/papyrxis/Arliz/releases/tag/latest-pre-release). Pushing a compatible version tag invokes the versioned release workflow. Both workflows call the same reusable Pipeline build.
+
+## Adding a chapter
+
+1. Decide which volume owns the content (see `VOLUMES.md`).
+2. Add the chapter source under the matching `volumes/volN/` directory.
+3. Add its `\\input{}` reference to the volume's master file.
+4. Run `make volN` and confirm that the output PDF passes verification.

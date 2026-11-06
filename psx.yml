@@ -1,0 +1,32 @@
+version: 1
+
+project:
+  type: ""
+  kind: book
+
+rules:
+  readme: error
+  license: warning
+  gitignore: warning
+  changelog: warning
+  docs_folder: warning
+  contributing: warning
+  security: warning
+  code_of_conduct: info
+  pull_request_template: info
+  issue_templates: info
+  editorconfig: info
+  pre_commit: info
+  ci_config: error
+  workflow_ci: error
+  workflow_release: error
+
+ignore:
+  - .git/
+  - build/
+  - .pxis/
+  - workspace/
+
+fix:
+  interactive: false
+  backup: false
