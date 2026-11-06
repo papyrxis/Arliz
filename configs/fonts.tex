@@ -3,13 +3,15 @@
 \usepackage[utf8]{inputenc}
 
 % mathpazo sets both the Palatino text face and its matching math fonts.
-% The previous Charter/mathdesign combination was internally inconsistent:
-% mathpazo overrode Charter, while mathdesign was loaded without a family
-% option and emitted "No font specified" during every volume build.
+% The previous Charter/mathdesign combination was inconsistent: mathpazo
+% overrode Charter, while mathdesign had no family option and emitted
+% "No font specified" on every build.
 \usepackage{mathpazo}
 
 \usepackage[scaled=0.92]{helvet}
-\usepackage[scaled=0.85]{beramono}
+
+% Use TeX's built-in Computer Modern typewriter face for monospace text.
+% Bera Mono is not included in the lean TeX Live toolchain used by Pipeline.
 \usepackage[english]{babel}
 \usepackage{csquotes}
 \usepackage{lettrine}
