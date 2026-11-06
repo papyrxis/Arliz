@@ -82,13 +82,13 @@ jobs:
           language: latex
           working-directory: .
           stages: install,lint,build,test
-          install-command: python -m pip install -e workspace
+          install-command: python -m pip install -r .ci/locks/python-requirements.lock -e workspace
           lint-command: psx check --config psx.yml
           build-command: make build
           test-command: make test
           timeout-seconds: "3600"
           cache: "true"
-          python-cache-dependency-path: workspace/pyproject.toml
+          python-cache-dependency-path: .ci/locks/python-requirements.lock
           latex-setup-mode: install
           latex-packages-file: .ci/locks/texlive-packages.ubuntu.lock
         env:
