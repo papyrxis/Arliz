@@ -18,19 +18,27 @@
 % Import workspace preset (auto-generated from workspace.yml)
 \input{.pxis/preset}
 
+% Per-volume front matter is optional until that volume's editorial material
+% is written. Shared title, copyright and author pages remain required.
+\newcommand{\InputOptionalVolumeFrontmatter}[1]{%
+  \InputIfFileExists{#1.tex}{}{%
+    \typeout{ARLIZ: optional front matter #1.tex not found; skipped.}%
+  }%
+}
+
 \begin{document}
 
 \frontmatter
 \frontmatterpagenumber
 
-\input{@FRONTMATTER_DIR@/cover}
+\InputOptionalVolumeFrontmatter{@FRONTMATTER_DIR@/cover}
 \input{@MAIN_FRONTMATTER@/title}
 \input{@MAIN_FRONTMATTER@/copyright}
-\input{@FRONTMATTER_DIR@/acknowledgments}
+\InputOptionalVolumeFrontmatter{@FRONTMATTER_DIR@/acknowledgments}
 \tableofcontents
 \input{@MAIN_FRONTMATTER@/about_author}
-\input{@FRONTMATTER_DIR@/preface}
-\input{@FRONTMATTER_DIR@/introduction}
+\InputOptionalVolumeFrontmatter{@FRONTMATTER_DIR@/preface}
+\InputOptionalVolumeFrontmatter{@FRONTMATTER_DIR@/introduction}
 
 \mainmatter
 \mainmatterpagenumber
