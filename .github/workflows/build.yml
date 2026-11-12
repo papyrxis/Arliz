@@ -24,10 +24,9 @@ jobs:
     outputs:
       artifact-name: ${{ steps.artifact.outputs.name }}
     steps:
-      - name: Checkout with shared Workspace
+      - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: recursive
           fetch-depth: 0
 
       - name: Set up Go for gix and psx
@@ -77,12 +76,12 @@ jobs:
         run: gix version show
 
       - name: Run Pipeline LaTeX preset
-        uses: m-mdy-m/pipeline/.github/actions/toolchain-quality@feat/toolchain-cache-locks
+        uses: m-mdy-m/pipeline/.github/actions/toolchain-quality@main
         with:
           language: latex
           working-directory: .
           stages: install,lint,build,test
-          install-command: python -m pip install -r .ci/locks/python-requirements.lock -e workspace
+          install-command: python -m pip install -r .ci/locks/python-requirements.lock
           lint-command: psx check --config psx.yml
           build-command: make build
           test-command: make test
@@ -104,6 +103,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.artifact.outputs.name }}
-          path: build/*.pdf
+          path: build/**/*.pdf
           if-no-files-found: error
           retention-days: 30

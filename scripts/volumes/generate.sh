@@ -30,7 +30,6 @@ source <(tr -d '\r' < "$CONF")
 : "${VOLUME_TITLE:?VOLUME_TITLE not set in $CONF}"
 : "${VOLUME_DISPLAY_TITLE:?VOLUME_DISPLAY_TITLE not set in $CONF}"
 
-# Fail before LaTeX starts when a configured source path is misspelled.
 require_tex_source() {
   local entry="$1"
   local label="$2"
@@ -49,10 +48,9 @@ for source in title copyright about_author; do
   require_tex_source "$MAIN_FRONTMATTER/$source" "shared front matter"
 done
 
-YEAR="$(date -u '+%Y')"
-OUT_BASENAME="${YEAR}_ARLIZ_${VOLUME_TITLE}_Volume_${VOLUME_NUM}"
-
-OUTPUT="$ROOT/${OUT_BASENAME}.tex"
+OUTPUT_DIR="$ROOT/.generated/$VOL"
+OUTPUT="$OUTPUT_DIR/main.tex"
+mkdir -p "$OUTPUT_DIR"
 
 CHAPTERS_BLOCK=""
 for c in "${CHAPTERS[@]}"; do
@@ -77,6 +75,8 @@ T_FRONTMATTER_DIR="$(escape_sed "$FRONTMATTER_DIR")"
 T_MAIN_FRONTMATTER="$(escape_sed "$MAIN_FRONTMATTER")"
 T_VOLUME_DISPLAY_TITLE="$(escape_sed "$VOLUME_DISPLAY_TITLE")"
 T_VOLUME_NUM="$(escape_sed "$VOLUME_NUM")"
+T_PROJECT_VERSION="$(escape_sed "${PROJECT_VERSION:-dev}")"
+T_BUILD_DATE="$(escape_sed "${BUILD_DATE:-unknown}")"
 
 {
   while IFS='' read -r line || [[ -n "$line" ]]; do
@@ -98,7 +98,9 @@ T_VOLUME_NUM="$(escape_sed "$VOLUME_NUM")"
               -e "s/@FRONTMATTER_DIR@/${T_FRONTMATTER_DIR}/g" \
               -e "s/@MAIN_FRONTMATTER@/${T_MAIN_FRONTMATTER}/g" \
               -e "s/@VOLUME_DISPLAY_TITLE@/${T_VOLUME_DISPLAY_TITLE}/g" \
-              -e "s/@VOLUME_NUM@/${T_VOLUME_NUM}/g"
+              -e "s/@VOLUME_NUM@/${T_VOLUME_NUM}/g" \
+              -e "s/@PROJECT_VERSION@/${T_PROJECT_VERSION}/g" \
+              -e "s/@BUILD_DATE@/${T_BUILD_DATE}/g"
         ;;
     esac
   done < "$TEMPLATE"

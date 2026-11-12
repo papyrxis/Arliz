@@ -4,6 +4,8 @@ import re
 import unittest
 from pathlib import Path
 
+import yaml
+
 
 PACKAGE_IMPORT = re.compile(
     r"\\(?:usepackage|RequirePackage)\s*(?:\[[^\]]*\]\s*)?\{([^}]+)\}"
@@ -58,12 +60,29 @@ class OptionalVolumeFrontmatterTests(unittest.TestCase):
                 self.assertIn(r"\end{volumeintro}", content)
                 self.assertNotIn("volumesintro", content)
 
-    def test_ci_uses_pinned_python_build_dependencies(self) -> None:
+    def test_ci_installs_the_pinned_workspace_wheel_without_a_submodule(self) -> None:
         lock = Path(".ci/locks/python-requirements.lock").read_text(encoding="utf-8")
         workflow = Path(".github/workflows/build.yml").read_text(encoding="utf-8")
         self.assertIn("PyYAML==6.0.3", lock)
-        self.assertIn("pip install -r .ci/locks/python-requirements.lock -e workspace", workflow)
-        self.assertIn("python-cache-dependency-path: .ci/locks/python-requirements.lock", workflow)
+        self.assertIn("papyrxis_workspace-0.5.1-py3-none-any.whl", lock)
+        self.assertIn("python -m pip install -r .ci/locks/python-requirements.lock", workflow)
+        self.assertNotIn("-e workspace", workflow)
+        self.assertNotIn("submodules: recursive", workflow)
+        self.assertFalse(Path(".gitmodules").exists())
+
+    def test_workspace_schema_declares_three_independent_book_documents(self) -> None:
+        config = yaml.safe_load(Path("workspace.yml").read_text(encoding="utf-8"))
+        self.assertEqual(config["schema_version"], 2)
+        self.assertEqual(config["project"]["type"], "collection")
+        self.assertEqual(set(config["documents"]), {"vol1", "vol2", "vol3"})
+        for document_id, document in config["documents"].items():
+            with self.subTest(document=document_id):
+                self.assertEqual(document["type"], "book")
+                self.assertEqual(set(document["editions"]), {"en"})
+                self.assertEqual(
+                    document["editions"]["en"]["source"],
+                    f".generated/{document_id}/main.tex",
+                )
 
     def test_font_stack_uses_only_the_shared_toolchain(self) -> None:
         fonts = Path("configs/fonts.tex").read_text(encoding="utf-8")

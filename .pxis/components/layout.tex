@@ -79,11 +79,17 @@
 \setlength{\cftbeforetoctitleskip}{0pt}
 \setlength{\cftaftertoctitleskip}{3ex}
 \setlength{\cftbeforepartskip}{2ex plus 0.5ex}
-\setlength{\cftbeforechapskip}{1.2ex plus 0.3ex}
+% Chapter-level TOC entries exist only for book/report classes. Keep this
+% component usable by article-class projects as well.
+\ifcsname cftbeforechapskip\endcsname
+  \setlength{\cftbeforechapskip}{1.2ex plus 0.3ex}
+\fi
 \setlength{\cftbeforesecskip}{0.8ex plus 0.2ex}
 \setlength{\cftbeforesubsecskip}{0.4ex plus 0.1ex}
 
-\setlength{\cftchapnumwidth}{3em}
+\ifcsname cftchapnumwidth\endcsname
+  \setlength{\cftchapnumwidth}{3em}
+\fi
 \setlength{\cftsecnumwidth}{3em}
 \setlength{\cftsubsecnumwidth}{3.5em}
 
@@ -92,10 +98,12 @@
 \renewcommand{\cftpartleader}{\cftdotfill{\cftpartdotsep}}
 \renewcommand{\cftpartdotsep}{4.5}
 
-\renewcommand{\cftchapfont}{\large\sffamily\bfseries\color{primary}}
-\renewcommand{\cftchappagefont}{\large\sffamily\bfseries\color{primary}}
-\renewcommand{\cftchapleader}{\cftdotfill{\cftchapdotsep}}
-\renewcommand{\cftchapdotsep}{2.6}
+\ifcsname cftchapfont\endcsname
+  \renewcommand{\cftchapfont}{\large\sffamily\bfseries\color{primary}}
+  \renewcommand{\cftchappagefont}{\large\sffamily\bfseries\color{primary}}
+  \renewcommand{\cftchapleader}{\cftdotfill{\cftchapdotsep}}
+  \renewcommand{\cftchapdotsep}{2.6}
+\fi
 
 \renewcommand{\cftsecfont}{\sffamily\color{textprimary}}
 \renewcommand{\cftsecpagefont}{\sffamily\color{textprimary}}
