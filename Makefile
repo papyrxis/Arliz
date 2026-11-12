@@ -4,65 +4,62 @@ LEVEL ?= patch
 RELEASE_VERSION ?=
 TAGS ?= 0
 BUILD_DATE ?= $(shell date -u '+%Y-%m-%d_%H:%M:%S')
-PX := PYTHONPATH=workspace $(PYTHON) -m px --root .
+PX := $(PYTHON) -m px --root .
 VOLUME_SCRIPT := scripts/volumes
 
-.PHONY: all help sync build volumes vol1 vol2 vol3 generate-vol1 generate-vol2 generate-vol3 clean clean-vols clean-vol1 clean-vol2 clean-vol3 verify test doctor version tags changelog bump tag push cover chapter
+.PHONY: all help build volumes vol1 vol2 vol3 generate-vol1 generate-vol2 generate-vol3 clean clean-vols clean-vol1 clean-vol2 clean-vol3 verify test doctor version tags changelog bump tag push
 
 all: build
 
-sync:
-	@git submodule update --init --recursive workspace
-	@test -f workspace/src/sync.sh || { echo "Workspace submodule is missing workspace/src/sync.sh" >&2; exit 1; }
-	@python3 -c "import yaml" >/dev/null 2>&1 || { echo "PyYAML is required; run: python3 -m pip install -e workspace" >&2; exit 1; }
-	@bash workspace/src/sync.sh
-
-# The default project build always produces every configured volume.
-build: clean sync
-	@PROJECT_VERSION="$(VERSION)" BUILD_DATE="$(BUILD_DATE)" bash $(VOLUME_SCRIPT)/build.sh all
+# The default project build generates and builds all three Workspace documents.
+build: clean
+	@PYTHON="$(PYTHON)" PROJECT_VERSION="$(VERSION)" BUILD_DATE="$(BUILD_DATE)" bash $(VOLUME_SCRIPT)/build.sh all
 
 volumes: build
 
-vol1: sync clean-vol1
-	@PROJECT_VERSION="$(VERSION)" BUILD_DATE="$(BUILD_DATE)" bash $(VOLUME_SCRIPT)/build.sh vol1
+vol1: clean-vol1
+	@PYTHON="$(PYTHON)" PROJECT_VERSION="$(VERSION)" BUILD_DATE="$(BUILD_DATE)" bash $(VOLUME_SCRIPT)/build.sh vol1
 
-vol2: sync clean-vol2
-	@PROJECT_VERSION="$(VERSION)" BUILD_DATE="$(BUILD_DATE)" bash $(VOLUME_SCRIPT)/build.sh vol2
+vol2: clean-vol2
+	@PYTHON="$(PYTHON)" PROJECT_VERSION="$(VERSION)" BUILD_DATE="$(BUILD_DATE)" bash $(VOLUME_SCRIPT)/build.sh vol2
 
-vol3: sync clean-vol3
-	@PROJECT_VERSION="$(VERSION)" BUILD_DATE="$(BUILD_DATE)" bash $(VOLUME_SCRIPT)/build.sh vol3
+vol3: clean-vol3
+	@PYTHON="$(PYTHON)" PROJECT_VERSION="$(VERSION)" BUILD_DATE="$(BUILD_DATE)" bash $(VOLUME_SCRIPT)/build.sh vol3
 
 generate-vol1:
-	@bash $(VOLUME_SCRIPT)/generate.sh vol1
+	@PROJECT_VERSION="$(VERSION)" BUILD_DATE="$(BUILD_DATE)" bash $(VOLUME_SCRIPT)/generate.sh vol1
 
 generate-vol2:
-	@bash $(VOLUME_SCRIPT)/generate.sh vol2
+	@PROJECT_VERSION="$(VERSION)" BUILD_DATE="$(BUILD_DATE)" bash $(VOLUME_SCRIPT)/generate.sh vol2
 
 generate-vol3:
-	@bash $(VOLUME_SCRIPT)/generate.sh vol3
+	@PROJECT_VERSION="$(VERSION)" BUILD_DATE="$(BUILD_DATE)" bash $(VOLUME_SCRIPT)/generate.sh vol3
 
 clean:
+	@$(PX) clean
 	@bash $(VOLUME_SCRIPT)/clean.sh all
-	@find . -type f \( -name "*.aux" -o -name "*.log" -o -name "*.out" -o -name "*.toc" -o -name "*.bbl" -o -name "*.blg" -o -name "*.synctex.gz" -o -name "*.fdb_latexmk" -o -name "*.fls" -o -name "*.idx" -o -name "*.ilg" -o -name "*.ind" -o -name "*.run.xml" -o -name "*.bcf" \) -delete 2>/dev/null || true
 
 clean-vols: clean
 
 clean-vol1:
+	@$(PX) clean vol1
 	@bash $(VOLUME_SCRIPT)/clean.sh vol1
 
 clean-vol2:
+	@$(PX) clean vol2
 	@bash $(VOLUME_SCRIPT)/clean.sh vol2
 
 clean-vol3:
+	@$(PX) clean vol3
 	@bash $(VOLUME_SCRIPT)/clean.sh vol3
 
 verify:
+	@$(PX) verify
 	@$(PYTHON) scripts/verify_volumes.py
 
-# Run after make build. CI invokes this after the Pipeline build stage.
 test:
 	@$(PYTHON) -m unittest discover -s tests -v
-	@$(PYTHON) scripts/verify_volumes.py
+	@$(MAKE) verify
 
 doctor:
 	@command -v git >/dev/null
@@ -73,6 +70,7 @@ doctor:
 	@command -v biber >/dev/null
 	@command -v gix >/dev/null
 	@command -v psx >/dev/null
+	@$(PYTHON) -c 'from importlib.metadata import version; print("Papyrxis Workspace", version("papyrxis-workspace"))'
 	@$(PX) doctor
 	@psx check --config psx.yml
 
@@ -100,22 +98,14 @@ endif
 push:
 	@$(PX) push $(if $(filter 1,$(TAGS)),--tags,)
 
-cover:
-	@bash workspace/src/generator/cover.sh workspace.yml
-
-chapter:
-	@bash workspace/src/generator/chapter.sh $(ARGS)
-
 help:
 	@echo "Arliz — three-volume publishing workspace"
-	@echo "  make build | volumes                 Build all three volumes"
+	@echo "  make build | volumes                 Build all three Workspace documents"
 	@echo "  make vol1 | vol2 | vol3              Build one volume"
 	@echo "  make generate-vol1 | generate-vol2 | generate-vol3"
 	@echo "  make clean | clean-vol1 | clean-vol2 | clean-vol3"
-	@echo "  make test                            Run checks after make build"
-	@echo "  make sync | doctor | verify | version"
+	@echo "  make verify | test | doctor"
 	@echo "  make tags | changelog | bump LEVEL=minor"
 	@echo "  make tag RELEASE_VERSION=v1.2.0 | push TAGS=1"
-	@echo "  make cover | chapter ARGS='...'"
 
 .DEFAULT_GOAL := help

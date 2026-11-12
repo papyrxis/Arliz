@@ -1,21 +1,57 @@
+schema_version: 2
+
 project:
-  type: book
-  category: technical
+  name: arliz
+  type: collection
   title: "Arliz"
   author: "Mahdi"
   email: "bitsgenix@gmail.com"
   date: "auto"
   url: "https://github.com/papyrxis/arliz"
+  languages: [en]
 
 build:
-  engine: pdflatex
-  bibtex: biber
   output_dir: build
-  source: "2026_ARLIZ_Zero_to_Bit_Volume_1.tex"
+  default_engine: pdflatex
+  timeout_seconds: 3600
+
+documents:
+  vol1:
+    type: book
+    title: "ARLIZ — Zero to Bit"
+    editions:
+      en:
+        source: .generated/vol1/main.tex
+        working_directory: .
+        engine: pdflatex
+        output_name: ARLIZ_Zero_to_Bit_Volume_1
+  vol2:
+    type: book
+    title: "ARLIZ — Silicon Horizon"
+    editions:
+      en:
+        source: .generated/vol2/main.tex
+        working_directory: .
+        engine: pdflatex
+        output_name: ARLIZ_Silicon_Horizon_Volume_2
+  vol3:
+    type: book
+    title: "ARLIZ — Array Odyssey"
+    editions:
+      en:
+        source: .generated/vol3/main.tex
+        working_directory: .
+        engine: pdflatex
+        output_name: ARLIZ_Array_Odyssey_Volume_3
 
 version:
   source: git
   fallback: "dev"
+
+export:
+  output_dir: build/export
+  targets: []
+  tag_limit: 5
 
 components:
   - fonts
@@ -55,5 +91,4 @@ copyright:
 
 overrides:
   dir: "configs"
-  # mode: replace   (default) — your file replaces the default component
-  # mode: extend    — default component first, then your additions appended
+  mode: replace

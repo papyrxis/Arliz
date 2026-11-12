@@ -1,2 +1,3 @@
-# Exact Python dependencies required by the Arliz Workspace build.
+# Workspace is consumed as its immutable v0.5.1 release wheel; no repository checkout is needed.
 PyYAML==6.0.3
+papyrxis-workspace @ https://github.com/papyrxis/workspace/releases/download/v0.5.1/papyrxis_workspace-0.5.1-py3-none-any.whl

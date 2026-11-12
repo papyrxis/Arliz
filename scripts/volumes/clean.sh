@@ -11,14 +11,12 @@ clean_one() {
   local conf="$CONFIG_DIR/$vol.conf"
   [[ -f "$conf" ]] || die "unknown volume '$vol' (no $conf)"
 
-  # These configuration files are maintained in this repository.
   source <(tr -d '\r' < "$conf")
   : "${VOLUME_NUM:?VOLUME_NUM not set in $conf}"
   : "${VOLUME_TITLE:?VOLUME_TITLE not set in $conf}"
 
-  local basename
-  basename="$(date -u '+%Y')_ARLIZ_${VOLUME_TITLE}_Volume_${VOLUME_NUM}"
-  rm -f "$ROOT/$basename.tex" "$ROOT/build/$basename.pdf"
+  rm -rf "$ROOT/.generated/$vol"
+  rm -f "$ROOT"/*"_ARLIZ_${VOLUME_TITLE}_Volume_${VOLUME_NUM}.tex"
   rm -rf "$ROOT/build/$vol"
   echo "cleaned $vol"
 }
@@ -29,11 +27,10 @@ case "${1:-all}" in
       [[ -f "$conf" ]] || continue
       clean_one "$(basename "$conf" .conf)"
     done
-    # Remove generated files from earlier calendar years as well.
+    rm -rf "$ROOT/.generated"
     find "$ROOT" -maxdepth 1 -type f -name '*_ARLIZ_*_Volume_*.tex' -delete
-    rm -rf "$ROOT/build"
     ;;
-  vol*)
+  vol1|vol2|vol3)
     [[ $# -eq 1 ]] || die "usage: $0 [all|vol1|vol2|vol3]"
     clean_one "$1"
     ;;

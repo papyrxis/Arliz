@@ -25,7 +25,7 @@ ignore:
   - .git/
   - build/
   - .pxis/
-  - workspace/
+  - .generated/
 
 fix:
   interactive: false
