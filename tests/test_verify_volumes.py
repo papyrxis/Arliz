@@ -1,12 +1,18 @@
 from __future__ import annotations
 
+import json
 import re
 import tempfile
 import unittest
 from pathlib import Path
 
 from scripts.check_gix_tags import invalid_gix_tags
-from scripts.verify_volumes import expected_pdf_name, read_volume_metadata, valid_pdf
+from scripts.verify_volumes import (
+    expected_pdf_name,
+    read_volume_metadata,
+    valid_pdf,
+    verify_volumes,
+)
 
 
 def strip_config_comments(source: str) -> str:
@@ -53,8 +59,8 @@ def configured_entries(config: str, variable: str) -> list[str] | None:
 class VerifyVolumesTests(unittest.TestCase):
     def test_expected_pdf_name(self) -> None:
         self.assertEqual(
-            expected_pdf_name("Zero_to_Bit", 1, 2026),
-            "2026_ARLIZ_Zero_to_Bit_Volume_1.pdf",
+            expected_pdf_name("Zero_to_Bit", 1),
+            "ARLIZ_Zero_to_Bit_Volume_1.pdf",
         )
 
     def test_reads_volume_metadata(self) -> None:
@@ -70,6 +76,57 @@ class VerifyVolumesTests(unittest.TestCase):
             self.assertTrue(valid_pdf(pdf))
             pdf.write_bytes(b"not a pdf")
             self.assertFalse(valid_pdf(pdf))
+
+    def test_verifies_nested_pdf_against_workspace_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config_dir = root / "configs" / "volumes"
+            build_dir = root / "build"
+            config_dir.mkdir(parents=True)
+            config = config_dir / "vol1.conf"
+            config.write_text('VOLUME_TITLE="Zero_to_Bit"\nVOLUME_NUM=1\n', encoding="utf-8")
+
+            pdf = build_dir / "vol1" / "en" / "ARLIZ_Zero_to_Bit_Volume_1.pdf"
+            pdf.parent.mkdir(parents=True)
+            pdf.write_bytes(b"%PDF-1.7\nbody\n%%EOF\n")
+            manifest = {
+                "schema_version": 2,
+                "results": [{
+                    "document_id": "vol1",
+                    "edition": "en",
+                    "status": "success",
+                    "output": "build/vol1/en/ARLIZ_Zero_to_Bit_Volume_1.pdf",
+                }],
+            }
+            (build_dir / "manifest.json").write_text(
+                json.dumps(manifest), encoding="utf-8"
+            )
+            self.assertEqual(verify_volumes(config_dir, build_dir, "vol1"), [pdf])
+
+    def test_manifest_rejects_failed_volume(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config_dir = root / "configs" / "volumes"
+            build_dir = root / "build"
+            config_dir.mkdir(parents=True)
+            (config_dir / "vol1.conf").write_text(
+                'VOLUME_TITLE="Zero_to_Bit"\nVOLUME_NUM=1\n', encoding="utf-8"
+            )
+            (build_dir).mkdir()
+            (build_dir / "manifest.json").write_text(
+                json.dumps({
+                    "schema_version": 2,
+                    "results": [{
+                        "document_id": "vol1",
+                        "edition": "en",
+                        "status": "failed",
+                        "output": "build/vol1/en/ARLIZ_Zero_to_Bit_Volume_1.pdf",
+                    }],
+                }),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "status is 'failed'"):
+                verify_volumes(config_dir, build_dir, "vol1")
 
     def test_gix_rejects_semver_shaped_legacy_tags(self) -> None:
         self.assertEqual(

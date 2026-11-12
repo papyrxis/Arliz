@@ -2,73 +2,44 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-SCRIPTS_DIR="$ROOT/scripts/volumes"
-GENERATE="$SCRIPTS_DIR/generate.sh"
-BUILD_DIR="$ROOT/build"
+GENERATE="$ROOT/scripts/volumes/generate.sh"
+PYTHON_BIN="${PYTHON:-python3}"
 
-die()  { echo "error: $*" >&2; exit 1; }
-info() { echo "==> $*"; }
+die() { echo "error: $*" >&2; exit 1; }
 
-usage() {
-  echo "Usage: $(basename "$0") <vol1|vol2|vol3|all>" >&2
-  exit 1
+generate_one() {
+  local volume="$1"
+  [[ -f "$ROOT/configs/volumes/${volume}.conf" ]] || die "unknown volume '$volume'"
+  bash "$GENERATE" "$volume"
+}
+
+build_all() {
+  local conf volume
+  for conf in "$ROOT/configs/volumes"/*.conf; do
+    [[ -f "$conf" ]] || continue
+    volume="$(basename "$conf" .conf)"
+    generate_one "$volume"
+  done
+
+  "$PYTHON_BIN" -m px --root "$ROOT" build --keep-going
+  "$PYTHON_BIN" -m px --root "$ROOT" verify
+  "$PYTHON_BIN" "$ROOT/scripts/verify_volumes.py" --config-dir "$ROOT/configs/volumes" --build-dir "$ROOT/build"
 }
 
 build_one() {
-  local vol="$1"
-  local conf="$ROOT/configs/volumes/${vol}.conf"
-
-  [[ -f "$conf" ]] || die "unknown volume '$vol' (no $conf)"
-
-  source <(tr -d '\r' < "$conf")
-
-  : "${VOLUME_NUM:?VOLUME_NUM not set in $conf}"
-  : "${VOLUME_TITLE:?VOLUME_TITLE not set in $conf}"
-
-  local year
-  year="$(date -u '+%Y')"
-  local out_basename="${year}_ARLIZ_${VOLUME_TITLE}_Volume_${VOLUME_NUM}"
-
-  info "[$vol] generate ${out_basename}.tex"
-  bash "$GENERATE" "$vol"
-  [[ -f "$ROOT/${out_basename}.tex" ]] || die "generation did not produce $ROOT/${out_basename}.tex"
-
-  info "[$vol] compile (latexmk → pdflatex + biber)"
-  mkdir -p "$BUILD_DIR/$vol"
-
-  (
-    cd "$ROOT"
-    latexmk \
-      -pdf \
-      -halt-on-error \
-      -pdflatex="pdflatex -file-line-error -interaction=nonstopmode %O %S" \
-      -use-make \
-      -recorder \
-      -output-directory="$BUILD_DIR/$vol" \
-      "${out_basename}.tex"
-  )
-
-  local src="$BUILD_DIR/$vol/${out_basename}.pdf"
-  local dst="$BUILD_DIR/${out_basename}.pdf"
-  [[ -f "$src" ]] || die "latexmk finished but $src not found"
-  cp "$src" "$dst"
-
-  info "[$vol] done → build/${out_basename}.pdf"
+  local volume="$1"
+  generate_one "$volume"
+  "$PYTHON_BIN" -m px --root "$ROOT" build "$volume" --edition en
+  "$PYTHON_BIN" "$ROOT/scripts/verify_volumes.py" \
+    --config-dir "$ROOT/configs/volumes" \
+    --build-dir "$ROOT/build" \
+    --volume "$volume"
 }
 
-[[ $# -eq 1 ]] || usage
+[[ $# -eq 1 ]] || die "Usage: $0 <all|vol1|vol2|vol3>"
 
 case "$1" in
-  all)
-    for conf in "$ROOT/configs/volumes"/*.conf; do
-      [[ -f "$conf" ]] || continue
-      build_one "$(basename "$conf" .conf)"
-    done
-    ;;
-  vol*)
-    build_one "$1"
-    ;;
-  *)
-    usage
-    ;;
+  all) build_all ;;
+  vol1|vol2|vol3) build_one "$1" ;;
+  *) die "unknown build target: $1" ;;
 esac
