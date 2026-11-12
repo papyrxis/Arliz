@@ -23,7 +23,7 @@ The correspondence is conceptual and chapter-level. It does not promise line-for
 - **ARLIZ owns the Volume I text.** Its chapter files remain the sources compiled into the English ARLIZ volume.
 - **Papers owns the standalone booklet.** Its Persian and English editions, references, and publication files are maintained there.
 - Do not replace ARLIZ chapters wholesale merely because the companion booklet is completed. Review substantive changes and adapt only the material that belongs in the Volume I reading path.
-- Do not use a remote GitHub URL with LaTeX `\\input`, or add the Papers repository as a Git submodule just to share these chapters. That would couple the Volume I build to another repository and its checkout or network state. The current link keeps both publications independently buildable.
+- Do not use a remote GitHub URL with LaTeX `\input`, or add the Papers repository as a Git submodule just to share these chapters. That would couple the Volume I build to another repository and its checkout or network state. The current link keeps both publications independently buildable.
 - When a shared concept changes materially, review the corresponding chapter in the other repository and make an intentional editorial update. Preserve each publication's own structure, language, references, and typesetting conventions.
 
 ## Editorial status
